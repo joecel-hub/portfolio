@@ -1,0 +1,96 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--a1);
+  border-radius: 2px;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  overflow-x: hidden;
+  line-height: 1.7;
+  transition: background 0.7s ease, color 0.7s ease;
+}
+
+body.normal-mode {
+  background: var(--nm-bg);
+  color: var(--nm-text);
+  --bg: var(--nm-bg);
+  --bg2: var(--nm-bg2);
+  --surface: var(--nm-surface);
+  --border: var(--nm-border);
+  --text: var(--nm-text);
+  --muted: var(--nm-muted);
+  --a1: var(--nm-a1);
+  --a2: var(--nm-a2);
+  --a3: var(--nm-a3);
+  --glow1: rgba(91, 79, 207, 0.15);
+  --glow2: rgba(0, 153, 187, 0.15);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+section {
+  padding: 5rem 5vw;
+  position: relative;
+  z-index: 1;
+}
+
+.section-label {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--a1);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-label::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: var(--a1);
+}
+
+.section-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+
+.sec-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+#app {
+  margin-right: 0;
+}

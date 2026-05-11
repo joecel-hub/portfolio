@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gio — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@400;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="modulepreload" href="/src/main.js" />
+</head>
+
+<body>
+
+  <!-- ── NOISE ── -->
+  <div class="noise"></div>
+
+  <!-- ── CURSOR ── -->
+  <div class="cursor" id="cursor">
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+  </div>
+
+  <!-- ── LOADER ── -->
+  <div id="loader">
+    <div class="ld-logo">Stryg<span>.</span>Bytes</div>
+    <div class="ld-track">
+      <div class="ld-bar" id="lbar"></div>
+    </div>
+    <div class="ld-pct" id="lpct">0%</div>
+  </div>
+
+  <!-- ── BG CANVAS ── -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- ── LIQUID BLOB (right side cursor follower) ── -->
+  <div id="liquid-wrap">
+    <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="goo-filter">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="goo" />
+          <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+        </filter>
+        <radialGradient id="bgrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#7c6eff" stop-opacity="0.6" />
+          <stop offset="100%" stop-color="#00d4ff" stop-opacity="0.1" />
+        </radialGradient>
+      </defs>
+      <g filter="url(#goo-filter)" id="blob-group">
+        <circle id="blob-main" cx="140" cy="140" r="46" fill="url(#bgrad)" />
+        <circle id="blob-a" cx="140" cy="100" r="22" fill="#7c6eff" opacity="0.45" />
+        <circle id="blob-b" cx="170" cy="152" r="18" fill="#00d4ff" opacity="0.35" />
+        <circle id="blob-c" cx="110" cy="158" r="15" fill="#ff6ebc" opacity="0.3" />
+      </g>
+    </svg>
+  </div>
+
+  <!-- ── MODE SWITCH ── -->
+  <div id="mode-switch">
+    <span class="ms-label active" id="ms-top">Dev</span>
+    <div class="ms-track" id="ms-track" title="Toggle mode">
+      <div class="ms-thumb" id="ms-thumb"></div>
+    </div>
+    <span class="ms-label" id="ms-bot">Normal</span>
+  </div>
+
+  <!-- ── RIGHT NAV ── -->
+  <nav id="right-nav">
+    <button class="rn-btn active" data-target="hero">Home</button>
+    <div class="rn-sep"></div>
+    <button class="rn-btn" data-target="about">About</button>
+    <div class="rn-sep"></div>
+    <button class="rn-btn dev-only" data-target="skills-dev">Skills</button>
+    <button class="rn-btn normal-only" data-target="skills-normal">Skills</button>
+    <div class="rn-sep"></div>
+    <button class="rn-btn dev-only" data-target="projects">Work</button>
+    <button class="rn-btn normal-only" data-target="hobbies">Hobbies</button>
+    <div class="rn-sep"></div>
+    <button class="rn-btn dev-only" data-target="process">Process</button>
+    <button class="rn-btn normal-only" data-target="resume">Resume</button>
+    <div class="rn-sep"></div>
+    <button class="rn-btn" data-target="contact">Contact</button>
+  </nav>
+
+  <!-- ── TOP NAV ── -->
+  <nav id="topnav">
+    <div class="nav-logo">Stryg<span>.</span>Bytes</div>
+    <ul class="nav-links" id="nav-links">
+      <li><button class="nav-close" id="nav-close">&times;</button></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills-dev" id="nav-skills">Skills</a></li>
+      <li><a href="#projects" id="nav-work">Work</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="nav-cta">Let's Talk</button>
+      <button class="ham-btn" id="ham-btn" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <!-- ══════════════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════════════ -->
+  <div id="app">
+
+    <!-- ══ HERO ══ -->
+    <section id="hero">
+      <!-- DEV MODE hero -->
+      <div class="dev-only" id="hero-dev-content">
+        <div class="hero-eyebrow">Full-Stack Developer & Animation Engineer</div>
+        <h1 class="hero-title" id="hero-title-dev">
+          <span class="line"><span class="word">Building</span> <span class="word accent">immersive</span></span>
+          <span class="line"><span class="word">web</span> <span class="word stroke">experiences</span></span>
+        </h1>
+        <p class="hero-sub">
+          I craft <strong>high-performance interfaces</strong> powered by GSAP, Three.js and WebGL.
+          Every pixel is intentional. Every animation tells a story.
+        </p>
+        <div class="hero-cta">
+          <a href="#projects" class="btn btn-primary">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            View Projects
+          </a>
+          <a href="#contact" class="btn btn-ghost">Get In Touch</a>
+        </div>
+      </div>
+      <!-- NORMAL MODE hero -->
+      <div class="normal-only" id="hero-normal-content">
+        <div class="hero-eyebrow">Creative Professional & Designer</div>
+        <h1 class="hero-title" id="hero-title-normal">
+          <span class="line"><span class="word">Design.</span> <span class="word accent">Create.</span></span>
+          <span class="line"><span class="word stroke">Inspire.</span></span>
+        </h1>
+        <p class="hero-sub">
+          I'm <strong>Gio</strong> — a creative professional who blends <strong>design thinking</strong>
+          with technical craft to build things people love to use.
+        </p>
+        <div class="hero-cta">
+          <a href="#skills-normal" class="btn btn-primary">Explore Skills</a>
+          <a href="#resume" class="btn btn-ghost">Download CV</a>
+        </div>
+      </div>
+
+      <div class="hero-scroll-cue">
+        <span class="hsc-line"></span>
+        Scroll to explore
+      </div>
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Available for projects
+      </div>
+    </section>
+
+    <!-- wave divider -->
+    <div class="wave-div">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:120px;display:block">
+        <path d="M0 40 Q180 0 360 40 Q540 80 720 40 Q900 0 1080 40 Q1260 80 1440 40 L1440 80 L0 80 Z"
+          fill="var(--bg2)" />
+      </svg>
+    </div>
+
+    <!-- ══ ABOUT ══ -->
+    <section id="about" style="background:var(--bg2)">
+      <div class="sec-inner">
+        <div class="about-grid">
+          <div class="about-text">
+            <!-- DEV MODE: Creative profile -->
+            <div class="dev-only">
+              <div class="section-label">About Me</div>
+              <h2 class="section-title">Crafting pixels with <span style="color:var(--a1)">purpose</span></h2>
+              <p>I'm <strong>Gio</strong>, a creative developer and animation specialist who believes the web should be a
+                <strong>living, breathing</strong> medium — not static pages.
+              </p>
+              <p>My toolkit spans <strong>GSAP</strong>, Three.js, CSS architecture, and full-stack development. I obsess
+                over easing curves, timing ratios, and the fine line between delightful and distracting.</p>
+              <p>Every project is a chance to <strong>push the limits</strong> of browser technology, merging aesthetic
+                precision with engineering rigour.</p>
+              <div class="about-stats">
+                <div class="stat-card"><span class="stat-num" data-count="60">0</span>
+                  <div class="stat-lbl">Projects shipped</div>
+                </div>
+                <div class="stat-card"><span class="stat-num" data-count="5">0</span>
+                  <div class="stat-lbl">Years experience</div>
+                </div>
+                <div class="stat-card"><span class="stat-num" data-count="40">0</span>
+                  <div class="stat-lbl">Happy clients</div>
+                </div>
+                <div class="stat-card"><span class="stat-num" data-count="12">0</span>
+                  <div class="stat-lbl">Awards & features</div>
+                </div>
+              </div>
+              <div class="about-tags">
+                <span class="atag">GSAP</span><span class="atag">Three.js</span><span class="atag">WebGL</span><span
+                  class="atag">React</span>
+                <span class="atag">Next.js</span><span class="atag">TypeScript</span><span
+                  class="atag">Node.js</span><span class="atag">GLSL</span>
+              </div>
+            </div>
+            <!-- NORMAL MODE: Professional profile -->
+            <div class="normal-only">
+              <div class="section-label">Professional Profile</div>
+              <h2 class="section-title">Joecel <span style="color:var(--a1)">Pergis</span></h2>
+              <p class="profile-role">Full-Stack Web Developer &bull; IT Support Specialist</p>
+              <p>I build modern, user-focused websites and systems that combine clean interface design with dependable technical performance. My work balances <strong>usability</strong>, <strong>speed</strong>, and maintainable code standards.</p>
+              <p>Beyond development, I provide practical IT support including <strong>network setup</strong>, workstation optimization, and computer/laptop troubleshooting for day-to-day business operations.</p>
+              <div class="about-tags">
+                <span class="atag">PHP</span><span class="atag">MySQL</span><span class="atag">JavaScript</span><span
+                  class="atag">Tailwind</span>
+                <span class="atag">Networking</span><span class="atag">Hardware</span><span
+                  class="atag">Troubleshooting</span><span class="atag">IT Support</span>
+              </div>
+            </div>
+          </div>
+          <!-- ══════════════════════════════════════════════
+         SAMPLE SVG #1 — CIRCUIT BOARD ILLUSTRATION
+         ✏️ CUSTOMIZE: Add/remove <line>, <circle>, or
+            <rect> elements. Each has a unique id for
+            individual GSAP targeting. Colours inherit
+            from currentColor — change stroke="..." to
+            use a fixed hex value on any element.
+         ✏════════════════════════════════════════════ -->
+          <div style="display:flex;justify-content:center;align-items:center">
+            <!-- Dev mode: circuit SVG -->
+            <div class="dev-only" style="width:100%;max-width:420px">
+              <svg id="svg-circuit" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg"
+                aria-label="Circuit board illustration">
+                <defs>
+                  <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#7c6eff" />
+                    <stop offset="100%" stop-color="#00d4ff" />
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                    <feMerge>
+                      <feMergeNode in="coloredBlur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <!-- Grid base -->
+                <rect width="400" height="400" rx="16" fill="#0f0f1a" stroke="#1e1e2e" stroke-width="1" />
+
+                <!-- ── Horizontal traces ── -->
+                <line id="trace-h1" x1="40" y1="100" x2="200" y2="100" stroke="#1e2a3a" stroke-width="2"
+                  class="trace" />
+                <line id="trace-h2" x1="80" y1="160" x2="320" y2="160" stroke="#1e2a3a" stroke-width="2"
+                  class="trace" />
+                <line id="trace-h3" x1="40" y1="240" x2="360" y2="240" stroke="#1e2a3a" stroke-width="2"
+                  class="trace" />
+                <line id="trace-h4" x1="120" y1="300" x2="360" y2="300" stroke="#1e2a3a" stroke-width="2"
+                  class="trace" />
+
+                <!-- ── Vertical traces ── -->
+                <line id="trace-v1" x1="100" y1="40" x2="100" y2="360" stroke="#1e2a3a" stroke-width="2"
+                  class="trace" />
+                <line id="trace-v2" x1="200" y1="80" x2="200" y2="320" stroke="#1e2a3a" stroke-width="2"
+                  class="trace" />
+                <line id="trace-v3" x1="300" y1="40" x2="300" y2="360" stroke="#1e2a3a" stroke-width="2"
+                  class="trace" />
+
+                <!-- ── Active (glowing) traces — animated via GSAP ── -->
+                <line id="active-h1" x1="40" y1="100" x2="200" y2="100" stroke="url(#grad1)" stroke-width="2"
+                  filter="url(#glow)" stroke-dasharray="160" stroke-dashoffset="160" class="active-trace" />
+                <line id="active-v1" x1="200" y1="100" x2="200" y2="240" stroke="url(#grad1)" stroke-width="2"
+                  filter="url(#glow)" stroke-dasharray="140" stroke-dashoffset="140" class="active-trace" />
+                <line id="active-h2" x1="200" y1="240" x2="360" y2="240" stroke="#00d4ff" stroke-width="2"
+                  filter="url(#glow)" stroke-dasharray="160" stroke-dashoffset="160" class="active-trace" />
+
+                <!-- ── Nodes / solder pads ── -->
+                <circle id="node1" cx="100" cy="100" r="6" fill="#7c6eff" filter="url(#glow)" class="node" />
+                <circle id="node2" cx="200" cy="100" r="8" fill="url(#grad1)" filter="url(#glow)" class="node" />
+                <circle id="node3" cx="300" cy="100" r="6" fill="#7c6eff" filter="url(#glow)" class="node" />
+                <circle id="node4" cx="100" cy="160" r="5" fill="#00d4ff" class="node" />
+                <circle id="node5" cx="200" cy="160" r="5" fill="#00d4ff" class="node" />
+                <circle id="node6" cx="300" cy="160" r="7" fill="url(#grad1)" filter="url(#glow)" class="node" />
+                <circle id="node7" cx="100" cy="240" r="6" fill="#7c6eff" class="node" />
+                <circle id="node8" cx="200" cy="240" r="9" fill="url(#grad1)" filter="url(#glow)"
+                  class="node pulse-node" />
+                <circle id="node9" cx="300" cy="240" r="6" fill="#00d4ff" class="node" />
+                <circle id="node10" cx="100" cy="300" r="5" fill="#7c6eff" class="node" />
+                <circle id="node11" cx="200" cy="300" r="5" fill="#00d4ff" class="node" />
+                <circle id="node12" cx="300" cy="300" r="7" fill="url(#grad1)" filter="url(#glow)" class="node" />
+
+                <!-- ── IC Chip ── -->
+                <rect id="chip" x="140" y="200" width="120" height="80" rx="6" fill="#0d0d1f" stroke="url(#grad1)"
+                  stroke-width="1.5" />
+                <text x="200" y="247" text-anchor="middle" fill="#7c6eff" font-family="JetBrains Mono, monospace"
+                  font-size="10" font-weight="700">MCU-32</text>
+                <!-- Chip legs -->
+                <line x1="140" y1="220" x2="120" y2="220" stroke="#00d4ff" stroke-width="1.5" />
+                <line x1="140" y1="235" x2="120" y2="235" stroke="#00d4ff" stroke-width="1.5" />
+                <line x1="140" y1="250" x2="120" y2="250" stroke="#00d4ff" stroke-width="1.5" />
+                <line x1="140" y1="265" x2="120" y2="265" stroke="#00d4ff" stroke-width="1.5" />
+                <line x1="260" y1="220" x2="280" y2="220" stroke="#7c6eff" stroke-width="1.5" />
+                <line x1="260" y1="235" x2="280" y2="235" stroke="#7c6eff" stroke-width="1.5" />
+                <line x1="260" y1="250" x2="280" y2="250" stroke="#7c6eff" stroke-width="1.5" />
+                <line x1="260" y1="265" x2="280" y2="265" stroke="#7c6eff" stroke-width="1.5" />
+
+                <!-- ── Data packet — animated dot ── -->
+                <circle id="data-packet" r="4" fill="#ff6ebc" filter="url(#glow)">
+                  <animateMotion dur="4s" repeatCount="indefinite" rotate="auto">
+                    <mpath href="#data-path" />
+                  </animateMotion>
+                </circle>
+                <path id="data-path" d="M40,100 L200,100 L200,240 L360,240" fill="none" />
+              </svg>
+            </div>
+            <!-- Normal mode: profile photo with lens effect -->
+            <div class="normal-only" style="width:100%;max-width:420px">
+              <div class="photo-container" id="photo-container">
+                <img src="/images/normal.jpeg" alt="Gio" class="photo-img" id="photo-normal" />
+                <img src="/images/wacky-pose.png" alt="Gio" class="photo-img" id="photo-wacky" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- wave divider reversed -->
+    <div class="wave-div">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:120px;display:block">
+        <path d="M0 40 Q180 80 360 40 Q540 0 720 40 Q900 80 1080 40 Q1260 0 1440 40 L1440 0 L0 0 Z" fill="var(--bg2)" />
+      </svg>
+    </div>
+
+    <!-- ══ DEV: SKILLS ══ -->
+    <section id="skills-dev" class="dev-only">
+      <div class="sec-inner">
+        <div class="section-label">Expertise</div>
+        <h2 class="section-title">Tools &amp; <span style="color:var(--a1)">Mastery</span></h2>
+      </div>
+      <!-- Skill rings from Full-Stack template -->
+      <div class="rings-grid">
+        <div class="ring-item" data-pct="95">
+          <svg class="ring-svg" viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="42" />
+            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#7c6eff" />
+            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">95%</text>
+          </svg>
+          <span class="ring-lbl">GSAP</span>
+        </div>
+        <div class="ring-item" data-pct="90">
+          <svg class="ring-svg" viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="42" />
+            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#00d4ff" />
+            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">90%</text>
+          </svg>
+          <span class="ring-lbl">React/Next</span>
+        </div>
+        <div class="ring-item" data-pct="88">
+          <svg class="ring-svg" viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="42" />
+            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#ff6ebc" />
+            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">88%</text>
+          </svg>
+          <span class="ring-lbl">TypeScript</span>
+        </div>
+        <div class="ring-item" data-pct="82">
+          <svg class="ring-svg" viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="42" />
+            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#7c6eff" />
+            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">82%</text>
+          </svg>
+          <span class="ring-lbl">Three.js</span>
+        </div>
+        <div class="ring-item" data-pct="92">
+          <svg class="ring-svg" viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="42" />
+            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#00d4ff" />
+            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">92%</text>
+          </svg>
+          <span class="ring-lbl">Node.js</span>
+        </div>
+        <div class="ring-item" data-pct="96">
+          <svg class="ring-svg" viewBox="0 0 100 100">
+            <circle class="ring-bg" cx="50" cy="50" r="42" />
+            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#ff6ebc" />
+            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">96%</text>
+          </svg>
+          <span class="ring-lbl">CSS/SVG</span>
+        </div>
+      </div>
+      <!-- Skill cards below rings -->
+      <div class="skills-grid" style="margin-top:4rem">
+        <div class="skill-card">
+          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
+            <rect width="44" height="44" rx="9" fill="rgba(124,110,255,0.1)" />
+            <path d="M9 33L18 13l5 11 4-5 8 14" stroke="var(--a1)" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <circle cx="36" cy="13" r="3" fill="var(--a2)" />
+          </svg>
+          <div class="skill-name">GSAP / Animation</div>
+          <div class="skill-desc">ScrollTrigger, MorphSVG, SplitText, and complex multi-timeline orchestration at 60fps.
+          </div>
+          <div class="skill-bar-bg">
+            <div class="skill-bar" data-width="95"></div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
+            <rect width="44" height="44" rx="9" fill="rgba(0,212,255,0.08)" />
+            <polygon points="22,6 36,30 8,30" fill="none" stroke="var(--a2)" stroke-width="1.8"
+              stroke-linejoin="round" />
+            <circle cx="22" cy="30" r="5" fill="none" stroke="var(--a2)" stroke-width="1.5" />
+          </svg>
+          <div class="skill-name">Three.js / WebGL</div>
+          <div class="skill-desc">3D scenes, custom shaders, procedural geometry, and GPU-accelerated particle systems.
+          </div>
+          <div class="skill-bar-bg">
+            <div class="skill-bar" data-width="82"></div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
+            <rect width="44" height="44" rx="9" fill="rgba(255,110,188,0.08)" />
+            <path d="M7 15h30M7 22h22M7 29h14" stroke="var(--a3)" stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+          <div class="skill-name">Full-Stack Dev</div>
+          <div class="skill-desc">React, Next.js App Router, Node.js, PostgreSQL, and TypeScript from UI to database.
+          </div>
+          <div class="skill-bar-bg">
+            <div class="skill-bar" data-width="90"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ NORMAL: SKILLS ══ -->
+    <section id="skills-normal" class="normal-only" style="background:var(--bg2)">
+      <div class="sec-inner">
+        <div class="section-label">Capabilities</div>
+        <h2 class="section-title">What I <span style="color:var(--a1)">Create</span></h2>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
+            <rect width="44" height="44" rx="9" fill="rgba(91,79,207,0.1)" />
+            <rect x="8" y="12" width="28" height="20" rx="3" stroke="var(--a1)" stroke-width="1.5" />
+            <path d="M16 22 l5-4 0 8z" fill="var(--a1)" opacity="0.8" />
+          </svg>
+          <div class="skill-name">Video Editing</div>
+          <div class="skill-desc">Premiere Pro, DaVinci Resolve. Colour grading, motion titles, and cinematic
+            storytelling.</div>
+          <div class="skill-bar-bg">
+            <div class="skill-bar" data-width="90"></div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
+            <rect width="44" height="44" rx="9" fill="rgba(0,153,187,0.08)" />
+            <circle cx="22" cy="22" r="14" stroke="var(--a2)" stroke-width="1.5" />
+            <circle cx="22" cy="22" r="5" fill="var(--a2)" opacity="0.6" />
+            <rect x="18" y="6" width="8" height="5" rx="2" stroke="var(--a2)" stroke-width="1.2" />
+          </svg>
+          <div class="skill-name">Photography</div>
+          <div class="skill-desc">Lightroom, Photoshop. Street, product, and portrait photography with retouching
+            expertise.</div>
+          <div class="skill-bar-bg">
+            <div class="skill-bar" data-width="88"></div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
+            <rect width="44" height="44" rx="9" fill="rgba(204,68,136,0.08)" />
+            <rect x="8" y="14" width="28" height="18" rx="4" stroke="var(--a3)" stroke-width="1.5" />
+            <circle cx="15" cy="23" r="4" stroke="var(--a3)" stroke-width="1.2" />
+            <circle cx="29" cy="23" r="4" stroke="var(--a3)" stroke-width="1.2" />
+            <rect x="19" y="21" width="6" height="4" rx="1" fill="var(--a3)" opacity="0.5" />
+          </svg>
+          <div class="skill-name">Gaming</div>
+          <div class="skill-desc">Competitive FPS, strategy. Twitch streaming with a 2K+ community. Content creation &
+            highlights.</div>
+          <div class="skill-bar-bg">
+            <div class="skill-bar" data-width="85"></div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
+            <rect width="44" height="44" rx="9" fill="rgba(91,79,207,0.1)" />
+            <path d="M10 38 L22 8 L34 38" stroke="var(--a1)" stroke-width="1.5" stroke-linejoin="round" fill="none" />
+            <path d="M15 28 h14" stroke="var(--a1)" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          <div class="skill-name">UI/UX Design</div>
+          <div class="skill-desc">Figma and Framer. Design systems, user research, interactive prototypes, and component
+            libraries.</div>
+          <div class="skill-bar-bg">
+            <div class="skill-bar" data-width="92"></div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
+            <rect width="44" height="44" rx="9" fill="rgba(0,153,187,0.08)" />
+            <ellipse cx="22" cy="26" rx="12" ry="7" stroke="var(--a2)" stroke-width="1.5" />
+            <line x1="22" y1="8" x2="22" y2="19" stroke="var(--a2)" stroke-width="1.5" />
+            <line x1="14" y1="10" x2="16" y2="18" stroke="var(--a2)" stroke-width="1.2" opacity="0.7" />
+            <line x1="30" y1="10" x2="28" y2="18" stroke="var(--a2)" stroke-width="1.2" opacity="0.7" />
+          </svg>
+          <div class="skill-name">Music Production</div>
+          <div class="skill-desc">Ableton Live. Electronic composition, sound design, podcast scoring, and ambient
+            soundscapes.</div>
+          <div class="skill-bar-bg">
+            <div class="skill-bar" data-width="72"></div>
+          </div>
+        </div>
+        <div class="skill-card">
+          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
+            <rect width="44" height="44" rx="9" fill="rgba(204,68,136,0.08)" />
+            <path d="M8 36 L22 8 L36 36" stroke="var(--a3)" stroke-width="1.5" stroke-linejoin="round" fill="none" />
+            <circle cx="22" cy="28" r="6" fill="none" stroke="var(--a3)" stroke-width="1.2" />
+          </svg>
+          <div class="skill-name">3D Modeling</div>
+          <div class="skill-desc">Blender and Cinema 4D. Product visualisation, architectural renders, and motion
+            graphics.</div>
+          <div class="skill-bar-bg">
+            <div class="skill-bar" data-width="78"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ DEV: PROJECTS ══ -->
+    <section id="projects" class="dev-only" style="background:var(--bg2)">
+      <div class="sec-inner">
+        <div class="section-label">Selected Work</div>
+        <h2 class="section-title">Featured <span style="color:var(--a1)">Projects</span></h2>
+      </div>
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-arrow">↗</div>
+          <div class="project-thumb" style="background:linear-gradient(135deg,#0d0d1a,#1a1040)">
+            <svg viewBox="0 0 600 200" fill="none">
+              <defs>
+                <radialGradient id="pg1" cx="50%" cy="50%">
+                  <stop offset="0%" stop-color="rgba(124,110,255,0.55)" />
+                  <stop offset="100%" stop-color="transparent" />
+                </radialGradient>
+              </defs>
+              <circle cx="300" cy="100" r="160" fill="url(#pg1)" opacity="0.4" />
+              <path d="M80 100 Q200 35 300 100 Q400 165 520 100" stroke="rgba(124,110,255,0.85)" stroke-width="2"
+                fill="none" id="wave1a" />
+              <path d="M80 120 Q200 55 300 120 Q400 185 520 120" stroke="rgba(255,110,188,0.5)" stroke-width="1.5"
+                fill="none" id="wave1b" />
+              <circle cx="300" cy="100" r="28" fill="rgba(124,110,255,0.18)" stroke="rgba(124,110,255,0.5)"
+                stroke-width="1" />
+              <text x="284" y="108" font-family="JetBrains Mono" font-size="16" fill="rgba(124,110,255,0.9)">3D</text>
+            </svg>
+          </div>
+          <div class="project-info">
+            <div class="project-tags"><span class="ptag">GSAP</span><span class="ptag">Three.js</span><span
+                class="ptag">WebGL</span></div>
+            <div class="project-name">Immersive 3D Landing</div>
+            <div class="project-desc">Full-screen interactive 3D experience with dynamic particle systems, custom
+              shaders, and scroll-driven camera movement.</div>
+            <div class="code-snip"><span class="cm">// ScrollTrigger + camera morph</span><br><span
+                class="kw">const</span> tl = gsap.<span class="fn">timeline</span>({ scrollTrigger:
+              {<br>&nbsp;&nbsp;trigger: <span class="str">'#scene'</span>, scrub: <span class="nm">1.5</span>
+              }});<br>tl.<span class="fn">to</span>(camera.position, { z: <span class="nm">3</span>, ease: <span
+                class="str">'power2.inOut'</span> });</div>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-arrow">↗</div>
+          <div class="project-thumb" style="background:linear-gradient(135deg,#0d1a12,#0a2010)">
+            <svg viewBox="0 0 600 200" fill="none">
+              <defs>
+                <radialGradient id="pg2" cx="50%" cy="50%">
+                  <stop offset="0%" stop-color="rgba(67,233,123,0.5)" />
+                  <stop offset="100%" stop-color="transparent" />
+                </radialGradient>
+              </defs>
+              <circle cx="300" cy="100" r="160" fill="url(#pg2)" opacity="0.3" />
+              <rect x="150" y="40" width="300" height="120" rx="8" fill="rgba(67,233,123,0.05)"
+                stroke="rgba(67,233,123,0.25)" stroke-width="1" />
+              <rect x="168" y="58" width="80" height="11" rx="2" fill="rgba(67,233,123,0.35)" />
+              <rect x="168" y="76" width="120" height="8" rx="2" fill="rgba(255,255,255,0.1)" />
+              <rect x="290" y="110" width="14" height="30" rx="2" fill="rgba(67,233,123,0.6)" />
+              <rect x="310" y="95" width="14" height="45" rx="2" fill="rgba(67,233,123,0.85)" />
+              <rect x="330" y="103" width="14" height="37" rx="2" fill="rgba(67,233,123,0.5)" />
+              <rect x="350" y="88" width="14" height="52" rx="2" fill="rgba(67,233,123,0.95)" />
+            </svg>
+          </div>
+          <div class="project-info">
+            <div class="project-tags"><span class="ptag">React</span><span class="ptag">D3.js</span><span
+                class="ptag">GSAP</span></div>
+            <div class="project-name">Analytics SaaS Dashboard</div>
+            <div class="project-desc">Real-time data visualisation platform with animated charts, WebSocket streaming,
+              and drag-and-drop widgets.</div>
+            <div class="code-snip"><span class="cm">// Animated bar entrance</span><br>gsap.<span
+                class="fn">from</span>(<span class="str">'.bar'</span>, {<br>&nbsp;&nbsp;scaleY: <span
+                class="nm">0</span>, transformOrigin: <span class="str">'bottom'</span>,<br>&nbsp;&nbsp;stagger: <span
+                class="nm">0.04</span>, ease: <span class="str">'back.out(1.7)'</span><br>});</div>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-arrow">↗</div>
+          <div class="project-thumb" style="background:linear-gradient(135deg,#1a0a10,#200a18)">
+            <svg viewBox="0 0 600 200" fill="none">
+              <defs>
+                <radialGradient id="pg3" cx="50%" cy="50%">
+                  <stop offset="0%" stop-color="rgba(255,110,188,0.5)" />
+                  <stop offset="100%" stop-color="transparent" />
+                </radialGradient>
+              </defs>
+              <circle cx="300" cy="100" r="160" fill="url(#pg3)" opacity="0.35" />
+              <rect x="255" y="20" width="90" height="160" rx="14" fill="rgba(255,110,188,0.05)"
+                stroke="rgba(255,110,188,0.35)" stroke-width="1.5" />
+              <rect x="268" y="44" width="64" height="86" rx="5" fill="rgba(255,110,188,0.07)" />
+              <rect x="276" y="52" width="48" height="10" rx="2" fill="rgba(255,110,188,0.4)" />
+              <rect x="276" y="68" width="36" height="6" rx="2" fill="rgba(255,255,255,0.14)" />
+              <rect x="276" y="108" width="48" height="16" rx="4" fill="rgba(255,110,188,0.5)" />
+              <circle cx="300" cy="167" r="5" fill="none" stroke="rgba(255,110,188,0.4)" stroke-width="1.5" />
+            </svg>
+          </div>
+          <div class="project-info">
+            <div class="project-tags"><span class="ptag">Next.js</span><span class="ptag">Stripe</span><span
+                class="ptag">PostgreSQL</span></div>
+            <div class="project-name">Mobile-First E-Commerce</div>
+            <div class="project-desc">Luxury brand storefront with gesture animations, micro-interactions, and a
+              zero-layout-shift cart.</div>
+            <div class="code-snip"><span class="cm">// Page transition wrapper</span><br><span class="kw">export
+                function</span> <span class="fn">PageWrap</span>({ children }) {<br>&nbsp;&nbsp;<span
+                class="kw">const</span> tl = <span class="fn">useRef</span>(gsap.<span
+                class="fn">timeline</span>());<br>&nbsp;&nbsp;<span class="kw">return</span> &lt;<span
+                class="fn">div</span> <span class="nm">ref</span>={el}&gt;{children}&lt;/<span
+                class="fn">div</span>&gt;<br>}</div>
+          </div>
+        </div>
+        <div class="project-card">
+          <div class="project-arrow">↗</div>
+          <div class="project-thumb" style="background:linear-gradient(135deg,#080d1a,#0a1040)">
+            <svg viewBox="0 0 600 200" fill="none">
+              <defs>
+                <radialGradient id="pg4a" cx="35%" cy="50%">
+                  <stop offset="0%" stop-color="rgba(124,110,255,0.5)" />
+                  <stop offset="100%" stop-color="transparent" />
+                </radialGradient>
+                <radialGradient id="pg4b" cx="65%" cy="50%">
+                  <stop offset="0%" stop-color="rgba(67,233,123,0.4)" />
+                  <stop offset="100%" stop-color="transparent" />
+                </radialGradient>
+              </defs>
+              <circle cx="200" cy="100" r="130" fill="url(#pg4a)" opacity="0.5" />
+              <circle cx="400" cy="100" r="130" fill="url(#pg4b)" opacity="0.4" />
+              <line x1="200" y1="100" x2="300" y2="72" stroke="rgba(124,110,255,0.4)" stroke-width="1" />
+              <line x1="200" y1="100" x2="300" y2="128" stroke="rgba(124,110,255,0.4)" stroke-width="1" />
+              <line x1="300" y1="72" x2="400" y2="100" stroke="rgba(67,233,123,0.4)" stroke-width="1" />
+              <line x1="300" y1="128" x2="400" y2="100" stroke="rgba(67,233,123,0.4)" stroke-width="1" />
+              <circle cx="200" cy="100" r="14" fill="rgba(124,110,255,0.45)" stroke="rgba(124,110,255,0.85)"
+                stroke-width="1.5" />
+              <circle cx="300" cy="72" r="9" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.28)"
+                stroke-width="1" />
+              <circle cx="300" cy="128" r="9" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.28)"
+                stroke-width="1" />
+              <circle cx="400" cy="100" r="14" fill="rgba(67,233,123,0.35)" stroke="rgba(67,233,123,0.8)"
+                stroke-width="1.5" />
+            </svg>
+          </div>
+          <div class="project-info">
+            <div class="project-tags"><span class="ptag">GSAP</span><span class="ptag">SVG</span><span
+                class="ptag">Canvas API</span></div>
+            <div class="project-name">Interactive Data Narrative</div>
+            <div class="project-desc">Scroll-driven data storytelling with animated network graphs, morphing SVG charts,
+              and voice sync.</div>
+            <div class="code-snip"><span class="cm">// Morph SVG path on scroll</span><br>gsap.<span
+                class="fn">to</span>(<span class="str">'#graph'</span>, {<br>&nbsp;&nbsp;attr: { d: newPath
+                },<br>&nbsp;&nbsp;scrollTrigger: { scrub: <span class="nm">2</span>, start: <span class="str">'top
+                  60%'</span> }<br>});</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ NORMAL: HOBBIES ══ -->
+    <section id="hobbies" class="normal-only" style="background:var(--bg2)">
+      <div class="sec-inner">
+        <div class="section-label">Life Outside Work</div>
+        <h2 class="section-title">Hobbies & <span style="color:var(--a1)">Interests</span></h2>
+        <div class="hobbies-grid">
+          <div class="hobby-card">
+            <svg class="hobby-icon" viewBox="0 0 56 56" fill="none">
+              <rect width="56" height="56" rx="14" fill="rgba(91,79,207,0.1)" />
+              <rect x="10" y="18" width="36" height="24" rx="4" stroke="var(--a1)" stroke-width="1.5" />
+              <path d="M22 30 l8-5 0 10z" fill="var(--a1)" opacity="0.8" />
+              <rect x="20" y="42" width="16" height="4" rx="2" fill="var(--a1)" opacity="0.4" />
+            </svg>
+            <div class="hobby-name">Video Editing</div>
+            <div class="hobby-desc">15K YouTube subscribers documenting creative processes. Cinematic edits using
+              DaVinci Resolve and After Effects.</div>
+          </div>
+          <div class="hobby-card">
+            <svg class="hobby-icon" viewBox="0 0 56 56" fill="none">
+              <rect width="56" height="56" rx="14" fill="rgba(0,153,187,0.08)" />
+              <circle cx="28" cy="28" r="16" stroke="var(--a2)" stroke-width="1.5" />
+              <circle cx="28" cy="28" r="5" fill="var(--a2)" opacity="0.7" />
+              <rect x="22" y="8" width="12" height="7" rx="3" stroke="var(--a2)" stroke-width="1.2" />
+              <line x1="28" y1="15" x2="28" y2="12" stroke="var(--a2)" stroke-width="1.2" />
+            </svg>
+            <div class="hobby-name">Photography</div>
+            <div class="hobby-desc">Street and architectural photography in Dubai. Lightroom presets downloaded 5K+
+              times. Monthly photo walks.</div>
+          </div>
+          <div class="hobby-card">
+            <svg class="hobby-icon" viewBox="0 0 56 56" fill="none">
+              <rect width="56" height="56" rx="14" fill="rgba(204,68,136,0.08)" />
+              <rect x="10" y="18" width="36" height="24" rx="6" stroke="var(--a3)" stroke-width="1.5" />
+              <circle cx="20" cy="30" r="5" stroke="var(--a3)" stroke-width="1.2" />
+              <circle cx="36" cy="30" r="5" stroke="var(--a3)" stroke-width="1.2" />
+              <rect x="24" y="27" width="8" height="5" rx="1.5" fill="var(--a3)" opacity="0.5" />
+            </svg>
+            <div class="hobby-name">Gaming</div>
+            <div class="hobby-desc">Competitive FPS and strategy. Twitch community of 2K+ viewers. Creating content
+              around creative gaming moments.</div>
+          </div>
+          <div class="hobby-card">
+            <svg class="hobby-icon" viewBox="0 0 56 56" fill="none">
+              <rect width="56" height="56" rx="14" fill="rgba(91,79,207,0.1)" />
+              <ellipse cx="28" cy="32" rx="14" ry="9" stroke="var(--a1)" stroke-width="1.5" />
+              <line x1="28" y1="12" x2="28" y2="23" stroke="var(--a1)" stroke-width="1.5" />
+              <line x1="20" y1="14" x2="22" y2="22" stroke="var(--a1)" stroke-width="1.2" opacity="0.7" />
+              <line x1="36" y1="14" x2="34" y2="22" stroke="var(--a1)" stroke-width="1.2" opacity="0.7" />
+            </svg>
+            <div class="hobby-name">Music Production</div>
+            <div class="hobby-desc">Two EPs released on Spotify. Electronic and ambient compositions. Custom soundscapes
+              for client campaigns.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ DEV: PROCESS ══ -->
+    <section id="process" class="dev-only">
+      <div class="sec-inner">
+        <div class="section-label">How I Work</div>
+        <h2 class="section-title">My <span style="color:var(--a1)">Process</span></h2>
+      </div>
+      <div class="process-steps">
+        <div class="process-step">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h3>Discovery & Strategy</h3>
+            <p>Deep dive into goals, audience, and brand. I map user journeys and define success metrics before a pixel
+              moves.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h3>Design & Prototype</h3>
+            <p>High-fidelity Figma prototypes with motion notes. Every interaction is documented before code begins.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h3>Development & Animation</h3>
+            <p>Semantic, accessible HTML/CSS with GSAP animation layers on top. Performance budgets enforced from day
+              one.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <h3>Testing & Refinement</h3>
+            <p>Cross-browser testing, Lighthouse audits, accessibility checks, and real user feedback before launch.</p>
+          </div>
+        </div>
+        <div class="process-step">
+          <div class="step-num">05</div>
+          <div class="step-content">
+            <h3>Launch & Iterate</h3>
+            <p>Staged deployment, analytics integration, and data-driven iteration post-launch.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ NORMAL: RESUME ══ -->
+    <section id="resume" class="normal-only">
+      <div class="sec-inner">
+        <div class="resume-grid">
+          <div>
+            <div class="section-label">Experience</div>
+            <h2 class="section-title">Career <span style="color:var(--a1)">Path</span></h2>
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-date">2025 — Present</div>
+                <div class="tl-role">Full Stack Developer</div>
+                <div class="tl-company">Al Ghurair CEW LLC</div>
+                <div class="tl-desc">Building and maintaining the company website, internal dashboards, and inventory systems using PHP, MySQL, Tailwind CSS, and JavaScript.</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-date">2025 — Present</div>
+                <div class="tl-role">IT Support / IT Specialist</div>
+                <div class="tl-company">Al Ghurair CEW LLC</div>
+                <div class="tl-desc">Managing network infrastructure, servers, and workstations. Providing hardware/software troubleshooting and IT security support for staff.</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-date">2019 — 2024</div>
+                <div class="tl-role">I.T Assistant</div>
+                <div class="tl-company">Currimao National High School (LGU Funded)</div>
+                <div class="tl-desc">Delivered on-site technical support for computer labs and faculty devices. Maintained network connectivity and assisted in deploying educational technology.</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="section-label">Awards</div>
+            <h2 class="section-title">Mile<span style="color:var(--a1)">stones</span></h2>
+            <div class="timeline">
+              <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-date">2024</div>
+                <div class="tl-role">Awwwards Site of the Day</div>
+                <div class="tl-company">Interactive Brand Campaign</div>
+                <div class="tl-desc">Honoured for outstanding interaction design and WebGL innovation.</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-date">2023</div>
+                <div class="tl-role">CSS Design Awards</div>
+                <div class="tl-company">Best Animation</div>
+                <div class="tl-desc">Recognised for GSAP-driven scroll storytelling project for a luxury client.</div>
+              </div>
+              <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-date">2022</div>
+                <div class="tl-role">FWA Honoured Site</div>
+                <div class="tl-company">E-Commerce Experience</div>
+                <div class="tl-desc">Featured as one of the top e-commerce experiences of the year.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ CONTACT ══ -->
+    <section id="contact">
+      <div class="section-label" style="justify-content:center"><span>Get In Touch</span></div>
+      <h2 class="section-title" style="text-align:center">Let's build something <span
+          style="color:var(--a1)">great</span></h2>
+      <p
+        style="text-align:center;color:var(--muted);max-width:46ch;margin:0 auto 2rem;font-size:0.95rem;line-height:1.8">
+        Open to freelance projects, full-time roles, and interesting collaborations. Let's make something extraordinary.
+      </p>
+      <a href="mailto:hello@stryg.bytes" class="contact-email">hello@stryg.bytes</a>
+      <div class="social-row">
+        <a href="https://github.com/joecel-hub" class="soc-link" title="GitHub"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z" />
+          </svg></a>
+        <a href="https://www.linkedin.com/in/joecel-jaygee-pergis-348b65137/" class="soc-link" title="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24"
+            fill="currentColor">
+            <path
+              d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+          </svg></a>
+        <a href="#" class="soc-link" title="Dribbble"><svg width="16" height="16" viewBox="0 0 24 24"
+            fill="currentColor">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.605 4.61a8.502 8.502 0 011.93 5.314c-.281-.054-3.101-.629-5.943-.271-.065-.141-.12-.293-.184-.445a25.424 25.424 0 00-.564-1.236c3.145-1.28 4.577-3.124 4.761-3.362zM12 3.475c2.17 0 4.154.813 5.662 2.148-.152.216-1.443 1.941-4.48 3.08-1.399-2.57-2.95-4.675-3.189-5A8.687 8.687 0 0112 3.475zm-3.633.803a53.896 53.896 0 013.167 4.935c-3.992 1.063-7.517 1.04-7.896 1.04a8.581 8.581 0 014.729-5.975zM3.453 12.01v-.26c.37.01 4.512.065 8.775-1.215.25.477.477.965.694 1.453-.109.033-.228.065-.336.098-4.404 1.42-6.747 5.303-6.942 5.629a8.522 8.522 0 01-2.19-5.705zM12 20.547a8.482 8.482 0 01-5.239-1.8c.152-.315 1.888-3.656 6.703-5.337.022-.01.033-.01.054-.022a35.32 35.32 0 011.823 6.475 8.4 8.4 0 01-3.341.684zm4.761-1.465c-.086-.52-.542-3.015-1.659-6.084 2.679-.423 5.022.271 5.314.369a8.468 8.468 0 01-3.655 5.715z" />
+          </svg></a>
+        <a href="#" class="soc-link" title="Twitter/X"><svg width="16" height="16" viewBox="0 0 24 24"
+            fill="currentColor">
+            <path
+              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+          </svg></a>
+      </div>
+      <div class="contact-form">
+        <div class="form-row">
+          <div class="form-field"><label>Name</label><input type="text" placeholder="Your name" /></div>
+          <div class="form-field"><label>Email</label><input type="email" placeholder="you@company.com" /></div>
+        </div>
+        <div class="form-field"><label>Subject</label><input type="text" placeholder="Project inquiry..." /></div>
+        <div class="form-field"><label>Message</label><textarea rows="4"
+            placeholder="Tell me about the project..."></textarea></div>
+        <button type="button" class="form-submit">Send Message →</button>
+      </div>
+    </section>
+
+    <!-- ══ FOOTER ══ -->
+    <footer>
+      <span>© 2025 <span class="Stryg Bytes">Stryg.Bytes</span> — </span>
+      <span class="acc">hello@stryg.bytes</span>
+    </footer>
+
+  </div><!-- /app -->
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

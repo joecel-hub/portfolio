@@ -1,0 +1,35 @@
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--a1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cursor-ring {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(124, 110, 255, 0.45);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: width 0.3s, height 0.3s, border-color 0.3s;
+}
+
+body.normal-mode .cursor-dot {
+  background: var(--a1);
+}
+
+body.normal-mode .cursor-ring {
+  border-color: rgba(91, 79, 207, 0.35);
+}

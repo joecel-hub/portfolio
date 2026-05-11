@@ -1,0 +1,262 @@
+/* ══════════════════════════════════════════════
+   RESPONSIVE — Mobile-first breakpoints
+   Base:       < 768px  (mobile)
+   Tablet:    >= 768px
+   Laptop:    >= 1024px
+   Desktop:   >= 1280px
+══════════════════════════════════════════════ */
+
+.resume-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+/* ── Tablet 768px+ ── */
+@media (min-width: 768px) {
+  section {
+    padding: 6rem 6vw;
+  }
+
+  .about-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+
+  .about-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+
+  .skills-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .resume-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .contact-form {
+    padding: 2.5rem 2.5rem;
+  }
+
+  .ham-btn {
+    display: none;
+  }
+
+  #topnav .nav-links {
+    display: flex;
+    position: static;
+    flex-direction: row;
+    width: auto;
+    padding: 0;
+    gap: 1.5rem;
+    background: none;
+    backdrop-filter: none;
+    transform: none;
+    transition: none;
+  }
+
+  .nav-backdrop {
+    display: none;
+  }
+
+  #topnav .nav-links a {
+    font-size: 0.75rem;
+  }
+
+  body.normal-mode #topnav .nav-links {
+    background: none;
+  }
+
+  .nav-close {
+    display: none;
+  }
+
+  #topnav {
+    padding: 1.2rem 6vw;
+  }
+
+  footer {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  #mode-switch {
+    right: 24px;
+  }
+
+  .hero-badge {
+    display: flex;
+  }
+
+  .hero-scroll-cue {
+    display: flex;
+  }
+
+  .hero-title {
+    font-size: clamp(3.5rem, 7vw, 6rem);
+  }
+}
+
+/* ── Laptop 1024px+ ── */
+@media (min-width: 1024px) {
+  section {
+    padding: 7rem 7vw;
+  }
+
+  .about-grid {
+    gap: 4rem;
+  }
+
+  .about-stats {
+    gap: 1.2rem;
+  }
+
+  .skills-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .rings-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  .resume-grid {
+    gap: 4rem;
+  }
+
+  .hero-title {
+    font-size: clamp(4rem, 8vw, 7rem);
+  }
+
+  .hero-sub {
+    font-size: 1.05rem;
+  }
+
+  #app {
+    margin-right: 0;
+  }
+
+  #right-nav {
+    display: flex;
+  }
+
+  #mode-switch {
+    right: 80px;
+  }
+
+  #topnav .nav-links,
+  #topnav .ham-btn {
+    display: none;
+  }
+
+  #topnav {
+    right: 72px;
+  }
+
+  .wave-div {
+    margin-right: 72px;
+  }
+
+  footer {
+    margin-right: 72px;
+  }
+}
+
+/* ── Desktop 1280px+ ── */
+@media (min-width: 1280px) {
+  section {
+    padding: 8rem 8vw;
+  }
+
+  .about-grid {
+    gap: 6rem;
+  }
+
+  .resume-grid {
+    gap: 5rem;
+  }
+
+}
+
+/* ── Small phones < 480px ── */
+@media (max-width: 480px) {
+  section {
+    padding: 3.5rem 4vw;
+  }
+
+  .hero-title {
+    font-size: clamp(2.2rem, 12vw, 3rem);
+  }
+
+  .hero-eyebrow {
+    font-size: 0.65rem;
+  }
+
+  .hero-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-cta .btn {
+    justify-content: center;
+  }
+
+  .section-title {
+    font-size: clamp(1.6rem, 7vw, 2rem);
+  }
+
+  .stat-num {
+    font-size: 1.6rem;
+  }
+
+  .rings-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+
+  .ring-svg {
+    width: 90px;
+    height: 90px;
+  }
+
+  .hobbies-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .process-step {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .process-steps::before {
+    left: 16px;
+  }
+
+  .contact-form {
+    padding: 1.5rem 1.2rem;
+  }
+
+  .tl-role {
+    font-size: 1rem;
+  }
+
+  .timeline {
+    padding-left: 28px;
+  }
+
+  .tl-dot {
+    left: -32px;
+  }
+}

@@ -1,0 +1,15 @@
+@import './tokens.css';
+@import './base.css';
+@import './components/loader.css';
+@import './components/cursor.css';
+@import './components/nav.css';
+@import './components/hero.css';
+@import './components/about.css';
+@import './components/skills.css';
+@import './components/projects.css';
+@import './components/process.css';
+@import './components/resume.css';
+@import './components/contact.css';
+@import './components/footer.css';
+@import './utilities.css';
+@import './responsive.css';

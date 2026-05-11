@@ -1,0 +1,27 @@
+:root {
+  --bg: #050508;
+  --bg2: #09090f;
+  --surface: rgba(255, 255, 255, 0.03);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-hi: rgba(108, 99, 255, 0.4);
+  --a1: #7c6eff;
+  --a2: #00d4ff;
+  --a3: #ff6ebc;
+  --text: #e4e4f0;
+  --muted: #5a5a72;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+  --head: 'Syne', sans-serif;
+  --r: 14px;
+  --glow1: rgba(124, 110, 255, 0.3);
+  --glow2: rgba(0, 212, 255, 0.2);
+  --nm-bg: #f8f8fc;
+  --nm-bg2: #f0f0f8;
+  --nm-surface: rgba(0, 0, 0, 0.03);
+  --nm-border: rgba(0, 0, 0, 0.08);
+  --nm-text: #0f0f1a;
+  --nm-muted: #6b6b8a;
+  --nm-a1: #5b4fcf;
+  --nm-a2: #0099bb;
+  --nm-a3: #cc4488;
+}

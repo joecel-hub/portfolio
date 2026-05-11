@@ -1,0 +1,129 @@
+#contact {
+  text-align: center;
+}
+
+#contact .section-label {
+  justify-content: center;
+}
+
+#contact .section-label::before {
+  display: none;
+}
+
+.contact-email {
+  font-family: var(--mono);
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-weight: 700;
+  border-bottom: 2px solid var(--a1);
+  padding-bottom: 4px;
+  display: inline-block;
+  margin: 1.5rem 0 2.5rem;
+  transition: color 0.3s;
+}
+
+.contact-email:hover {
+  color: var(--a1);
+}
+
+.social-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 3.5rem;
+  flex-wrap: wrap;
+}
+
+.soc-link {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: border-color 0.3s, color 0.3s, transform 0.2s;
+}
+
+.soc-link:hover {
+  border-color: var(--a1);
+  color: var(--a1);
+  transform: translateY(-3px);
+}
+
+.contact-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 3rem 4rem;
+  max-width: 580px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.form-field {
+  margin-bottom: 1.2rem;
+}
+
+.form-field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  transition: border-color 0.2s;
+  outline: none;
+  resize: vertical;
+}
+
+body.normal-mode .form-field input,
+body.normal-mode .form-field textarea {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--nm-text);
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: var(--a1);
+}
+
+.form-submit {
+  width: 100%;
+  padding: 0.9rem;
+  background: var(--a1);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.form-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px var(--glow1);
+}

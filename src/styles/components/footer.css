@@ -1,0 +1,25 @@
+footer {
+  position: relative;
+  z-index: 1;
+  padding: 2rem 8vw;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: 72px;
+}
+
+footer p,
+footer span {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+footer .acc {
+  color: var(--a1);
+}
+
+footer {
+  margin-right: 0;
+}

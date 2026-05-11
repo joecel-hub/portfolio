@@ -1,0 +1,151 @@
+/* Skills grid (card layout) */
+.skills-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+  max-width: 1100px;
+  margin: 3rem auto 0;
+}
+
+.skill-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.8rem;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+  cursor: default;
+}
+
+.skill-card:hover {
+  border-color: var(--a1);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px var(--glow1);
+}
+
+.skill-icon {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 1rem;
+}
+
+.skill-name {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.skill-desc {
+  font-size: 0.83rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 1.2rem;
+}
+
+.skill-bar-bg {
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.skill-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--a1), var(--a2));
+  border-radius: 2px;
+  width: 0%;
+}
+
+/* Skill rings */
+.rings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 2rem;
+  max-width: 900px;
+  margin: 3rem auto 0;
+}
+
+.ring-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.ring-svg {
+  width: 110px;
+  height: 110px;
+}
+
+.ring-bg {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 7;
+}
+
+.ring-fill {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-dasharray: 314;
+  stroke-dashoffset: 314;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.ring-pct {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  font-weight: 700;
+  fill: var(--text);
+}
+
+.ring-lbl {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+/* Hobbies grid (normal mode) */
+.hobbies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.hobby-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 2rem;
+  transition: border-color 0.3s, transform 0.25s;
+  cursor: default;
+}
+
+.hobby-card:hover {
+  border-color: var(--a1);
+  transform: translateY(-5px);
+}
+
+.hobby-icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1.2rem;
+}
+
+.hobby-name {
+  font-family: var(--head);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.hobby-desc {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.7;
+}

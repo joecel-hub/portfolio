@@ -1,0 +1,146 @@
+/* Noise overlay */
+.noise {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* Dev / Normal mode visibility */
+.dev-only {
+  display: block;
+}
+
+.normal-only {
+  display: block;
+}
+
+body.normal-mode .dev-only {
+  display: none !important;
+}
+
+body:not(.normal-mode) .normal-only {
+  display: none !important;
+}
+
+/* Wave divider */
+.wave-div {
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  margin-right: 72px;
+  position: relative;
+  z-index: 1;
+}
+
+.wave-div svg {
+  display: block;
+}
+
+/* Circuit SVG */
+#svg-circuit {
+  width: 100%;
+  max-width: 420px;
+  filter: drop-shadow(0 0 24px rgba(0, 212, 255, 0.14));
+}
+
+/* BG Canvas */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.7s;
+}
+
+/* Liquid blob */
+#liquid-wrap {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 280px;
+  height: 280px;
+  pointer-events: none;
+  z-index: 4;
+  transform: translate(60%, 60%);
+  transition: opacity 0.5s;
+}
+
+#liquid-wrap svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Mode switch */
+#mode-switch {
+  position: fixed;
+  top: 50%;
+  right: 80px;
+  transform: translateY(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.ms-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 0.4s;
+}
+
+.ms-label.active {
+  color: var(--a1);
+}
+
+body.normal-mode .ms-label.active {
+  color: var(--a1);
+}
+
+.ms-track {
+  width: 22px;
+  height: 52px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.4s, background 0.4s;
+}
+
+.ms-track:hover {
+  border-color: var(--a1);
+}
+
+.ms-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--a1);
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: top 0.4s cubic-bezier(.68, -0.55, .27, 1.55), background 0.4s;
+}
+
+body.normal-mode .ms-thumb {
+  top: 34px;
+  background: var(--nm-a1);
+}
+
+body.normal-mode .ms-track {
+  border-color: var(--nm-a1);
+}
+
+#mode-switch {
+  right: 20px;
+}
