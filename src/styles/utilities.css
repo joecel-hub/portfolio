@@ -26,18 +26,121 @@ body:not(.normal-mode) .normal-only {
   display: none !important;
 }
 
-/* Wave divider */
+/* Wave divider — multi-layer + accent crest (animated) */
 .wave-div {
   width: 100%;
   overflow: hidden;
   line-height: 0;
-  margin-right: 72px;
   position: relative;
   z-index: 1;
+  pointer-events: none;
+  height: 90px;
 }
 
-.wave-div svg {
+.wave-parallax {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.wave-parallax--back { z-index: 1; }
+.wave-parallax--mid { z-index: 2; }
+.wave-parallax--front { z-index: 3; }
+
+.wave-track {
+  display: flex;
+  width: 200%;
+  height: 100%;
+  will-change: transform;
+}
+
+.wave-svg {
   display: block;
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100%;
+  margin-right: -1px;
+  shape-rendering: geometricPrecision;
+}
+
+.wave-parallax--back .wave-track {
+  animation: wave-flow 18s linear infinite;
+}
+
+.wave-parallax--mid .wave-track {
+  animation: wave-flow 12s linear infinite reverse;
+}
+
+.wave-parallax--front .wave-track {
+  animation: wave-flow 8s linear infinite;
+}
+
+@keyframes wave-flow {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+.wave-layer--back {
+  fill: rgba(124, 110, 255, 0.18);
+}
+
+.wave-layer--mid {
+  fill: rgba(0, 212, 255, 0.12);
+}
+
+.wave-layer--front {
+  fill: var(--bg2);
+}
+
+.wave-crest {
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 8px rgba(124, 110, 255, 0.45));
+}
+
+.wave-div--down {
+  margin-bottom: -1px;
+}
+
+.wave-div--up {
+  margin-top: -1px;
+}
+
+body.normal-mode .wave-layer--back {
+  fill: rgba(91, 79, 207, 0.12);
+}
+
+body.normal-mode .wave-layer--mid {
+  fill: rgba(0, 153, 187, 0.1);
+}
+
+body.normal-mode .wave-crest {
+  opacity: 0.7;
+  filter: drop-shadow(0 0 6px rgba(91, 79, 207, 0.25));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-parallax--back .wave-track,
+  .wave-parallax--mid .wave-track,
+  .wave-parallax--front .wave-track {
+    animation: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .wave-div {
+    height: 110px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wave-div {
+    height: 130px;
+  }
 }
 
 /* Circuit SVG */
@@ -45,102 +148,4 @@ body:not(.normal-mode) .normal-only {
   width: 100%;
   max-width: 420px;
   filter: drop-shadow(0 0 24px rgba(0, 212, 255, 0.14));
-}
-
-/* BG Canvas */
-#bg-canvas {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 1;
-  transition: opacity 0.7s;
-}
-
-/* Liquid blob */
-#liquid-wrap {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  width: 280px;
-  height: 280px;
-  pointer-events: none;
-  z-index: 4;
-  transform: translate(60%, 60%);
-  transition: opacity 0.5s;
-}
-
-#liquid-wrap svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Mode switch */
-#mode-switch {
-  position: fixed;
-  top: 50%;
-  right: 80px;
-  transform: translateY(-50%);
-  z-index: 200;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.ms-label {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: var(--muted);
-  transition: color 0.4s;
-}
-
-.ms-label.active {
-  color: var(--a1);
-}
-
-body.normal-mode .ms-label.active {
-  color: var(--a1);
-}
-
-.ms-track {
-  width: 22px;
-  height: 52px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  cursor: pointer;
-  position: relative;
-  transition: border-color 0.4s, background 0.4s;
-}
-
-.ms-track:hover {
-  border-color: var(--a1);
-}
-
-.ms-thumb {
-  width: 14px;
-  height: 14px;
-  background: var(--a1);
-  border-radius: 50%;
-  position: absolute;
-  top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: top 0.4s cubic-bezier(.68, -0.55, .27, 1.55), background 0.4s;
-}
-
-body.normal-mode .ms-thumb {
-  top: 34px;
-  background: var(--nm-a1);
-}
-
-body.normal-mode .ms-track {
-  border-color: var(--nm-a1);
-}
-
-#mode-switch {
-  right: 20px;
 }

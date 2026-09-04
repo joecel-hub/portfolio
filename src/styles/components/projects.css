@@ -125,3 +125,10 @@
 .str { color: #f1fa8c; }
 .cm { color: #4a4a6a; }
 .nm { color: #bd93f9; }
+
+.projects-note {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: -0.5rem;
+  max-width: 46ch;
+}

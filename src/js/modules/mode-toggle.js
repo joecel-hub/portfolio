@@ -1,10 +1,10 @@
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-export function initModeToggle() {
+gsap.registerPlugin(ScrollTrigger)
+
+export function initModeToggle(devBg, callbacks = {}) {
   let isNormal = false
-  const msTrack = document.getElementById('ms-track')
-  const msTop = document.getElementById('ms-top')
-  const msBot = document.getElementById('ms-bot')
 
   function closeMenu() {
     const links = document.getElementById('nav-links')
@@ -18,20 +18,24 @@ export function initModeToggle() {
     }
   }
 
-  msTrack.addEventListener('click', () => {
+  function toggleMode() {
     isNormal = !isNormal
     closeMenu()
     gsap.to('#app', {
       opacity: 0, duration: 0.25, onComplete: () => {
         document.body.classList.toggle('normal-mode', isNormal)
-        if (window._threeSetNormal) window._threeSetNormal(isNormal)
-        const stop0 = document.querySelector('#bgrad stop')
-        if (stop0) stop0.style.stopColor = isNormal ? '#5b4fcf' : '#7c6eff'
-        msTop.textContent = isNormal ? 'Normal' : 'Dev'
-        msBot.textContent = isNormal ? 'Dev' : 'Normal'
-        msTop.classList.toggle('active', !isNormal)
-        msBot.classList.toggle('active', isNormal)
+
+        if (devBg) {
+          devBg.setPaused(isNormal)
+        }
+
+        if (isNormal && callbacks.onToNormal) callbacks.onToNormal()
+        if (!isNormal && callbacks.onToDev) callbacks.onToDev()
+
         gsap.to('#app', { opacity: 1, duration: 0.4, ease: 'power2.out' })
+        // The Dev Process section is pinned by ScrollTrigger. Recalculate its
+        // spacer after either mode changes visibility so it remains reachable.
+        requestAnimationFrame(() => ScrollTrigger.refresh())
         setTimeout(() => {
           document.querySelectorAll('.skill-bar').forEach(bar => {
             const w = bar.getAttribute('data-width') || 80
@@ -41,5 +45,7 @@ export function initModeToggle() {
         }, 350)
       }
     })
-  })
+  }
+
+  return { toggleMode }
 }

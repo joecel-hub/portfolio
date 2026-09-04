@@ -1,23 +1,41 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { animateTextReveal } from './text-reveal.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export function initAnimations() {
   try {
+    animateTextReveal()
   const heroTl = gsap.timeline({ delay: 0.1 })
   heroTl
     .to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out' })
     .from('.hero-title .word', { y: '110%', skewY: 5, duration: 1.1, ease: 'expo.out', stagger: 0.1 }, '-=0.5')
     .to('.hero-sub', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, '-=0.4')
+    .to('.hero-bot-card', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, '-=0.45')
     .to('.hero-cta', { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5')
     .to('.hero-scroll-cue', { opacity: 1, duration: 0.6 }, '-=0.3')
     .to('.hero-badge', { opacity: 1, y: 0, duration: 0.5 }, '-=0.4')
 
-  gsap.to('.hero-title', {
-    scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.2 },
-    y: -80, opacity: 0.3
-  })
+  // fromTo (not to) so the scrubbed "return to top" state is always the
+  // settled, fully-visible values below — not whatever opacity:0 CSS
+  // default happened to be on screen the instant this tween was created
+  // (that stale-capture bug is what made the hero-bot-card vanish when
+  // scrolling back up).
+  gsap.fromTo('.hero-title',
+    { y: 0, opacity: 1 },
+    {
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.2 },
+      y: -80, opacity: 0.3
+    }
+  )
+  gsap.fromTo('.hero-bot-card',
+    { y: 0, opacity: 1, scale: 1 },
+    {
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.2 },
+      y: -40, opacity: 0.35, scale: 0.94
+    }
+  )
 
   gsap.fromTo('.about-text > .dev-only > *',
     { opacity: 0, y: 40 },
@@ -25,15 +43,17 @@ export function initAnimations() {
       scrollTrigger: { trigger: '#about', start: 'top 72%' }
     }
   )
-  gsap.fromTo('.about-text > .normal-only > *',
-    { opacity: 0, y: 40 },
-    { opacity: 1, y: 0, duration: 0.8, stagger: 0.11, ease: 'power2.out',
-      scrollTrigger: { trigger: '#about', start: 'top 72%' }
-    }
-  )
-  gsap.from('.stat-card', {
-    scrollTrigger: { trigger: '.about-stats', start: 'top 80%' },
-    opacity: 0, scale: 0.88, duration: 0.6, stagger: 0.08, ease: 'back.out(1.5)'
+  gsap.from('.value-card', {
+    scrollTrigger: { trigger: '.value-cards', start: 'top 80%' },
+    opacity: 0, y: 36, duration: 0.7, stagger: 0.1, ease: 'power3.out'
+  })
+  gsap.from('.about-stats-bar', {
+    scrollTrigger: { trigger: '.about-stats-bar', start: 'top 85%' },
+    opacity: 0, y: 24, duration: 0.7, ease: 'power2.out'
+  })
+  gsap.from('.bar-stat', {
+    scrollTrigger: { trigger: '.about-stats-bar', start: 'top 85%' },
+    opacity: 0, y: 12, duration: 0.5, stagger: 0.08, ease: 'power2.out'
   })
   gsap.from('#svg-circuit', {
     scrollTrigger: { trigger: '#about', start: 'top 70%' },
@@ -77,20 +97,6 @@ export function initAnimations() {
     orbitDot('dot4-nm', 170, 60, 200, 200, 11, 0.5)
   }
 
-  const CIRC = 264
-  document.querySelectorAll('.ring-item').forEach((item, i) => {
-    const pct = parseInt(item.dataset.pct) / 100
-    const ring = item.querySelector('.ring-fill')
-    gsap.to(ring, {
-      scrollTrigger: { trigger: '#skills-dev', start: 'top 72%' },
-      strokeDashoffset: CIRC * (1 - pct), duration: 1.5, delay: i * 0.1, ease: 'power3.out'
-    })
-    gsap.from(item, {
-      scrollTrigger: { trigger: '#skills-dev', start: 'top 72%' },
-      opacity: 0, y: 30, duration: 0.7, delay: i * 0.09, ease: 'power2.out'
-    })
-  })
-
   document.querySelectorAll('.skill-bar').forEach(bar => {
     const w = bar.getAttribute('data-width') || 80
     ScrollTrigger.create({
@@ -99,18 +105,29 @@ export function initAnimations() {
     })
   })
 
-  gsap.from('.skill-card', {
-    scrollTrigger: { trigger: '#skills-dev,#skills-normal', start: 'top 72%' },
-    opacity: 0, y: 50, duration: 0.7, stagger: 0.09, ease: 'power3.out'
+  gsap.from('.svc-card', {
+    scrollTrigger: { trigger: '#skills-dev', start: 'top 72%' },
+    opacity: 0, y: 56, duration: 0.9, stagger: 0.14, ease: 'power3.out'
   })
-  gsap.from('.hobby-card', {
-    scrollTrigger: { trigger: '#hobbies', start: 'top 75%' },
-    opacity: 0, y: 50, duration: 0.7, stagger: 0.1, ease: 'power3.out'
+  gsap.from('.services-lead', {
+    scrollTrigger: { trigger: '#skills-dev', start: 'top 78%' },
+    opacity: 0, y: 20, duration: 0.7, ease: 'power2.out'
+  })
+  gsap.from('.svc-bg-orb', {
+    scrollTrigger: { trigger: '#skills-dev', start: 'top 80%' },
+    opacity: 0, scale: 0.7, duration: 1.4, stagger: 0.15, ease: 'power2.out'
   })
 
   gsap.from('.project-card', {
     scrollTrigger: { trigger: '#projects', start: 'top 72%' },
     opacity: 0, y: 60, duration: 0.8, stagger: 0.13, ease: 'power3.out'
+  })
+  document.querySelectorAll('.project-thumb').forEach((thumb) => {
+    gsap.to(thumb.querySelector('svg'), {
+      y: -18,
+      ease: 'none',
+      scrollTrigger: { trigger: thumb, start: 'top bottom', end: 'bottom top', scrub: 0.6 }
+    })
   })
 
   ;[
@@ -121,17 +138,71 @@ export function initAnimations() {
     if (el) gsap.to(el, { attr: { d }, duration: 3.5, ease: 'sine.inOut', repeat: -1, yoyo: true, delay })
   })
 
-  gsap.from('.process-step', {
-    scrollTrigger: { trigger: '#process', start: 'top 72%' },
-    opacity: 0, x: -40, duration: 0.7, stagger: 0.13, ease: 'power2.out'
-  })
+  const ptSteps = document.querySelectorAll('#process .pt-step')
+  const ptTimeline = document.querySelector('#process .process-timeline')
+  const ptLine = document.querySelector('#process .pt-line')
 
-  gsap.from('.tl-item', {
-    scrollTrigger: { trigger: '#resume', start: 'top 75%' },
-    opacity: 0, x: -25, duration: 0.7, stagger: 0.12, ease: 'power2.out'
-  })
+
+  if (ptSteps.length && ptTimeline) {
+    let totalShift = 0
+
+    function calcShift() {
+      const headerH = document.querySelector('#process > .sec-inner')?.offsetHeight || 0
+      return Math.max(0, ptTimeline.scrollHeight + 50 - (window.innerHeight - headerH - 40))
+    }
+
+    totalShift = calcShift()
+    const revealed = new Set()
+
+    const firstIcon = ptSteps[0]?.querySelector('.pt-icon')
+    const firstCard = ptSteps[0]?.querySelector('.pt-card')
+    if (firstIcon) gsap.set(firstIcon, { opacity: 1, scale: 1 })
+    if (firstCard) gsap.set(firstCard, { opacity: 1, y: 0 })
+    ptSteps[0]?.classList.add('is-active')
+    ptSteps[0]?.querySelector('.pt-dot')?.classList.add('is-active')
+    revealed.add(0)
+
+    ptSteps.forEach((step, i) => {
+      const iconSvg = step.querySelector('.pt-icon svg')
+      if (iconSvg) {
+        gsap.to(iconSvg, { y: -4, duration: 1.2, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: i * 0.15 })
+      }
+    })
+
+    ScrollTrigger.create({
+      trigger: '#process',
+      pin: true,
+      scrub: 1,
+      start: 'top top',
+      end: () => `+=${Math.max(calcShift() + 100, window.innerHeight * 0.4)}`,
+      invalidateOnRefresh: true,
+      onUpdate: (self) => {
+        totalShift = calcShift()
+        const p = self.progress
+        gsap.set(ptTimeline, { y: -p * totalShift })
+
+        ptSteps.forEach((step, i) => {
+          if (revealed.has(i)) return
+          const r = step.getBoundingClientRect()
+          if (r.top >= window.innerHeight || r.bottom <= 0) return
+
+          revealed.add(i)
+          step.classList.add('is-active')
+          const icon = step.querySelector('.pt-icon')
+          const card = step.querySelector('.pt-card')
+          const dot = step.querySelector('.pt-dot')
+          if (icon) gsap.fromTo(icon, { opacity: 0.3, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.7, ease: 'back.out(1.7)', overwrite: 'auto' })
+          if (card) gsap.fromTo(card, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.1, ease: 'power2.out', overwrite: 'auto' })
+          if (dot) dot.classList.add('is-active')
+        })
+
+        if (ptLine) gsap.set(ptLine, { scaleY: p })
+      }
+    })
+  }
 
   document.querySelectorAll('.section-title').forEach(el => {
+    if (el.closest('#profile')) return
     gsap.fromTo(el,
       { opacity: 0, y: 32 },
       { opacity: 1, y: 0, duration: 0.9, ease: 'power2.out',
@@ -140,7 +211,7 @@ export function initAnimations() {
     )
   })
 
-  gsap.from('.contact-form > *,#contact > *', {
+  gsap.from('#contact > *', {
     scrollTrigger: { trigger: '#contact', start: 'top 72%' },
     opacity: 0, y: 35, duration: 0.8, stagger: 0.09, ease: 'power2.out'
   })

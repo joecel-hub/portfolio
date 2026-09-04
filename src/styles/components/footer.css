@@ -6,7 +6,10 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-right: 72px;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-right: 0;
+  /* margin-right is pushed to 72px at 1024px+ in responsive.css, to clear #right-nav */
 }
 
 footer p,
@@ -16,10 +19,15 @@ footer span {
   color: var(--muted);
 }
 
-footer .acc {
+footer a {
+  transition: color 0.25s;
+}
+
+footer a:hover {
   color: var(--a1);
 }
 
-footer {
-  margin-right: 0;
+footer .acc,
+footer .brand {
+  color: var(--a1);
 }

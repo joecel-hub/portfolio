@@ -18,55 +18,14 @@
   <!-- ── NOISE ── -->
   <div class="noise"></div>
 
-  <!-- ── CURSOR ── -->
-  <div class="cursor" id="cursor">
-    <div class="cursor-dot"></div>
-    <div class="cursor-ring"></div>
-  </div>
-
   <!-- ── LOADER ── -->
   <div id="loader">
-    <div class="ld-logo">Stryg<span>.</span>Bytes</div>
-    <div class="ld-track">
-      <div class="ld-bar" id="lbar"></div>
-    </div>
-    <div class="ld-pct" id="lpct">0%</div>
+    <div class="ld-bg"></div>
+    <div class="ld-logo">Stryg<span>.</span><span>Bytes</span></div>
+    <div class="ld-loading">Loading</div>
   </div>
 
-  <!-- ── BG CANVAS ── -->
-  <canvas id="bg-canvas"></canvas>
 
-  <!-- ── LIQUID BLOB (right side cursor follower) ── -->
-  <div id="liquid-wrap">
-    <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="goo-filter">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur" />
-          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="goo" />
-          <feComposite in="SourceGraphic" in2="goo" operator="atop" />
-        </filter>
-        <radialGradient id="bgrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#7c6eff" stop-opacity="0.6" />
-          <stop offset="100%" stop-color="#00d4ff" stop-opacity="0.1" />
-        </radialGradient>
-      </defs>
-      <g filter="url(#goo-filter)" id="blob-group">
-        <circle id="blob-main" cx="140" cy="140" r="46" fill="url(#bgrad)" />
-        <circle id="blob-a" cx="140" cy="100" r="22" fill="#7c6eff" opacity="0.45" />
-        <circle id="blob-b" cx="170" cy="152" r="18" fill="#00d4ff" opacity="0.35" />
-        <circle id="blob-c" cx="110" cy="158" r="15" fill="#ff6ebc" opacity="0.3" />
-      </g>
-    </svg>
-  </div>
-
-  <!-- ── MODE SWITCH ── -->
-  <div id="mode-switch">
-    <span class="ms-label active" id="ms-top">Dev</span>
-    <div class="ms-track" id="ms-track" title="Toggle mode">
-      <div class="ms-thumb" id="ms-thumb"></div>
-    </div>
-    <span class="ms-label" id="ms-bot">Normal</span>
-  </div>
 
   <!-- ── RIGHT NAV ── -->
   <nav id="right-nav">
@@ -74,36 +33,47 @@
     <div class="rn-sep"></div>
     <button class="rn-btn" data-target="about">About</button>
     <div class="rn-sep"></div>
-    <button class="rn-btn dev-only" data-target="skills-dev">Skills</button>
-    <button class="rn-btn normal-only" data-target="skills-normal">Skills</button>
+    <button class="rn-btn dev-only" data-target="skills-dev">Services</button>
     <div class="rn-sep"></div>
     <button class="rn-btn dev-only" data-target="projects">Work</button>
-    <button class="rn-btn normal-only" data-target="hobbies">Hobbies</button>
     <div class="rn-sep"></div>
     <button class="rn-btn dev-only" data-target="process">Process</button>
-    <button class="rn-btn normal-only" data-target="resume">Resume</button>
+    <button class="rn-btn normal-only" data-target="pf-resume">Experience</button>
     <div class="rn-sep"></div>
     <button class="rn-btn" data-target="contact">Contact</button>
   </nav>
 
   <!-- ── TOP NAV ── -->
   <nav id="topnav">
-    <div class="nav-logo">Stryg<span>.</span>Bytes</div>
+    <div class="nav-brand">
+      <div class="nav-logo" id="nav-logo" role="button" tabindex="0" aria-label="Go to top">
+        <span class="dev-only">Stryg.<span>Bytes</span></span>
+        <span class="normal-only">Gio</span>
+      </div>
+      <button class="back-to-studio normal-only" id="back-to-studio" type="button">&larr; Studio</button>
+    </div>
     <ul class="nav-links" id="nav-links">
       <li><button class="nav-close" id="nav-close">&times;</button></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#skills-dev" id="nav-skills">Skills</a></li>
+      <li><a href="#about" id="nav-about">About</a></li>
+      <li><a href="#skills-dev" id="nav-skills">Services</a></li>
       <li><a href="#projects" id="nav-work">Work</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="#contact" id="nav-contact">Contact</a></li>
     </ul>
     <div class="nav-right">
-      <button class="nav-cta">Let's Talk</button>
       <button class="ham-btn" id="ham-btn" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
     </div>
   </nav>
   <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <!-- ── FULL-PAGE BACKGROUND ── -->
+  <div class="dev-bg-gradient dev-only" id="dev-bg-gradient">
+    <div class="dev-bg-blob"></div>
+  </div>
+  <div class="dev-bg-grain dev-only" aria-hidden="true"></div>
+  <canvas class="dev-bg-particles dev-only" id="dev-particles-canvas" aria-hidden="true"></canvas>
+  <div class="pixel-bg normal-only" id="pixel-blast-container"></div>
 
   <!-- ══════════════════════════════════════════════
      MAIN APP
@@ -114,43 +84,33 @@
     <section id="hero">
       <!-- DEV MODE hero -->
       <div class="dev-only" id="hero-dev-content">
-        <div class="hero-eyebrow">Full-Stack Developer & Animation Engineer</div>
-        <h1 class="hero-title" id="hero-title-dev">
-          <span class="line"><span class="word">Building</span> <span class="word accent">immersive</span></span>
-          <span class="line"><span class="word">web</span> <span class="word stroke">experiences</span></span>
-        </h1>
-        <p class="hero-sub">
-          I craft <strong>high-performance interfaces</strong> powered by GSAP, Three.js and WebGL.
-          Every pixel is intentional. Every animation tells a story.
-        </p>
-        <div class="hero-cta">
-          <a href="#projects" class="btn btn-primary">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-            View Projects
-          </a>
-          <a href="#contact" class="btn btn-ghost">Get In Touch</a>
+        <div class="hero-split-dev">
+          <div class="hero-info-dev">
+            <div class="hero-eyebrow">Stryg.Bytes | Full-Stack Development</div>
+            <h1 class="hero-title" id="hero-title-dev">
+              <span class="line"><span class="word">Welcome</span></span>
+              <span class="line"><span class="word">to</span> <span class="word">the</span></span>
+              <span class="line"><span class="word accent">Studio</span></span>
+            </h1>
+            <p class="hero-sub">
+              High-performance web experiences, <strong>engineered for impact</strong>.
+            </p>
+            <div class="hero-cta">
+              <a href="#projects" class="btn btn-primary">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+                Explore
+              </a>
+            </div>
+          </div>
+          <div class="hero-bot-card">
+            <div class="hero-bot" id="hero-bot" aria-hidden="true"></div>
+            <span class="hero-bot-cap">// watching for good ideas</span>
+          </div>
         </div>
       </div>
-      <!-- NORMAL MODE hero -->
-      <div class="normal-only" id="hero-normal-content">
-        <div class="hero-eyebrow">Creative Professional & Designer</div>
-        <h1 class="hero-title" id="hero-title-normal">
-          <span class="line"><span class="word">Design.</span> <span class="word accent">Create.</span></span>
-          <span class="line"><span class="word stroke">Inspire.</span></span>
-        </h1>
-        <p class="hero-sub">
-          I'm <strong>Gio</strong> — a creative professional who blends <strong>design thinking</strong>
-          with technical craft to build things people love to use.
-        </p>
-        <div class="hero-cta">
-          <a href="#skills-normal" class="btn btn-primary">Explore Skills</a>
-          <a href="/My CV.pdf" download class="btn btn-ghost">Download CV</a>
-        </div>
-      </div>
-
       <div class="hero-scroll-cue">
         <span class="hsc-line"></span>
         Scroll to explore
@@ -161,12 +121,47 @@
       </div>
     </section>
 
-    <!-- wave divider -->
-    <div class="wave-div">
-      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:120px;display:block">
-        <path d="M0 40 Q180 0 360 40 Q540 80 720 40 Q900 0 1080 40 Q1260 80 1440 40 L1440 80 L0 80 Z"
-          fill="var(--bg2)" />
-      </svg>
+    <!-- wave divider (Dev mode) — hero → about -->
+    <div class="wave-div wave-div--down dev-only" aria-hidden="true">
+      <div class="wave-parallax wave-parallax--back">
+        <div class="wave-track">
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path class="wave-layer wave-layer--back" d="M0,72 C180,42 360,102 540,72 C720,42 900,102 1080,72 C1260,42 1380,62 1440,72 L1440,120 L0,120 Z" />
+          </svg>
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path class="wave-layer wave-layer--back" d="M0,72 C180,42 360,102 540,72 C720,42 900,102 1080,72 C1260,42 1380,62 1440,72 L1440,120 L0,120 Z" />
+          </svg>
+        </div>
+      </div>
+      <div class="wave-parallax wave-parallax--mid">
+        <div class="wave-track">
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path class="wave-layer wave-layer--mid" d="M0,82 C160,112 320,52 480,82 C640,112 800,52 960,82 C1120,112 1280,52 1440,82 L1440,120 L0,120 Z" />
+          </svg>
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path class="wave-layer wave-layer--mid" d="M0,82 C160,112 320,52 480,82 C640,112 800,52 960,82 C1120,112 1280,52 1440,82 L1440,120 L0,120 Z" />
+          </svg>
+        </div>
+      </div>
+      <div class="wave-parallax wave-parallax--front">
+        <div class="wave-track">
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="waveDownGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#7c6eff" />
+                <stop offset="50%" stop-color="#00d4ff" />
+                <stop offset="100%" stop-color="#ff6ebc" />
+              </linearGradient>
+            </defs>
+            <path class="wave-layer wave-layer--front" d="M0,92 C200,62 400,112 600,92 C800,72 1000,112 1200,92 C1320,82 1380,88 1440,92 L1440,120 L0,120 Z" />
+            <path class="wave-crest" fill="none" stroke="url(#waveDownGrad)" d="M0,92 C200,62 400,112 600,92 C800,72 1000,112 1200,92 C1320,82 1380,88 1440,92" />
+          </svg>
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path class="wave-layer wave-layer--front" d="M0,92 C200,62 400,112 600,92 C800,72 1000,112 1200,92 C1320,82 1380,88 1440,92 L1440,120 L0,120 Z" />
+            <path class="wave-crest" fill="none" stroke="url(#waveDownGrad)" d="M0,92 C200,62 400,112 600,92 C800,72 1000,112 1200,92 C1320,82 1380,88 1440,92" />
+          </svg>
+        </div>
+      </div>
     </div>
 
     <!-- ══ ABOUT ══ -->
@@ -174,52 +169,97 @@
       <div class="sec-inner">
         <div class="about-grid">
           <div class="about-text">
-            <!-- DEV MODE: Creative profile -->
+            <!-- DEV MODE: Why Stryg.Bytes -->
             <div class="dev-only">
-              <div class="section-label">About Me</div>
-              <h2 class="section-title">Crafting pixels with <span style="color:var(--a1)">purpose</span></h2>
-              <p>I'm <strong>Gio</strong>, a creative developer and animation specialist who believes the web should be a
-                <strong>living, breathing</strong> medium — not static pages.
-              </p>
-              <p>My toolkit spans <strong>GSAP</strong>, Three.js, CSS architecture, and full-stack development. I obsess
-                over easing curves, timing ratios, and the fine line between delightful and distracting.</p>
-              <p>Every project is a chance to <strong>push the limits</strong> of browser technology, merging aesthetic
-                precision with engineering rigour.</p>
-              <div class="about-stats">
-                <div class="stat-card"><span class="stat-num" data-count="60">0</span>
-                  <div class="stat-lbl">Projects shipped</div>
+              <div class="section-label">Why Stryg.Bytes</div>
+              <h2 class="section-title">Built for <span style="color:var(--a1)">Impact</span></h2>
+              <p class="about-lead">We don't just build websites — we craft digital experiences that convert, perform, and leave a lasting impression.</p>
+
+              <div class="value-cards">
+                <div class="value-card" data-accent="a1">
+                  <span class="val-ghost" aria-hidden="true">01</span>
+                  <div class="val-shine"></div>
+                  <div class="val-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="16 18 22 12 16 6" />
+                      <polyline points="8 6 2 12 8 18" />
+                    </svg>
+                  </div>
+                  <div class="val-body">
+                    <p class="val-problem">Your brand deserves more than a template</p>
+                    <h4 class="val-title">Bespoke websites engineered for speed, motion, and conversion</h4>
+                  </div>
                 </div>
-                <div class="stat-card"><span class="stat-num" data-count="5">0</span>
-                  <div class="stat-lbl">Years experience</div>
+                <div class="value-card" data-accent="a2">
+                  <span class="val-ghost" aria-hidden="true">02</span>
+                  <div class="val-shine"></div>
+                  <div class="val-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2l2.4 7.2L22 9.6l-5.6 4.8 1.6 7.6L12 18l-6 4 1.6-7.6L2 9.6l7.6-.4z" />
+                    </svg>
+                  </div>
+                  <div class="val-body">
+                    <p class="val-problem">Users judge your brand in milliseconds</p>
+                    <h4 class="val-title">Scroll-driven storytelling and micro-interactions that demand attention</h4>
+                  </div>
                 </div>
-                <div class="stat-card"><span class="stat-num" data-count="40">0</span>
-                  <div class="stat-lbl">Happy clients</div>
+                <div class="value-card" data-accent="a3">
+                  <span class="val-ghost" aria-hidden="true">03</span>
+                  <div class="val-shine"></div>
+                  <div class="val-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+                      <line x1="8" y1="21" x2="16" y2="21" />
+                      <line x1="12" y1="17" x2="12" y2="21" />
+                    </svg>
+                  </div>
+                  <div class="val-body">
+                    <p class="val-problem">Growth shouldn't break your site</p>
+                    <h4 class="val-title">Scalable architecture built to handle traffic and future features</h4>
+                  </div>
                 </div>
-                <div class="stat-card"><span class="stat-num" data-count="12">0</span>
-                  <div class="stat-lbl">Awards & features</div>
+                <div class="value-card" data-accent="a1">
+                  <span class="val-ghost" aria-hidden="true">04</span>
+                  <div class="val-shine"></div>
+                  <div class="val-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                  </div>
+                  <div class="val-body">
+                    <p class="val-problem">You need a partner, not just a vendor</p>
+                    <h4 class="val-title">Strategy, support, and a creative ally invested in your success</h4>
+                  </div>
                 </div>
               </div>
-              <div class="about-tags">
-                <span class="atag">GSAP</span><span class="atag">Three.js</span><span class="atag">WebGL</span><span
-                  class="atag">React</span>
-                <span class="atag">Next.js</span><span class="atag">TypeScript</span><span
-                  class="atag">Node.js</span><span class="atag">GLSL</span>
+
+              <div class="about-stats-bar">
+                <div class="bar-stat">
+                  <span class="bar-num" data-count="60">0</span>
+                  <span class="bar-lbl">Projects Shipped</span>
+                </div>
+                <div class="bar-divider"></div>
+                <div class="bar-stat">
+                  <span class="bar-num" data-count="40">0</span>
+                  <span class="bar-lbl">Happy Clients</span>
+                </div>
+                <div class="bar-divider"></div>
+                <div class="bar-stat">
+                  <span class="bar-num" data-count="5">0</span>
+                  <span class="bar-lbl">Years of Craft</span>
+                </div>
+                <div class="bar-divider"></div>
+                <div class="bar-stat">
+                  <span class="bar-num" data-count="12">0</span>
+                  <span class="bar-lbl">Awards &amp; Features</span>
+                </div>
               </div>
             </div>
-            <!-- NORMAL MODE: Professional profile -->
-            <div class="normal-only">
-              <div class="section-label">Professional Profile</div>
-              <h2 class="section-title">Joecel <span style="color:var(--a1)">Pergis</span></h2>
-              <p class="profile-role">Full-Stack Web Developer &bull; IT Support Specialist</p>
-              <p>I build modern, user-focused websites and systems that combine clean interface design with dependable technical performance. My work balances <strong>usability</strong>, <strong>speed</strong>, and maintainable code standards.</p>
-              <p>Beyond development, I provide practical IT support including <strong>network setup</strong>, workstation optimization, and computer/laptop troubleshooting for day-to-day business operations.</p>
-              <div class="about-tags">
-                <span class="atag">PHP</span><span class="atag">MySQL</span><span class="atag">JavaScript</span><span
-                  class="atag">Tailwind</span>
-                <span class="atag">Networking</span><span class="atag">Hardware</span><span
-                  class="atag">Troubleshooting</span><span class="atag">IT Support</span>
-              </div>
-            </div>
+
           </div>
           <!-- ══════════════════════════════════════════════
          SAMPLE SVG #1 — CIRCUIT BOARD ILLUSTRATION
@@ -316,216 +356,422 @@
                 <path id="data-path" d="M40,100 L200,100 L200,240 L360,240" fill="none" />
               </svg>
             </div>
-            <!-- Normal mode: profile photo with lens effect -->
-            <div class="normal-only" style="width:100%;max-width:420px">
-              <div class="photo-container" id="photo-container">
-                <img src="/images/normal.jpeg" alt="Gio" class="photo-img" id="photo-normal" />
-                <img src="/images/wacky-pose.png" alt="Gio" class="photo-img" id="photo-wacky" />
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
     </section>
-    <!-- wave divider reversed -->
-    <div class="wave-div">
-      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="height:120px;display:block">
-        <path d="M0 40 Q180 80 360 40 Q540 0 720 40 Q900 80 1080 40 Q1260 0 1440 40 L1440 0 L0 0 Z" fill="var(--bg2)" />
-      </svg>
+    <!-- wave divider reversed — about → services -->
+    <div class="wave-div wave-div--up dev-only" aria-hidden="true">
+      <div class="wave-parallax wave-parallax--back">
+        <div class="wave-track">
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path class="wave-layer wave-layer--back" d="M0,48 C180,78 360,18 540,48 C720,78 900,18 1080,48 C1260,78 1380,58 1440,48 L1440,0 L0,0 Z" />
+          </svg>
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path class="wave-layer wave-layer--back" d="M0,48 C180,78 360,18 540,48 C720,78 900,18 1080,48 C1260,78 1380,58 1440,48 L1440,0 L0,0 Z" />
+          </svg>
+        </div>
+      </div>
+      <div class="wave-parallax wave-parallax--mid">
+        <div class="wave-track">
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path class="wave-layer wave-layer--mid" d="M0,38 C160,8 320,68 480,38 C640,8 800,68 960,38 C1120,8 1280,68 1440,38 L1440,0 L0,0 Z" />
+          </svg>
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path class="wave-layer wave-layer--mid" d="M0,38 C160,8 320,68 480,38 C640,8 800,68 960,38 C1120,8 1280,68 1440,38 L1440,0 L0,0 Z" />
+          </svg>
+        </div>
+      </div>
+      <div class="wave-parallax wave-parallax--front">
+        <div class="wave-track">
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="waveUpGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#ff6ebc" />
+                <stop offset="50%" stop-color="#7c6eff" />
+                <stop offset="100%" stop-color="#00d4ff" />
+              </linearGradient>
+            </defs>
+            <path class="wave-layer wave-layer--front" d="M0,28 C200,58 400,8 600,28 C800,48 1000,8 1200,28 C1320,38 1380,32 1440,28 L1440,0 L0,0 Z" />
+            <path class="wave-crest" fill="none" stroke="url(#waveUpGrad)" d="M0,28 C200,58 400,8 600,28 C800,48 1000,8 1200,28 C1320,38 1380,32 1440,28" />
+          </svg>
+          <svg class="wave-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+            <path class="wave-layer wave-layer--front" d="M0,28 C200,58 400,8 600,28 C800,48 1000,8 1200,28 C1320,38 1380,32 1440,28 L1440,0 L0,0 Z" />
+            <path class="wave-crest" fill="none" stroke="url(#waveUpGrad)" d="M0,28 C200,58 400,8 600,28 C800,48 1000,8 1200,28 C1320,38 1380,32 1440,28" />
+          </svg>
+        </div>
+      </div>
     </div>
 
-    <!-- ══ DEV: SKILLS ══ -->
-    <section id="skills-dev" class="dev-only">
-      <div class="sec-inner">
-        <div class="section-label">Expertise</div>
-        <h2 class="section-title">Tools &amp; <span style="color:var(--a1)">Mastery</span></h2>
+    <!-- ══ DEV: SERVICES ══ -->
+    <section id="skills-dev" class="dev-only services-section">
+      <div class="svc-bg" aria-hidden="true">
+        <div class="svc-bg-orb o1"></div>
+        <div class="svc-bg-orb o2"></div>
+        <div class="svc-bg-orb o3"></div>
+        <div class="svc-bg-grid"></div>
       </div>
-      <!-- Skill rings from Full-Stack template -->
-      <div class="rings-grid">
-        <div class="ring-item" data-pct="95">
-          <svg class="ring-svg" viewBox="0 0 100 100">
-            <circle class="ring-bg" cx="50" cy="50" r="42" />
-            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#7c6eff" />
-            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">95%</text>
-          </svg>
-          <span class="ring-lbl">GSAP</span>
-        </div>
-        <div class="ring-item" data-pct="90">
-          <svg class="ring-svg" viewBox="0 0 100 100">
-            <circle class="ring-bg" cx="50" cy="50" r="42" />
-            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#00d4ff" />
-            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">90%</text>
-          </svg>
-          <span class="ring-lbl">React/Next</span>
-        </div>
-        <div class="ring-item" data-pct="88">
-          <svg class="ring-svg" viewBox="0 0 100 100">
-            <circle class="ring-bg" cx="50" cy="50" r="42" />
-            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#ff6ebc" />
-            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">88%</text>
-          </svg>
-          <span class="ring-lbl">TypeScript</span>
-        </div>
-        <div class="ring-item" data-pct="82">
-          <svg class="ring-svg" viewBox="0 0 100 100">
-            <circle class="ring-bg" cx="50" cy="50" r="42" />
-            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#7c6eff" />
-            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">82%</text>
-          </svg>
-          <span class="ring-lbl">Three.js</span>
-        </div>
-        <div class="ring-item" data-pct="92">
-          <svg class="ring-svg" viewBox="0 0 100 100">
-            <circle class="ring-bg" cx="50" cy="50" r="42" />
-            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#00d4ff" />
-            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">92%</text>
-          </svg>
-          <span class="ring-lbl">Node.js</span>
-        </div>
-        <div class="ring-item" data-pct="96">
-          <svg class="ring-svg" viewBox="0 0 100 100">
-            <circle class="ring-bg" cx="50" cy="50" r="42" />
-            <circle class="ring-fill" cx="50" cy="50" r="42" stroke="#ff6ebc" />
-            <text class="ring-pct" x="50" y="54" text-anchor="middle" dominant-baseline="middle">96%</text>
-          </svg>
-          <span class="ring-lbl">CSS/SVG</span>
-        </div>
+      <div class="sec-inner services-head">
+        <div class="section-label">Services</div>
+        <h2 class="section-title">What <span style="color:var(--a1)">We Do</span></h2>
+        <p class="services-lead">High-performance digital products for brands that care about craft — motion, immersion, and systems that scale.</p>
       </div>
-      <!-- Skill cards below rings -->
-      <div class="skills-grid" style="margin-top:4rem">
-        <div class="skill-card">
-          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="9" fill="rgba(124,110,255,0.1)" />
-            <path d="M9 33L18 13l5 11 4-5 8 14" stroke="var(--a1)" stroke-width="1.8" stroke-linecap="round"
-              stroke-linejoin="round" />
-            <circle cx="36" cy="13" r="3" fill="var(--a2)" />
-          </svg>
-          <div class="skill-name">GSAP / Animation</div>
-          <div class="skill-desc">ScrollTrigger, MorphSVG, SplitText, and complex multi-timeline orchestration at 60fps.
+      <div class="services-bento">
+        <article class="svc-card svc-featured" data-accent="a1">
+          <span class="svc-ghost" aria-hidden="true">01</span>
+          <div class="svc-shine"></div>
+          <div class="svc-visual">
+            <svg class="svc-visual-svg" viewBox="0 0 280 120" fill="none" aria-hidden="true">
+              <path d="M20 90 C50 40 80 100 110 55 C140 10 170 80 200 45 C230 10 250 60 270 35" stroke="url(#g1)" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+              <path d="M20 100 C55 55 85 105 120 70 C155 35 180 90 220 60 C250 35 260 70 270 50" stroke="url(#g1)" stroke-width="1.2" stroke-linecap="round" opacity="0.35"/>
+              <circle cx="110" cy="55" r="4" fill="var(--a1)"/><circle cx="200" cy="45" r="3" fill="var(--a2)"/>
+              <defs><linearGradient id="g1" x1="0" y1="0" x2="280" y2="0"><stop stop-color="var(--a1)"/><stop offset="1" stop-color="var(--a2)"/></linearGradient></defs>
+            </svg>
           </div>
-          <div class="skill-bar-bg">
-            <div class="skill-bar" data-width="95"></div>
+          <div class="svc-body">
+            <div class="svc-meta">
+              <span class="svc-num">01</span>
+              <div class="svc-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14l4-4 4 4 6-6"/><path d="M14 4h6v6"/></svg>
+              </div>
+            </div>
+            <h3 class="svc-title">Motion &amp; Animation</h3>
+            <p class="svc-desc">Scroll-driven storytelling, interactive UI motion, and multi-timeline orchestration built for buttery 60fps.</p>
+            <ul class="svc-points">
+              <li>Landing page motion systems</li>
+              <li>ScrollTrigger sequences</li>
+              <li>Micro-interactions &amp; UI polish</li>
+            </ul>
+            <div class="svc-tags">
+              <span class="svc-tag">GSAP</span>
+              <span class="svc-tag">ScrollTrigger</span>
+              <span class="svc-tag">UI Motion</span>
+            </div>
           </div>
-        </div>
-        <div class="skill-card">
-          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="9" fill="rgba(0,212,255,0.08)" />
-            <polygon points="22,6 36,30 8,30" fill="none" stroke="var(--a2)" stroke-width="1.8"
-              stroke-linejoin="round" />
-            <circle cx="22" cy="30" r="5" fill="none" stroke="var(--a2)" stroke-width="1.5" />
-          </svg>
-          <div class="skill-name">Three.js / WebGL</div>
-          <div class="skill-desc">3D scenes, custom shaders, procedural geometry, and GPU-accelerated particle systems.
+        </article>
+
+        <article class="svc-card" data-accent="a2">
+          <span class="svc-ghost" aria-hidden="true">02</span>
+          <div class="svc-shine"></div>
+          <div class="svc-body">
+            <div class="svc-meta">
+              <span class="svc-num">02</span>
+              <div class="svc-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>
+              </div>
+            </div>
+            <h3 class="svc-title">Immersive 3D &amp; WebGL</h3>
+            <p class="svc-desc">Custom 3D scenes, shader-driven visuals, and real-time interaction for product launches and brand experiences.</p>
+            <ul class="svc-points">
+              <li>Interactive 3D product views</li>
+              <li>Shader &amp; particle systems</li>
+              <li>WebGL performance tuning</li>
+            </ul>
+            <div class="svc-tags">
+              <span class="svc-tag">Three.js</span>
+              <span class="svc-tag">WebGL</span>
+              <span class="svc-tag">Shaders</span>
+            </div>
           </div>
-          <div class="skill-bar-bg">
-            <div class="skill-bar" data-width="82"></div>
+        </article>
+
+        <article class="svc-card" data-accent="a3">
+          <span class="svc-ghost" aria-hidden="true">03</span>
+          <div class="svc-shine"></div>
+          <div class="svc-body">
+            <div class="svc-meta">
+              <span class="svc-num">03</span>
+              <div class="svc-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </div>
+            </div>
+            <h3 class="svc-title">Full-Stack Engineering</h3>
+            <p class="svc-desc">End-to-end web apps — polished frontends, solid backends, databases, and architecture ready for production.</p>
+            <ul class="svc-points">
+              <li>React / Next.js frontends</li>
+              <li>PHP &amp; Node backends</li>
+              <li>MySQL &amp; API design</li>
+            </ul>
+            <div class="svc-tags">
+              <span class="svc-tag">React</span>
+              <span class="svc-tag">Next.js</span>
+              <span class="svc-tag">PHP</span>
+              <span class="svc-tag">Node.js</span>
+              <span class="svc-tag">MySQL</span>
+            </div>
           </div>
-        </div>
-        <div class="skill-card">
-          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="9" fill="rgba(255,110,188,0.08)" />
-            <path d="M7 15h30M7 22h22M7 29h14" stroke="var(--a3)" stroke-width="1.8" stroke-linecap="round" />
-          </svg>
-          <div class="skill-name">Full-Stack Dev</div>
-          <div class="skill-desc">React, Next.js App Router, Node.js, PostgreSQL, and TypeScript from UI to database.
-          </div>
-          <div class="skill-bar-bg">
-            <div class="skill-bar" data-width="90"></div>
-          </div>
-        </div>
+        </article>
       </div>
     </section>
 
-    <!-- ══ NORMAL: SKILLS ══ -->
-    <section id="skills-normal" class="normal-only" style="background:var(--bg2)">
-      <div class="sec-inner">
-        <div class="section-label">Capabilities</div>
-        <h2 class="section-title">What I <span style="color:var(--a1)">Create</span></h2>
+    <!-- ══ NORMAL: PROFILE (Gio) — cover + scrollable sections ══ -->
+    <section id="profile" class="normal-only">
+
+      <!-- Cover -->
+      <div class="pf-cover">
+        <img class="pf-cover-img" src="/images/wacky-pose.png" alt="" />
+        <div class="pf-cover-overlay"></div>
+        <div class="pf-cover-glow"></div>
       </div>
-      <div class="skills-grid">
-        <div class="skill-card">
-          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="9" fill="rgba(91,79,207,0.1)" />
-            <rect x="8" y="12" width="28" height="20" rx="3" stroke="var(--a1)" stroke-width="1.5" />
-            <path d="M16 22 l5-4 0 8z" fill="var(--a1)" opacity="0.8" />
-          </svg>
-          <div class="skill-name">Video Editing</div>
-          <div class="skill-desc">Premiere Pro, DaVinci Resolve. Colour grading, motion titles, and cinematic
-            storytelling.</div>
-          <div class="skill-bar-bg">
-            <div class="skill-bar" data-width="90"></div>
+
+      <!-- Profile head -->
+      <header class="pf-head">
+        <div class="pf-head-inner">
+          <figure class="pf-avatar-wrap">
+            <img class="pf-avatar" src="/images/normal.jpeg" alt="Gio" />
+            <span class="pf-online" title="Available for work"></span>
+          </figure>
+
+          <div class="pf-id">
+            <h1 class="pf-name">Gio</h1>
+            <div class="pf-role" id="pf-role"></div>
+            <p class="pf-loc">Dubai &middot; IT Engineer &amp; Full Stack Developer</p>
+          </div>
+
+          <div class="pf-actions">
+            <a href="#pf-contact" class="btn btn-primary">Contact Me</a>
+            <a href="/My CV.pdf" download class="btn btn-ghost">Download CV</a>
+          </div>
+
+          <div class="pf-socials">
+            <a class="pf-soc" href="https://github.com/joecel-hub" target="_blank" rel="noopener" title="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+              GitHub
+            </a>
+            <a class="pf-soc" href="https://www.linkedin.com/in/joecel-jaygee-pergis-348b65137/" target="_blank" rel="noopener" title="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              LinkedIn
+            </a>
+            <a class="pf-soc" href="mailto:hello@stryg.bytes" title="Email">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+              Email
+            </a>
           </div>
         </div>
-        <div class="skill-card">
-          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="9" fill="rgba(0,153,187,0.08)" />
-            <circle cx="22" cy="22" r="14" stroke="var(--a2)" stroke-width="1.5" />
-            <circle cx="22" cy="22" r="5" fill="var(--a2)" opacity="0.6" />
-            <rect x="18" y="6" width="8" height="5" rx="2" stroke="var(--a2)" stroke-width="1.2" />
-          </svg>
-          <div class="skill-name">Photography</div>
-          <div class="skill-desc">Lightroom, Photoshop. Street, product, and portrait photography with retouching
-            expertise.</div>
-          <div class="skill-bar-bg">
-            <div class="skill-bar" data-width="88"></div>
+      </header>
+
+      <!-- Body -->
+      <div class="pf-body">
+
+        <!-- ── About ── -->
+        <section class="pf-sec" id="pf-about">
+          <div class="section-label">About</div>
+          <h2 class="section-title">About <span style="color:var(--a1)">me</span></h2>
+          <p class="pf-sec-text">
+            Full-stack developer &amp; hands-on IT engineer at Al Ghurair CEW. I build clean, user-focused websites and systems &mdash; and back them up with real IT support, from networks to workstations.
+          </p>
+          <p class="pf-sec-text">
+            Based in Dubai, open to freelance projects, full-time roles, and interesting collaborations.
+          </p>
+
+          <h3 class="pf-sub">What I'm doing</h3>
+          <div class="pf-services">
+            <div class="pf-service">
+              <div class="pf-service-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </div>
+              <h4 class="pf-service-name">Web Development</h4>
+              <p class="pf-service-text">Full-stack web apps with PHP, MySQL, JavaScript, and Tailwind CSS &mdash; front to back, built to scale.</p>
+            </div>
+            <div class="pf-service">
+              <div class="pf-service-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              </div>
+              <h4 class="pf-service-name">IT Support &amp; Networking</h4>
+              <p class="pf-service-text">Network infrastructure, servers, workstations, hardware/software troubleshooting, and IT security.</p>
+            </div>
+            <div class="pf-service">
+              <div class="pf-service-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+              </div>
+              <h4 class="pf-service-name">UI/UX &amp; Motion</h4>
+              <p class="pf-service-text">Design systems, interactive prototypes, GSAP motion, and immersive Three.js experiences.</p>
+            </div>
+            <div class="pf-service">
+              <div class="pf-service-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+              <h4 class="pf-service-name">Creative Media</h4>
+              <p class="pf-service-text">Video editing, photography, music production, and 3D modeling for polished, original content.</p>
+            </div>
           </div>
-        </div>
-        <div class="skill-card">
-          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="9" fill="rgba(204,68,136,0.08)" />
-            <rect x="8" y="14" width="28" height="18" rx="4" stroke="var(--a3)" stroke-width="1.5" />
-            <circle cx="15" cy="23" r="4" stroke="var(--a3)" stroke-width="1.2" />
-            <circle cx="29" cy="23" r="4" stroke="var(--a3)" stroke-width="1.2" />
-            <rect x="19" y="21" width="6" height="4" rx="1" fill="var(--a3)" opacity="0.5" />
-          </svg>
-          <div class="skill-name">Gaming</div>
-          <div class="skill-desc">Competitive FPS, strategy. Twitch streaming with a 2K+ community. Content creation &
-            highlights.</div>
-          <div class="skill-bar-bg">
-            <div class="skill-bar" data-width="85"></div>
+
+          <h3 class="pf-sub">Stack</h3>
+          <div class="pf-chips">
+            <span class="pf-chip">PHP</span>
+            <span class="pf-chip">MySQL</span>
+            <span class="pf-chip">JavaScript</span>
+            <span class="pf-chip">Tailwind CSS</span>
+            <span class="pf-chip">HTML &amp; CSS</span>
+            <span class="pf-chip">Networking</span>
+            <span class="pf-chip">Hardware</span>
+            <span class="pf-chip">Troubleshooting</span>
+            <span class="pf-chip">IT Support</span>
+            <span class="pf-chip">React</span>
+            <span class="pf-chip">GSAP</span>
+            <span class="pf-chip">Three.js</span>
+            <span class="pf-chip">Git</span>
+            <span class="pf-chip">Linux</span>
           </div>
-        </div>
-        <div class="skill-card">
-          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="9" fill="rgba(91,79,207,0.1)" />
-            <path d="M10 38 L22 8 L34 38" stroke="var(--a1)" stroke-width="1.5" stroke-linejoin="round" fill="none" />
-            <path d="M15 28 h14" stroke="var(--a1)" stroke-width="1.5" stroke-linecap="round" />
-          </svg>
-          <div class="skill-name">UI/UX Design</div>
-          <div class="skill-desc">Figma and Framer. Design systems, user research, interactive prototypes, and component
-            libraries.</div>
-          <div class="skill-bar-bg">
-            <div class="skill-bar" data-width="92"></div>
+        </section>
+
+        <!-- ── Experience & Skills ── -->
+        <section class="pf-sec" id="pf-resume">
+          <div class="section-label">Resume</div>
+          <h2 class="section-title">Career <span style="color:var(--a1)">path</span></h2>
+
+          <ol class="pf-timeline">
+            <li class="pf-tl-item">
+              <h4 class="pf-tl-role">Full Stack Developer</h4>
+              <span class="pf-tl-meta">Al Ghurair CEW LLC &middot; 2024 &mdash; Present</span>
+              <p class="pf-tl-text">Building and maintaining the company website, internal dashboards, and inventory systems with PHP, MySQL, Tailwind CSS, and JavaScript.</p>
+              <div class="pf-tl-tags"><span class="pf-tag">PHP</span><span class="pf-tag">MySQL</span><span class="pf-tag">Tailwind</span><span class="pf-tag">JavaScript</span></div>
+            </li>
+            <li class="pf-tl-item">
+              <h4 class="pf-tl-role">IT Support / IT Specialist</h4>
+              <span class="pf-tl-meta">Al Ghurair CEW LLC &middot; 2024 &mdash; Present</span>
+              <p class="pf-tl-text">Managing network infrastructure, servers, and workstations. Providing hardware/software troubleshooting and IT security support for staff.</p>
+              <div class="pf-tl-tags"><span class="pf-tag">Networking</span><span class="pf-tag">Hardware</span><span class="pf-tag">Troubleshooting</span><span class="pf-tag">IT Security</span></div>
+            </li>
+            <li class="pf-tl-item">
+              <h4 class="pf-tl-role">I.T Assistant</h4>
+              <span class="pf-tl-meta">Currimao National High School (LGU Funded) &middot; 2019 &mdash; 2024</span>
+              <p class="pf-tl-text">Delivered on-site technical support for computer labs and faculty devices. Maintained network connectivity and assisted in deploying educational technology.</p>
+              <div class="pf-tl-tags"><span class="pf-tag">IT Support</span><span class="pf-tag">Networking</span><span class="pf-tag">Education</span></div>
+            </li>
+          </ol>
+
+          <h3 class="pf-sub">Skills</h3>
+          <ul class="pf-skills">
+            <li class="pf-skill">
+              <div class="pf-skill-head"><span>Web Development</span><span>90%</span></div>
+              <div class="skill-bar-bg"><div class="skill-bar" data-width="90"></div></div>
+            </li>
+            <li class="pf-skill">
+              <div class="pf-skill-head"><span>Networking &amp; IT Support</span><span>88%</span></div>
+              <div class="skill-bar-bg"><div class="skill-bar" data-width="88"></div></div>
+            </li>
+            <li class="pf-skill">
+              <div class="pf-skill-head"><span>UI/UX Design</span><span>85%</span></div>
+              <div class="skill-bar-bg"><div class="skill-bar" data-width="85"></div></div>
+            </li>
+            <li class="pf-skill">
+              <div class="pf-skill-head"><span>Video Editing</span><span>90%</span></div>
+              <div class="skill-bar-bg"><div class="skill-bar" data-width="90"></div></div>
+            </li>
+            <li class="pf-skill">
+              <div class="pf-skill-head"><span>Photography</span><span>88%</span></div>
+              <div class="skill-bar-bg"><div class="skill-bar" data-width="88"></div></div>
+            </li>
+            <li class="pf-skill">
+              <div class="pf-skill-head"><span>Music Production</span><span>72%</span></div>
+              <div class="skill-bar-bg"><div class="skill-bar" data-width="72"></div></div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- ── Portfolio ── -->
+        <section class="pf-sec" id="pf-portfolio">
+          <div class="section-label">Portfolio</div>
+          <h2 class="section-title">Featured <span style="color:var(--a1)">work</span></h2>
+
+          <div class="pf-filters">
+            <button class="pf-filter active" data-vc-filter="all">All</button>
+            <button class="pf-filter" data-vc-filter="development">Development</button>
+            <button class="pf-filter" data-vc-filter="design">Design</button>
+            <button class="pf-filter" data-vc-filter="concept">Concept</button>
           </div>
-        </div>
-        <div class="skill-card">
-          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="9" fill="rgba(0,153,187,0.08)" />
-            <ellipse cx="22" cy="26" rx="12" ry="7" stroke="var(--a2)" stroke-width="1.5" />
-            <line x1="22" y1="8" x2="22" y2="19" stroke="var(--a2)" stroke-width="1.5" />
-            <line x1="14" y1="10" x2="16" y2="18" stroke="var(--a2)" stroke-width="1.2" opacity="0.7" />
-            <line x1="30" y1="10" x2="28" y2="18" stroke="var(--a2)" stroke-width="1.2" opacity="0.7" />
-          </svg>
-          <div class="skill-name">Music Production</div>
-          <div class="skill-desc">Ableton Live. Electronic composition, sound design, podcast scoring, and ambient
-            soundscapes.</div>
-          <div class="skill-bar-bg">
-            <div class="skill-bar" data-width="72"></div>
+
+          <div class="pf-projects">
+            <div class="pf-project" data-vc-cat="development">
+              <div class="pf-project-tags"><span class="pf-tag">PHP</span><span class="pf-tag">MySQL</span></div>
+              <h4 class="pf-project-name">Company Website &amp; Systems <span class="pf-project-arrow">↗</span></h4>
+              <p class="pf-project-desc">Corporate website, internal dashboards, and inventory systems at Al Ghurair CEW.</p>
+            </div>
+            <div class="pf-project" data-vc-cat="development">
+              <div class="pf-project-tags"><span class="pf-tag">Tailwind</span><span class="pf-tag">JavaScript</span></div>
+              <h4 class="pf-project-name">Internal Dashboards <span class="pf-project-arrow">↗</span></h4>
+              <p class="pf-project-desc">Custom internal dashboards for operations and reporting.</p>
+            </div>
+            <div class="pf-project" data-vc-cat="development">
+              <div class="pf-project-tags"><span class="pf-tag">MySQL</span><span class="pf-tag">PHP</span></div>
+              <h4 class="pf-project-name">Inventory System <span class="pf-project-arrow">↗</span></h4>
+              <p class="pf-project-desc">Inventory tracking and management integrated with existing tooling.</p>
+            </div>
+            <div class="pf-project" data-vc-cat="design">
+              <div class="pf-project-tags"><span class="pf-tag">GSAP</span><span class="pf-tag">D3</span></div>
+              <h4 class="pf-project-name">Analytics SaaS Dashboard <span class="pf-project-arrow">↗</span></h4>
+              <p class="pf-project-desc">Real-time data visualisation concept with animated charts and live widgets.</p>
+            </div>
+            <div class="pf-project" data-vc-cat="concept">
+              <div class="pf-project-tags"><span class="pf-tag">Three.js</span><span class="pf-tag">WebGL</span></div>
+              <h4 class="pf-project-name">Immersive 3D Landing <span class="pf-project-arrow">↗</span></h4>
+              <p class="pf-project-desc">Full-screen interactive 3D concept with particles and scroll-driven motion.</p>
+            </div>
+            <div class="pf-project" data-vc-cat="concept">
+              <div class="pf-project-tags"><span class="pf-tag">Next.js</span><span class="pf-tag">Stripe</span></div>
+              <h4 class="pf-project-name">Mobile-First E-Commerce <span class="pf-project-arrow">↗</span></h4>
+              <p class="pf-project-desc">Storefront concept with gesture animations and a zero-layout-shift cart.</p>
+            </div>
           </div>
-        </div>
-        <div class="skill-card">
-          <svg class="skill-icon" viewBox="0 0 44 44" fill="none">
-            <rect width="44" height="44" rx="9" fill="rgba(204,68,136,0.08)" />
-            <path d="M8 36 L22 8 L36 36" stroke="var(--a3)" stroke-width="1.5" stroke-linejoin="round" fill="none" />
-            <circle cx="22" cy="28" r="6" fill="none" stroke="var(--a3)" stroke-width="1.2" />
-          </svg>
-          <div class="skill-name">3D Modeling</div>
-          <div class="skill-desc">Blender and Cinema 4D. Product visualisation, architectural renders, and motion
-            graphics.</div>
-          <div class="skill-bar-bg">
-            <div class="skill-bar" data-width="78"></div>
+        </section>
+
+        <!-- ── Contact ── -->
+        <section class="pf-sec" id="pf-contact">
+          <div class="section-label">Contact</div>
+          <h2 class="section-title">Get in <span style="color:var(--a1)">touch</span></h2>
+          <p class="pf-sec-text">
+            Open to freelance projects, full-time roles, and interesting collaborations. Drop a message and I'll get back to you.
+          </p>
+
+          <div class="pf-contact-grid">
+            <div class="pf-contact-links">
+              <a class="pf-contact-row" href="mailto:hello@stryg.bytes">
+                <span class="pf-c-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+                </span>
+                <span>
+                  <span class="pf-row-label">Email</span>
+                  <span class="pf-row-value">hello@stryg.bytes</span>
+                </span>
+              </a>
+              <div class="pf-contact-row">
+                <span class="pf-c-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </span>
+                <span>
+                  <span class="pf-row-label">Location</span>
+                  <span class="pf-row-value">Dubai, UAE</span>
+                </span>
+              </div>
+              <div class="pf-contact-row">
+                <span class="pf-c-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </span>
+                <span>
+                  <span class="pf-row-label">Availability</span>
+                  <span class="pf-row-value pf-row-value--ok">Available for projects</span>
+                </span>
+              </div>
+            </div>
+
+            <form class="contact-form" id="pf-contact-form">
+              <div class="form-row">
+                <div class="form-field"><label for="pf-cf-name">Name</label><input id="pf-cf-name" name="name" type="text" placeholder="Your name" required /></div>
+                <div class="form-field"><label for="pf-cf-email">Email</label><input id="pf-cf-email" name="email" type="email" placeholder="you@company.com" required /></div>
+              </div>
+              <div class="form-field"><label for="pf-cf-subject">Subject</label><input id="pf-cf-subject" name="subject" type="text" placeholder="Project inquiry..." /></div>
+              <div class="form-field"><label for="pf-cf-message">Message</label><textarea id="pf-cf-message" name="message" rows="4" placeholder="Tell me about the project..." required></textarea></div>
+              <button type="submit" class="form-submit">Send Message →</button>
+              <p class="form-note" aria-live="polite"></p>
+            </form>
           </div>
-        </div>
+        </section>
+
+        <!-- Switch back to dev -->
+        <button class="btn btn-ghost back-to-studio pf-back" type="button">View Stryg.Bytes &rarr;</button>
+
       </div>
     </section>
 
@@ -534,6 +780,7 @@
       <div class="sec-inner">
         <div class="section-label">Selected Work</div>
         <h2 class="section-title">Featured <span style="color:var(--a1)">Projects</span></h2>
+        <p class="projects-note">Concept builds showcasing motion, 3D, and full-stack craft &mdash; not client work.</p>
       </div>
       <div class="projects-grid">
         <div class="project-card">
@@ -681,169 +928,98 @@
       </div>
     </section>
 
-    <!-- ══ NORMAL: HOBBIES ══ -->
-    <section id="hobbies" class="normal-only" style="background:var(--bg2)">
-      <div class="sec-inner">
-        <div class="section-label">Life Outside Work</div>
-        <h2 class="section-title">Hobbies & <span style="color:var(--a1)">Interests</span></h2>
-        <div class="hobbies-grid">
-          <div class="hobby-card">
-            <svg class="hobby-icon" viewBox="0 0 56 56" fill="none">
-              <rect width="56" height="56" rx="14" fill="rgba(91,79,207,0.1)" />
-              <rect x="10" y="18" width="36" height="24" rx="4" stroke="var(--a1)" stroke-width="1.5" />
-              <path d="M22 30 l8-5 0 10z" fill="var(--a1)" opacity="0.8" />
-              <rect x="20" y="42" width="16" height="4" rx="2" fill="var(--a1)" opacity="0.4" />
-            </svg>
-            <div class="hobby-name">Video Editing</div>
-            <div class="hobby-desc">15K YouTube subscribers documenting creative processes. Cinematic edits using
-              DaVinci Resolve and After Effects.</div>
-          </div>
-          <div class="hobby-card">
-            <svg class="hobby-icon" viewBox="0 0 56 56" fill="none">
-              <rect width="56" height="56" rx="14" fill="rgba(0,153,187,0.08)" />
-              <circle cx="28" cy="28" r="16" stroke="var(--a2)" stroke-width="1.5" />
-              <circle cx="28" cy="28" r="5" fill="var(--a2)" opacity="0.7" />
-              <rect x="22" y="8" width="12" height="7" rx="3" stroke="var(--a2)" stroke-width="1.2" />
-              <line x1="28" y1="15" x2="28" y2="12" stroke="var(--a2)" stroke-width="1.2" />
-            </svg>
-            <div class="hobby-name">Photography</div>
-            <div class="hobby-desc">Street and architectural photography in Dubai. Lightroom presets downloaded 5K+
-              times. Monthly photo walks.</div>
-          </div>
-          <div class="hobby-card">
-            <svg class="hobby-icon" viewBox="0 0 56 56" fill="none">
-              <rect width="56" height="56" rx="14" fill="rgba(204,68,136,0.08)" />
-              <rect x="10" y="18" width="36" height="24" rx="6" stroke="var(--a3)" stroke-width="1.5" />
-              <circle cx="20" cy="30" r="5" stroke="var(--a3)" stroke-width="1.2" />
-              <circle cx="36" cy="30" r="5" stroke="var(--a3)" stroke-width="1.2" />
-              <rect x="24" y="27" width="8" height="5" rx="1.5" fill="var(--a3)" opacity="0.5" />
-            </svg>
-            <div class="hobby-name">Gaming</div>
-            <div class="hobby-desc">Competitive FPS and strategy. Twitch community of 2K+ viewers. Creating content
-              around creative gaming moments.</div>
-          </div>
-          <div class="hobby-card">
-            <svg class="hobby-icon" viewBox="0 0 56 56" fill="none">
-              <rect width="56" height="56" rx="14" fill="rgba(91,79,207,0.1)" />
-              <ellipse cx="28" cy="32" rx="14" ry="9" stroke="var(--a1)" stroke-width="1.5" />
-              <line x1="28" y1="12" x2="28" y2="23" stroke="var(--a1)" stroke-width="1.5" />
-              <line x1="20" y1="14" x2="22" y2="22" stroke="var(--a1)" stroke-width="1.2" opacity="0.7" />
-              <line x1="36" y1="14" x2="34" y2="22" stroke="var(--a1)" stroke-width="1.2" opacity="0.7" />
-            </svg>
-            <div class="hobby-name">Music Production</div>
-            <div class="hobby-desc">Two EPs released on Spotify. Electronic and ambient compositions. Custom soundscapes
-              for client campaigns.</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ══ DEV: PROCESS ══ -->
+    <!-- ══ DEV: PROCESS (centered alternating timeline) ══ -->
     <section id="process" class="dev-only">
       <div class="sec-inner">
         <div class="section-label">How I Work</div>
         <h2 class="section-title">My <span style="color:var(--a1)">Process</span></h2>
       </div>
-      <div class="process-steps">
-        <div class="process-step">
-          <div class="step-num">01</div>
-          <div class="step-content">
-            <h3>Discovery & Strategy</h3>
-            <p>Deep dive into goals, audience, and brand. I map user journeys and define success metrics before a pixel
-              moves.</p>
+      <div class="process-timeline">
+        <div class="pt-line-bg"></div>
+        <div class="pt-line"></div>
+        <div class="pt-step pt-step-right">
+          <div class="pt-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 16v-4" />
+              <path d="M12 8h.01" />
+            </svg>
+          </div>
+          <div class="pt-dot"></div>
+          <div class="pt-card">
+            <div class="pt-num">01</div>
+            <h3>Discovery &amp; Strategy</h3>
+            <p class="pt-sub">Define the vision</p>
           </div>
         </div>
-        <div class="process-step">
-          <div class="step-num">02</div>
-          <div class="step-content">
-            <h3>Design & Prototype</h3>
-            <p>High-fidelity Figma prototypes with motion notes. Every interaction is documented before code begins.</p>
+        <div class="pt-step pt-step-left">
+          <div class="pt-card pt-card-left">
+            <div class="pt-num">02</div>
+            <h3>Design &amp; Prototype</h3>
+            <p class="pt-sub">Bring it to life</p>
+          </div>
+          <div class="pt-dot"></div>
+          <div class="pt-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+            </svg>
           </div>
         </div>
-        <div class="process-step">
-          <div class="step-num">03</div>
-          <div class="step-content">
-            <h3>Development & Animation</h3>
-            <p>Semantic, accessible HTML/CSS with GSAP animation layers on top. Performance budgets enforced from day
-              one.</p>
+        <div class="pt-step pt-step-right">
+          <div class="pt-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+          </div>
+          <div class="pt-dot"></div>
+          <div class="pt-card">
+            <div class="pt-num">03</div>
+            <h3>Development &amp; Animation</h3>
+            <p class="pt-sub">Build &amp; refine</p>
           </div>
         </div>
-        <div class="process-step">
-          <div class="step-num">04</div>
-          <div class="step-content">
-            <h3>Testing & Refinement</h3>
-            <p>Cross-browser testing, Lighthouse audits, accessibility checks, and real user feedback before launch.</p>
+        <div class="pt-step pt-step-left">
+          <div class="pt-card pt-card-left">
+            <div class="pt-num">04</div>
+            <h3>Testing &amp; Refinement</h3>
+            <p class="pt-sub">Polish every detail</p>
+          </div>
+          <div class="pt-dot"></div>
+          <div class="pt-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
           </div>
         </div>
-        <div class="process-step">
-          <div class="step-num">05</div>
-          <div class="step-content">
-            <h3>Launch & Iterate</h3>
-            <p>Staged deployment, analytics integration, and data-driven iteration post-launch.</p>
+        <div class="pt-step pt-step-right">
+          <div class="pt-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14" />
+              <path d="M12 5l7 7-7 7" />
+            </svg>
+          </div>
+          <div class="pt-dot"></div>
+          <div class="pt-card">
+            <div class="pt-num">05</div>
+            <h3>Launch &amp; Iterate</h3>
+            <p class="pt-sub">Ship &amp; grow</p>
           </div>
         </div>
+
       </div>
     </section>
 
-    <!-- ══ NORMAL: RESUME ══ -->
-    <section id="resume" class="normal-only">
-      <div class="sec-inner">
-        <div class="resume-grid">
-          <div>
-            <div class="section-label">Experience</div>
-            <h2 class="section-title">Career <span style="color:var(--a1)">Path</span></h2>
-            <div class="timeline">
-              <div class="tl-item">
-                <div class="tl-dot"></div>
-                <div class="tl-date">2024 — Present</div>
-                <div class="tl-role">Full Stack Developer</div>
-                <div class="tl-company">Al Ghurair CEW LLC</div>
-                <div class="tl-desc">Building and maintaining the company website, internal dashboards, and inventory systems using PHP, MySQL, Tailwind CSS, and JavaScript.</div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot"></div>
-                <div class="tl-date">2024 — Present</div>
-                <div class="tl-role">IT Support / IT Specialist</div>
-                <div class="tl-company">Al Ghurair CEW LLC</div>
-                <div class="tl-desc">Managing network infrastructure, servers, and workstations. Providing hardware/software troubleshooting and IT security support for staff.</div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot"></div>
-                <div class="tl-date">2019 — 2024</div>
-                <div class="tl-role">I.T Assistant</div>
-                <div class="tl-company">Currimao National High School (LGU Funded)</div>
-                <div class="tl-desc">Delivered on-site technical support for computer labs and faculty devices. Maintained network connectivity and assisted in deploying educational technology.</div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div class="section-label">Awards</div>
-            <h2 class="section-title">Mile<span style="color:var(--a1)">stones</span></h2>
-            <div class="timeline">
-              <div class="tl-item">
-                <div class="tl-dot"></div>
-                <div class="tl-date">2024</div>
-                <div class="tl-role">Awwwards Site of the Day</div>
-                <div class="tl-company">Interactive Brand Campaign</div>
-                <div class="tl-desc">Honoured for outstanding interaction design and WebGL innovation.</div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot"></div>
-                <div class="tl-date">2023</div>
-                <div class="tl-role">CSS Design Awards</div>
-                <div class="tl-company">Best Animation</div>
-                <div class="tl-desc">Recognised for GSAP-driven scroll storytelling project for a luxury client.</div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot"></div>
-                <div class="tl-date">2022</div>
-                <div class="tl-role">FWA Honoured Site</div>
-                <div class="tl-company">E-Commerce Experience</div>
-                <div class="tl-desc">Featured as one of the top e-commerce experiences of the year.</div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <!-- ══ PERSONAL GATE (Dev → Normal transition) ══ -->
+    <section id="personal-gate" class="dev-only" style="background:var(--bg2)">
+      <div class="sec-inner" style="text-align:center">
+        <div class="section-label">Beyond the Code</div>
+        <h2 class="section-title">Want to know the <span style="color:var(--a1)">person</span> behind the pixels?</h2>
+        <p style="color:var(--muted);max-width:44ch;margin:0 auto 2.5rem;line-height:1.8">
+          There's more to me than code — my experience, hobbies, and what drives me.
+        </p>
+        <button class="btn btn-primary gate-btn">Meet Gio →</button>
       </div>
     </section>
 
@@ -853,8 +1029,8 @@
       <h2 class="section-title" style="text-align:center">Let's build something <span
           style="color:var(--a1)">great</span></h2>
       <p
-        style="text-align:center;color:var(--muted);max-width:46ch;margin:0 auto 2rem;font-size:0.95rem;line-height:1.8">
-        Open to freelance projects, full-time roles, and interesting collaborations. Let's make something extraordinary.
+        style="text-align:center;color:var(--muted);max-width:42ch;margin:0 auto 2rem;font-size:0.95rem;line-height:1.8">
+        Open to freelance projects, full-time roles, and interesting collaborations.
       </p>
       <a href="mailto:hello@stryg.bytes" class="contact-email">hello@stryg.bytes</a>
       <div class="social-row">
@@ -867,33 +1043,24 @@
             <path
               d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
           </svg></a>
-        <a href="#" class="soc-link" title="Dribbble"><svg width="16" height="16" viewBox="0 0 24 24"
-            fill="currentColor">
-            <path
-              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm6.605 4.61a8.502 8.502 0 011.93 5.314c-.281-.054-3.101-.629-5.943-.271-.065-.141-.12-.293-.184-.445a25.424 25.424 0 00-.564-1.236c3.145-1.28 4.577-3.124 4.761-3.362zM12 3.475c2.17 0 4.154.813 5.662 2.148-.152.216-1.443 1.941-4.48 3.08-1.399-2.57-2.95-4.675-3.189-5A8.687 8.687 0 0112 3.475zm-3.633.803a53.896 53.896 0 013.167 4.935c-3.992 1.063-7.517 1.04-7.896 1.04a8.581 8.581 0 014.729-5.975zM3.453 12.01v-.26c.37.01 4.512.065 8.775-1.215.25.477.477.965.694 1.453-.109.033-.228.065-.336.098-4.404 1.42-6.747 5.303-6.942 5.629a8.522 8.522 0 01-2.19-5.705zM12 20.547a8.482 8.482 0 01-5.239-1.8c.152-.315 1.888-3.656 6.703-5.337.022-.01.033-.01.054-.022a35.32 35.32 0 011.823 6.475 8.4 8.4 0 01-3.341.684zm4.761-1.465c-.086-.52-.542-3.015-1.659-6.084 2.679-.423 5.022.271 5.314.369a8.468 8.468 0 01-3.655 5.715z" />
-          </svg></a>
-        <a href="#" class="soc-link" title="Twitter/X"><svg width="16" height="16" viewBox="0 0 24 24"
-            fill="currentColor">
-            <path
-              d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-          </svg></a>
       </div>
-      <div class="contact-form">
+      <form class="contact-form" id="contact-form">
         <div class="form-row">
-          <div class="form-field"><label>Name</label><input type="text" placeholder="Your name" /></div>
-          <div class="form-field"><label>Email</label><input type="email" placeholder="you@company.com" /></div>
+          <div class="form-field"><label for="cf-name">Name</label><input id="cf-name" name="name" type="text" placeholder="Your name" required /></div>
+          <div class="form-field"><label for="cf-email">Email</label><input id="cf-email" name="email" type="email" placeholder="you@company.com" required /></div>
         </div>
-        <div class="form-field"><label>Subject</label><input type="text" placeholder="Project inquiry..." /></div>
-        <div class="form-field"><label>Message</label><textarea rows="4"
-            placeholder="Tell me about the project..."></textarea></div>
-        <button type="button" class="form-submit">Send Message →</button>
-      </div>
+        <div class="form-field"><label for="cf-subject">Subject</label><input id="cf-subject" name="subject" type="text" placeholder="Project inquiry..." /></div>
+        <div class="form-field"><label for="cf-message">Message</label><textarea id="cf-message" name="message" rows="4"
+            placeholder="Tell me about the project..." required></textarea></div>
+        <button type="submit" class="form-submit">Send Message →</button>
+        <p class="form-note" id="contact-form-note" aria-live="polite"></p>
+      </form>
     </section>
 
     <!-- ══ FOOTER ══ -->
     <footer>
-      <span>© 2025 <span class="Stryg Bytes">Stryg.Bytes</span> — </span>
-      <span class="acc">hello@stryg.bytes</span>
+      <span>&copy; <span id="footer-year">2026</span> <span class="brand">Stryg.Bytes</span> &mdash; </span>
+      <span id="footer-contact"><a href="mailto:hello@stryg.bytes" class="acc">hello@stryg.bytes</a></span>
     </footer>
 
   </div><!-- /app -->

@@ -8,6 +8,164 @@
   z-index: 1;
 }
 
+#hero-dev-content,
+#hero-normal-content {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-split {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Dev mode: text left, eyes right in a glass card */
+.hero-split-dev {
+  display: flex;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+
+.hero-info-dev {
+  flex: 1.15;
+  min-width: 0;
+}
+
+.hero-bot-card {
+  flex: 0.85;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  min-height: 260px;
+  padding: 2.5rem;
+  border-radius: 28px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.hero-bot-card::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle at 50% 40%, var(--glow1), transparent 65%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.hero-bot-cap {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .hero-split-dev {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .hero-info-dev .hero-eyebrow,
+  .hero-info-dev .hero-cta {
+    justify-content: center;
+  }
+  .hero-info-dev .hero-sub {
+    max-width: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-bot-card {
+    min-height: 200px;
+    padding: 2rem;
+  }
+}
+
+/* Normal mode: text left, swipe-card stack right in a matching glass
+   frame — same premium-split language as the Dev hero's bot card, just
+   re-tinted for the light theme so the two modes read as one family. */
+.hero-card-frame {
+  flex: 0.95;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 420px;
+  border-radius: 28px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.25));
+  border: 1px solid var(--nm-border);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 24px 60px rgba(20, 20, 40, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  /* deliberately NOT overflow:hidden — the fanned card stack is meant to
+     float slightly past the glass panel's edge, not get clipped by it */
+}
+
+.hero-card-frame::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(circle at 50% 35%, rgba(91, 79, 207, 0.14), transparent 65%);
+  pointer-events: none;
+}
+
+.hero-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.hero-card canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.hero-info {
+  flex: 1.05;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  #hero-normal-content .hero-split {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+    gap: 1rem;
+  }
+  .hero-info .hero-eyebrow,
+  .hero-info .hero-cta {
+    justify-content: center;
+  }
+  .hero-info .hero-sub {
+    max-width: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero-card-frame {
+    min-height: 380px;
+  }
+  body.normal-mode .hero-scroll-cue,
+  body.normal-mode .hero-badge {
+    display: none;
+  }
+}
+
 .hero-eyebrow {
   font-family: var(--mono);
   font-size: 0.78rem;
@@ -64,7 +222,7 @@ body.normal-mode .hero-title .stroke {
   font-size: 1.05rem;
   color: var(--muted);
   max-width: 500px;
-  margin-bottom: 3rem;
+  margin-bottom: 1.75rem;
   opacity: 0;
   line-height: 1.85;
 }
@@ -133,6 +291,44 @@ body.normal-mode .btn-ghost {
 body.normal-mode .btn-ghost:hover {
   border-color: var(--a2);
   color: var(--a2);
+}
+
+.logo-marquee {
+  width: 100%;
+  overflow: hidden;
+  padding: 2rem 0;
+  background: var(--bg2);
+  position: relative;
+  z-index: 1;
+}
+
+.lm-track {
+  display: flex;
+  gap: 3rem;
+  animation: lmScroll 20s linear infinite;
+  white-space: nowrap;
+}
+
+.lm-track span {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--nm-a1);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+@keyframes lmScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.type-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  font-weight: 300;
+  color: var(--nm-a1);
 }
 
 .hero-scroll-cue {

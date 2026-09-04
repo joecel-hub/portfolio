@@ -7,7 +7,24 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
 
 ::-webkit-scrollbar {
@@ -44,8 +61,8 @@ body.normal-mode {
   --a1: var(--nm-a1);
   --a2: var(--nm-a2);
   --a3: var(--nm-a3);
-  --glow1: rgba(91, 79, 207, 0.15);
-  --glow2: rgba(0, 153, 187, 0.15);
+  --glow1: rgba(93, 79, 211, 0.2);
+  --glow2: rgba(0, 127, 159, 0.14);
 }
 
 a {

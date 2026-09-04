@@ -105,13 +105,17 @@ body.normal-mode #topnav.scrolled {
   font-family: var(--mono);
   font-size: 1.15rem;
   font-weight: 700;
-  color: var(--text);
+  color: #fff;
   letter-spacing: -0.03em;
   position: relative;
   z-index: 1;
 }
 
 .nav-logo span {
+  color: inherit;
+}
+
+.nav-logo .dev-only > span {
   color: var(--a1);
 }
 
@@ -311,4 +315,37 @@ body.normal-mode .nav-close:hover {
 .nav-links li:first-child {
   list-style: none;
   position: static;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.nav-logo {
+  cursor: pointer;
+}
+
+.back-to-studio {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 0.4rem 0.9rem;
+  margin-left: 0.9rem;
+  cursor: pointer;
+  transition: color 0.25s, border-color 0.25s;
+  position: relative;
+  z-index: 1;
+}
+
+.back-to-studio:hover {
+  color: var(--a1);
+  border-color: var(--a1);
 }

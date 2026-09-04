@@ -100,8 +100,9 @@
 
 body.normal-mode .form-field input,
 body.normal-mode .form-field textarea {
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(23, 26, 45, 0.05);
   color: var(--nm-text);
+  border-color: var(--nm-border);
 }
 
 .form-field input:focus,
@@ -126,4 +127,12 @@ body.normal-mode .form-field textarea {
 .form-submit:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 36px var(--glow1);
+}
+
+.form-note {
+  margin-top: 0.9rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--a2);
+  min-height: 1.2em;
 }

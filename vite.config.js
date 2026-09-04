@@ -5,6 +5,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three', 'postprocessing'],
+        },
+      },
+    },
   },
   server: {
     open: true,

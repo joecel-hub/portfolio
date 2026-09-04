@@ -1,28 +1,67 @@
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import gsap from 'gsap'
+
+let lenisInstance = null
+
+gsap.registerPlugin(ScrollTrigger)
+
+export function setLenis(instance) {
+  lenisInstance = instance
+}
+
 export function initNavigation() {
+  function isNormal() {
+    return document.body.classList.contains('normal-mode')
+  }
+
+  function resolveTarget(id) {
+    if (isNormal()) {
+      if (id === 'hero') return 'profile'
+      if (id === 'about') return 'pf-about'
+      if (id === 'contact') return 'pf-contact'
+    }
+    return id
+  }
+
   document.querySelectorAll('.rn-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const id = btn.dataset.target
+      const id = resolveTarget(btn.dataset.target)
       const el = document.getElementById(id)
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      if (el) {
+        if (lenisInstance) {
+          lenisInstance.scrollTo(el, { offset: 0, duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) })
+        } else {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }
       document.querySelectorAll('.rn-btn').forEach(b => b.classList.remove('active'))
       btn.classList.add('active')
     })
   })
 
-  const sectionEls = document.querySelectorAll('[id]')
-  const rnObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        document.querySelectorAll('.rn-btn').forEach(b => {
-          b.classList.toggle('active', b.dataset.target === e.target.id)
-        })
+  document.querySelectorAll('.rn-btn').forEach(btn => {
+    const targetId = resolveTarget(btn.dataset.target)
+    const el = document.getElementById(targetId)
+    // Profile sections share the single #profile region in normal mode;
+    // skip scrollspy for those so they don't all highlight at once.
+    if (!el || targetId === 'profile' || targetId.startsWith('pf-')) return
+
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 55%',
+      end: 'bottom 45%',
+      onToggle: (self) => {
+        if (self.isActive) {
+          document.querySelectorAll('.rn-btn').forEach(b => b.classList.remove('active'))
+          btn.classList.add('active')
+        }
       }
     })
-  }, { threshold: 0.45 })
-  sectionEls.forEach(s => rnObs.observe(s))
+  })
 
   window.addEventListener('scroll', () => {
-    document.getElementById('topnav').classList.toggle('scrolled', window.scrollY > 60)
+    const topnav = document.getElementById('topnav')
+    if (topnav) topnav.classList.toggle('scrolled', window.scrollY > 60)
   })
 
   function closeMenu() {
@@ -48,7 +87,22 @@ export function initNavigation() {
     if (closeBtn) closeBtn.addEventListener('click', closeMenu)
     if (backdrop) backdrop.addEventListener('click', closeMenu)
     links.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', closeMenu)
+      a.addEventListener('click', (e) => {
+        const href = a.getAttribute('href')
+        if (href && href.startsWith('#')) {
+          e.preventDefault()
+          const id = href.slice(1)
+          const el = document.getElementById(id)
+          if (el) {
+            if (lenisInstance) {
+              lenisInstance.scrollTo(el, { offset: 0, duration: 1.2 })
+            } else {
+              el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+          }
+        }
+        closeMenu()
+      })
     })
     window.addEventListener('resize', () => {
       if (window.innerWidth >= 768 && links.classList.contains('open')) {
@@ -57,12 +111,16 @@ export function initNavigation() {
     })
   }
 
+  const aboutEl = document.getElementById('nav-about')
   const skEl = document.getElementById('nav-skills')
   const wkEl = document.getElementById('nav-work')
+  const contactEl = document.getElementById('nav-contact')
   function updateNavLinks() {
     const nm = document.body.classList.contains('normal-mode')
-    if (skEl) skEl.href = nm ? '#hobbies' : '#skills-dev'
-    if (wkEl) { wkEl.href = nm ? '#resume' : '#projects'; wkEl.textContent = nm ? 'Resume' : 'Work' }
+    if (aboutEl) aboutEl.href = nm ? '#pf-about' : '#about'
+    if (skEl) skEl.href = nm ? '#pf-about' : '#skills-dev'
+    if (wkEl) { wkEl.href = nm ? '#pf-resume' : '#projects'; wkEl.textContent = nm ? 'Resume' : 'Work' }
+    if (contactEl) contactEl.href = nm ? '#pf-contact' : '#contact'
   }
   updateNavLinks()
   const mo = new MutationObserver(updateNavLinks)
