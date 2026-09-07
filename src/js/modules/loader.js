@@ -1,12 +1,47 @@
 import gsap from 'gsap'
 
-export function initLoader(onComplete) {
+function buildLogoHTML(brand) {
+  const dot = brand.indexOf('.')
+  if (dot === -1) return brand
+  const head = brand.slice(0, dot)
+  const tail = brand.slice(dot + 1)
+  return head + '<span>.</span><span>' + tail + '</span>'
+}
+
+export function playLoader({ brand = 'Gio', onComplete } = {}) {
   const loader = document.getElementById('loader')
-  const logo = document.querySelector('.ld-logo')
+  if (!loader) return
   const ldBg = document.querySelector('.ld-bg')
 
-  const originalHTML = logo ? logo.innerHTML : ''
-  const originalText = logo ? logo.textContent : ''
+  // Reset so the loader can be replayed after a mode switch
+  loader.style.zIndex = ''
+  loader.style.pointerEvents = ''
+  document.body.classList.remove('loader-done')
+  if (ldBg) ldBg.style.opacity = '1'
+
+  // Ensure the logo + loading elements exist (they are removed after each play)
+  let logo = document.querySelector('.ld-logo')
+  if (!logo) {
+    logo = document.createElement('div')
+    logo.className = 'ld-logo'
+    loader.insertBefore(logo, ldBg ? ldBg.nextSibling : null)
+  }
+  const originalHTML = buildLogoHTML(brand)
+  const originalText = brand
+  logo.innerHTML = originalHTML
+
+  let loadingEl = document.querySelector('.ld-loading')
+  if (!loadingEl) {
+    loadingEl = document.createElement('div')
+    loadingEl.className = 'ld-loading'
+    loadingEl.textContent = 'Loading'
+    loader.appendChild(loadingEl)
+  }
+
+  // Remove any leftover grid overlay from a previous play
+  const oldOverlay = document.querySelector('.ld-grid-overlay')
+  if (oldOverlay) oldOverlay.remove()
+
   const chars = '!@#$%^&*()_+-=[]{}|;:,.<>?/`~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   let step = 0
 
@@ -34,15 +69,13 @@ export function initLoader(onComplete) {
         }
         loader.appendChild(overlay)
 
-        // Blocks appear on charcoal bg — no ldBg fade
         gsap.to(blocks, {
           opacity: 1,
           duration: 0.2,
           stagger: { each: 0.005, from: 'random' },
           ease: 'power2.out',
           onComplete: () => {
-            // Allow Lenis + animations to initialize behind the grid
-            onComplete()
+            if (onComplete) onComplete()
 
             const sorted = [...blocks].sort((a, b) => {
               const ia = blocks.indexOf(a), ib = blocks.indexOf(b)
@@ -50,7 +83,7 @@ export function initLoader(onComplete) {
               return rb - ra || (ia % 12) - (ib % 12)
             })
 
-            // Fade out ldBg alongside blocks to reveal hero
+            // Fade out ldBg alongside blocks to reveal the app
             if (ldBg) gsap.to(ldBg, { opacity: 0, duration: 0.3, ease: 'power2.in' })
 
             gsap.to(sorted, {
@@ -59,7 +92,6 @@ export function initLoader(onComplete) {
               stagger: { each: 0.003 },
               ease: 'power2.in',
               onComplete: () => {
-                const loadingEl = document.querySelector('.ld-loading')
                 gsap.to([logo, loadingEl], {
                   opacity: 0,
                   duration: 0.15,

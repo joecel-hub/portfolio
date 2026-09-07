@@ -2,10 +2,11 @@ import gsap from 'gsap'
 
 export function initTextMorph() {
   const words = [
-    'Full-Stack Developer & Animation Engineer',
-    'IT Engineer & Full Stack Developer',
-    'SaaS Application Developer',
-    'IT Support & Infrastructure Specialist',
+    'Interactive Web Experiences',
+    'Creative Development & Motion',
+    'SaaS & Web Applications',
+    'UI, Animation & Infrastructure',
+    'Selected Works & Experiments',
   ]
 
   let current = 0

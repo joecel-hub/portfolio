@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Share your experience — Stryg.Bytes</title>
+<style>
+  :root {
+    --bg: #0a0b12; --panel: #12141f; --panel-2: #171a28; --border: #23273a; --text: #e8e9f2; --muted: #8b90a7;
+    --acc: #7c6eff; --acc2: #43e97b; --danger: #ff5c6c; --radius: 12px;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: radial-gradient(1200px 600px at 80% -10%, rgba(124,110,255,.14), transparent), var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1.25rem; }
+  .card { width: 100%; max-width: 520px; background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+  .logo { font-family: var(--mono); font-weight: 700; letter-spacing: .3px; color: var(--acc); margin-bottom: 1.25rem; font-size: 1.05rem; }
+  .logo span { color: var(--text); }
+  h1 { font-size: 1.45rem; margin-bottom: .4rem; font-weight: 700; }
+  .sub { color: var(--muted); font-size: .95rem; margin-bottom: 1.5rem; line-height: 1.6; }
+  .field { margin-bottom: 1.1rem; }
+  .field label { display: block; font-size: .82rem; color: var(--muted); margin-bottom: .4rem; font-weight: 600; }
+  .field input, .field textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: .78rem .9rem;
+    border-radius: 10px; font-size: .98rem; font-family: var(--sans);
+  }
+  .field textarea { resize: vertical; min-height: 110px; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--acc); }
+  .star-row { display: flex; gap: .5rem; font-size: 1.7rem; color: #2c3050; cursor: pointer; user-select: none; }
+  .star-row .on { color: #ffc75c; }
+  .hint { color: var(--muted); font-size: .8rem; margin-top: .35rem; }
+  .btn { width: 100%; background: var(--acc); color: #fff; border: none; font-family: var(--sans); font-size: 1rem; font-weight: 700; padding: .95rem; border-radius: 10px; cursor: pointer; transition: .15s; }
+  .btn:hover { filter: brightness(1.1); }
+  .btn:disabled { opacity: .6; cursor: not-allowed; }
+  .err { color: var(--danger); font-size: .86rem; min-height: 1.2em; margin-top: .6rem; }
+  .success { text-align: center; padding: 2rem 0; }
+  .success .check { width: 64px; height: 64px; border-radius: 50%; background: rgba(67,233,123,.15); border: 1px solid rgba(67,233,123,.4); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--acc2); margin: 0 auto 1.25rem; }
+  .success h2 { margin-bottom: .5rem; }
+  .success p { color: var(--muted); font-size: .95rem; line-height: 1.6; }
+  @media (max-width: 480px) { .card { padding: 1.5rem; } }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">Stryg.Bytes<span> // review</span></div>
+  <div id="view"></div>
+</div>
+<script>
+(function(){
+  const view = document.getElementById('view')
+  const q = new URLSearchParams(location.search)
+  const company = q.get('c') || ''
+  let stars = 5
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])) }
+
+  function renderForm() {
+    view.innerHTML = `
+      <h1>How was working together?</h1>
+      <p class="sub">${company ? `Thanks for taking a moment to review your project with <strong style="color:var(--text)">${esc(company)}</strong>.` : 'Thanks for taking a moment to leave a review.'} Your feedback helps others choose who to work with.</p>
+      <form id="review-form">
+        ${company ? `<input type="hidden" name="project" value="${esc(company)}">` : ''}
+        <div class="field">
+          <label>Your star rating</label>
+          <div class="star-row" id="stars">${[1,2,3,4,5].map(i => `<span data-v="${i}" class="${i<=stars?'on':''}">★</span>`).join('')}</div>
+        </div>
+        <div class="field"><label>Name</label><input name="name" placeholder="Your full name" required maxlength="120"></div>
+        <div class="field"><label>Role / title</label><input name="role" placeholder="e.g. Operations Manager" maxlength="160"></div>
+        <div class="field"><label>Your review</label><textarea name="quote" placeholder="Share what it was like working together..." required minlength="3" maxlength="2000"></textarea></div>
+        <button class="btn" type="submit" id="submit-btn">Send review →</button>
+        <div class="err" id="form-err"></div>
+      </form>`
+    const row = document.getElementById('stars')
+    row.addEventListener('click', (e) => {
+      const t = e.target.closest('span[data-v]'); if (!t) return
+      stars = Number(t.dataset.v)
+      document.querySelectorAll('#stars span').forEach(s => s.classList.toggle('on', Number(s.dataset.v) <= stars))
+    })
+    document.getElementById('review-form').addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const btn = document.getElementById('submit-btn')
+      const err = document.getElementById('form-err')
+      btn.disabled = true; err.textContent = ''
+      const form = e.target
+      const payload = {
+        project: company,
+        name: form.name.value.trim(),
+        role: form.role ? form.role.value.trim() : '',
+        quote: form.quote.value.trim(),
+        stars
+      }
+      try {
+        const res = await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) throw new Error(data.error || 'Something went wrong — please try again.')
+        renderSuccess()
+      } catch (errMsg) { err.textContent = errMsg.message || errMsg; btn.disabled = false }
+    })
+  }
+
+  function renderSuccess() {
+    view.innerHTML = `
+      <div class="success">
+        <div class="check">✓</div>
+        <h2>Thank you!</h2>
+        <p>Your review has been received and will appear on the site shortly. I appreciate you taking the time.</p>
+      </div>`
+  }
+
+  renderForm()
+})()
+</script>
+</body>
+</html>

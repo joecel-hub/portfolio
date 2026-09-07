@@ -16,6 +16,16 @@ export default defineConfig({
   server: {
     open: true,
     allowedHosts: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5175',
+        changeOrigin: true,
+      },
+      '/uploads': {
+        target: 'http://localhost:5175',
+        changeOrigin: true,
+      },
+    },
   },
   preview: {
     allowedHosts: true,

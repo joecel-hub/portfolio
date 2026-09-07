@@ -293,37 +293,6 @@ body.normal-mode .btn-ghost:hover {
   color: var(--a2);
 }
 
-.logo-marquee {
-  width: 100%;
-  overflow: hidden;
-  padding: 2rem 0;
-  background: var(--bg2);
-  position: relative;
-  z-index: 1;
-}
-
-.lm-track {
-  display: flex;
-  gap: 3rem;
-  animation: lmScroll 20s linear infinite;
-  white-space: nowrap;
-}
-
-.lm-track span {
-  font-family: var(--mono);
-  font-size: 0.85rem;
-  color: var(--nm-a1);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  opacity: 0.6;
-  flex-shrink: 0;
-}
-
-@keyframes lmScroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
 .type-cursor {
   display: inline-block;
   margin-left: 2px;

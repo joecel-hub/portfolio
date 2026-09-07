@@ -1,111 +1,141 @@
 # Stryg.Bytes — Portfolio
 
-Dual-mode portfolio for **Stryg.Bytes** (full-stack development studio) and **Gio** (personal IT Engineer profile).
+Dual-mode portfolio for **Stryg.Bytes** (full-stack development studio) and **Gio** (personal IT Engineer profile), powered by a small self-hosted CMS.
 
 ## Tech Stack
 
+### Frontend
 - **Vite** 5 + vanilla JS
-- **CSS + Canvas 2D** — Layered gradient blobs, SVG film grain, particle field (Dev mode background)
-- **React + Three.js + postprocessing** — PixelBlast background (Normal mode)
-- **React + Framer Motion** — Swipe Card Stack interaction (Normal mode)
-- **GSAP** + ScrollTrigger — animations, text reveals, typewriter effect
+- **GSAP** + ScrollTrigger — loader, hero entrance, scroll animations, pinned Process timeline, text reveals
 - **Lenis** — smooth scrolling
-- **CSS** custom properties (dark/light theme, dual mode)
+- **Canvas 2D** — Dev-mode background (layered gradient blobs, SVG film grain, particle field with mouse repulsion)
+- **React + Three.js** — PixelBlast pixel-grid background (Normal mode)
+- **CSS** custom properties — dark Dev theme + light Normal theme
+
+### Backend (CMS)
+- **Express 5** — REST API + static serving of built dist
+- **better-sqlite3** — SQLite database (`portfolio.db`)
+- **multer** — file uploads (project screenshots, client logos, certificate images + PDFs)
+- **jsonwebtoken + bcryptjs** — JWT admin authentication
+- Admin SPA at `/admin` for managing projects, testimonials, client logos, certificates, and the review inbox
 
 ## Features
 
 - **Dual mode** (Dev / Normal) — Stryg.Bytes studio vs personal IT Engineer profile
 - **Grid loading screen** — Stryg.Bytes glitch → 144-block grid wipe → hero reveal
-- **Layered Dev background** — CSS animated gradient blobs, SVG film grain overlay, Canvas 2D particles with mouse repulsion
-- **3D Following Eyes** — realistic-ish eye pair in hero, tracks cursor with perspective transforms (Dev mode)
-- **Premium split hero** — asymmetric two-column layout with glass card for eyes (Dev mode)
-- **PixelBlast background** — Three.js pixel grid with mouse-reactive ripples (Normal mode)
-- **Swipe Card Stack** — interactive Tinder-style card stack with photos (Normal mode)
-- **Typewriter effect** — cycling role titles in Normal hero eyebrow
-- **Logo marquee** — scrolling tech stack strip between sections (Normal mode)
-- **"Why Stryg.Bytes" value cards** — premium glass cards with ghost numbers, shine sweeps, and client-benefit copy (Dev mode About)
-- **Premium Services bento** — glass cards with gradient borders, ghost numbers, shine sweeps, tech tags, and deliverable lists (Dev mode)
-- **Animated wave dividers** — multi-layer parallax SVG waves between Hero → About → Services (Dev mode)
-- **Service pillars** — visual icon grid for Stryg.Bytes offerings (Dev mode About)
-- **Alternating centered timeline** — 5-step process with progressive step activation (Dev mode)
-- **Personal gate** — "Meet Gio →" transition at bottom of Dev portfolio
-- **Scroll-triggered text reveals** — word-by-word translateY stagger on section titles
-- **Lenis smooth scroll** throughout (native scrollbar hidden)
+- **Hero bot** — robot card in the Dev hero
+- **Premium split hero** — asymmetric two-column layout with glass robot card (Dev mode)
+- **"Why Stryg.Bytes" value cards / Services bento / Animated wave dividers / Process timeline** (Dev)
+- **Personal gate** — "Meet Gio →" transition at the bottom of the Dev portfolio
+- **Normal profile** — Facebook-style cover + profile header, light theme
+- **API-driven content** — projects, testimonials, client logos, and certificates load from the CMS (with graceful static fallback)
+- **Project categories** — Client Projects / SaaS Templates / Systems & Apps / Templates, with a filter bar and per-project screenshots
+- **Client logos marquee** — logo images or text-only fallback
+- **Certificates** — thumbnail image + optional PDF or external verification link (e.g. GSD Council), managed in admin
+- **PixelBlast background** / **Lenis smooth scroll** / **Scroll-triggered text reveals**
 
 ## Commands
 
 | Command | Description |
 |---|---|
-| `npm run dev` | Start dev server |
+| `npm run dev` | Vite dev server only (frontend) |
+| `npm run server` | Run the Express backend on `:5175` |
+| `npm run dev:full` | Run backend + Vite dev together (recommended for development) |
 | `npm run build` | Production build to `dist/` |
 | `npm run preview` | Preview production build |
+| `npm run seed` | Start backend (seeds database on first run) |
+
+During development, Vite proxies `/api` and `/uploads` to the backend at `localhost:5175`.
+
+## CMS & Admin
+
+- **Admin panel**: `http://localhost:5175/admin` (dev), or `/admin` behind the backend in production.
+- **Default credentials** (development only): `admin` / `admin123`.
+  - ⚠️ Create `server/.env` with a real `ADMIN_PASS` and a long random `JWT_SECRET` before any production/full-stack deploy.
+- **Login route**: `POST /api/auth/login` → returns a JWT (7-day expiry).
+- **Managed content**:
+  - Projects — name, description, tags, category, live URL, demo URL, screenshot, thumb style, sort
+  - Testimonials — name, role, quote, stars (approve from the Reviews inbox or add manually)
+  - Client logos — name + image, sort, show/hide
+  - Certificates — name, issuer, date, thumbnail image, PDF, verification link, sort, show/hide
+  - Reviews — public submission page (`/review?c=<name>`) + approve/delete in admin
+- **Uploads** live in `server/public/uploads/` (gitignored user content), served at `/uploads`.
+
+## Env Variables (`server/.env`)
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `PORT` | `5175` | Backend port |
+| `DB_FILE` | `server/portfolio.db` | SQLite database path |
+| `ADMIN_USER` | `admin` | Admin username |
+| `ADMIN_PASS` | `admin123` | Admin password (set a real one) |
+| `JWT_SECRET` | `dev-secret-change-me` | JWT signing secret (set a long random one) |
 
 ## Sections
 
 ### Dev mode (Stryg.Bytes)
-
-1. **Hero** — "Welcome to the Studio" split layout with 3D following eyes
-2. **About** — "Why Stryg.Bytes" value proposition, premium client-benefit cards, stats bar
-3. **Services** — premium bento cards (Motion & Animation, Immersive 3D & WebGL, Full-Stack Engineering)
-4. **Projects** — featured work grid
-5. **Process** — 5-step centered alternating timeline
-6. **Personal Gate** — "Meet Gio →" transition into Normal mode
-7. **Contact** — form + social links
+1. **Hero** (`#hero`) — "Welcome to the Studio" split layout with hero-bot card
+2. **About** (`#about`) — "Why Stryg.Bytes" value proposition, stats bar
+3. **Services** (`#skills-dev`) — premium bento cards
+4. **Projects** (`#projects`) — featured work grid
+5. **Process** (`#process`) — 5-step centered alternating timeline (pinned)
+6. **Contact** (`#contact`) — form + social links (hidden in Normal mode)
 
 ### Normal mode (Gio)
-
-1. **Hero** — personal landing + Swipe Card Stack
-2. **Logo marquee** — tech / IT skills strip
-3. **Skills** — capability cards with progress bars
-4. **Hobbies** — interests grid
-5. **Experience** — career path + milestones timelines
-6. **Contact** — form + social links
+Single profile page (`#profile`, light theme):
+1. **Cover + header** — wide cover photo, avatar, name, typewriter role, actions, socials
+2. **About** (`#pf-about`) — bio + services grid
+3. **Resume** (`#pf-resume`) — experience timeline + skills with logos
+4. **Portfolio** (`#pf-portfolio`) — filterable project grid (Client Projects / SaaS / Apps / Templates)
+5. **Hobbies & Certificates** (`#pf-hobbies`) — hobby cards + certificate cards (managed in admin)
+6. **Contact** (`#pf-contact`) — contact rows + form
 
 ## Project Structure
 
 ```
 src/
-├── main.js                 # Entry point
+├── main.js                   # Entry point
 ├── styles/
-│   ├── tokens.css          # CSS custom properties
-│   ├── base.css            # Reset, body, shared layouts
-│   ├── utilities.css       # Wave dividers, mode visibility, noise
-│   ├── responsive.css      # Breakpoints
-│   └── components/         # Per-section CSS files
-│       ├── dev-bg.css      # Gradient blobs + grain overlay (Dev)
-│       ├── hero-eyes.css   # 3D following eyes styles (Dev)
-│       └── skills.css      # Services bento + Normal skills/hobbies
+│   ├── tokens.css            # CSS custom properties (dev + --nm-* normal tokens)
+│   ├── base.css              # Reset, body, normal-mode remapping
+│   ├── utilities.css         # Wave dividers, mode visibility, noise
+│   ├── responsive.css        # Breakpoints
+│   └── components/           # Per-section CSS files
 ├── js/
 │   └── modules/
-│       ├── loader.js       # Grid loading screen
-│       ├── dev-particles.js # Canvas 2D particle field (Dev)
-│       ├── hero-eyes.js    # 3D following eyes cursor tracking (Dev)
-│       ├── lenis.js        # Smooth scroll
-│       ├── animations.js   # GSAP scroll animations
-│       ├── navigation.js   # Nav + mode-aware links
-│       ├── mode-toggle.js  # Dev/Normal switch
-│       ├── text-reveal.js  # Word-by-word section title reveals
-│       ├── text-morph.js   # Hero eyebrow cycling (Dev)
-│       ├── text-type.js    # Typewriter effect (Normal)
-│       ├── SwipeStack.jsx  # Card stack component (Normal)
-│       ├── mountSwipeStack.jsx  # React mount factory
-│       ├── PixelBlast.jsx  # Three.js shader background (Normal)
-│       ├── mountPixelBlast.jsx  # React mount factory
-│       └── helpers.js      # Utility helpers
-└── utils/
-    └── helpers.js
+│       ├── loader.js         # Grid loading screen
+│       ├── api-content.js    # Loads projects/logos/testimonials/certificates from the API
+│       ├── animations.js     # GSAP scroll animations + Process pin
+│       ├── navigation.js / mode-toggle.js / profile.js / text-reveal.js / text-morph.js / text-type.js
+│       ├── PixelBlast.jsx    # Three.js shader background (Normal)
+│       └── mountPixelBlast.jsx
+server/
+├── index.js                  # Express app entry + route mounting + SPA fallback
+├── db.js                     # SQLite schema, migrations, seeding
+├── auth.js                   # JWT login + requireAuth middleware
+├── middleware/upload.js      # multer config (images + PDFs)
+├── routes/
+│   ├── projects.js           # Project CRUD + screenshot upload
+│   ├── testimonials.js       # Testimonial CRUD
+│   ├── logos.js              # Client logo CRUD + image upload
+│   ├── certificates.js       # Certificate CRUD + image/PDF upload
+│   └── reviews.js            # Public submit + admin approve/delete
+└── public/
+    ├── admin/index.html      # Admin SPA (login + dashboard)
+    ├── review/index.html     # Public review submission page
+    └── uploads/              # User-uploaded files (gitignored)
 ```
 
-## Session Notes (in progress)
+## Deployment
 
-### Done
-- Replaced Lightfall/OGL with layered Dev background (gradients + grain + particles)
-- Removed `ogl` dependency
-- Top nav logo fully white (Stryg.Bytes)
-- Hero copy → "Welcome to the Studio" + single Explore CTA
-- 3D following eyes added to Dev hero (currently between subtitle and CTA)
+> **Important:** the current Vercel deploy is **static-only**. Vercel serves the built `dist/` site; the Express/SQLite backend (and therefore the admin panel and API-driven content) **does not run on Vercel** — those run locally via `npm run dev:full` / `npm run server`. The static site renders its built-in fallback content (projects/certs/hobbies/contact).
 
-### Next (tomorrow)
-- Premium split hero layout (text left, eyes right in glass card)
-- Title stacked on 3 lines for editorial rhythm
-- Responsive stacking for mobile
+- Source lives in a **private** GitHub repo (`joecel-hub/portfolio`, `main` branch).
+- **Vercel (static)**: link the repo (`vercel link --repo`), framework preset **Vite**, push → preview + production URLs. `dist/` is built on deploy.
+- **Full-stack hosting (future option)**: to make admin edits go live, host the whole Express app on a service with a persistent filesystem (Render, Railway, or a VPS), set the env vars in `server/.env`, and point the site at the hosted backend. The `server/public/uploads/` dir must be persisted there.
+- `dist/`, `.vercel/`, `server/.env`, all `server/*.db*`, and `server/public/uploads/` are git-ignored; never commit build output, credentials, runtime databases, or uploaded files.
+
+## Notes
+
+- Profile (`.section-title`) headings are excluded from the text-reveal system — they render through the profile entrance animation instead.
+- Always call `ScrollTrigger.refresh()` after a mode switch so pinned sections recalculate.

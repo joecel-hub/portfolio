@@ -67,33 +67,53 @@
     display: none;
   }
 
-  #topnav .nav-links {
+  .nav-links {
     display: flex;
     position: static;
     flex-direction: row;
-    width: auto;
-    padding: 0;
+    align-items: center;
     gap: 1.5rem;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
     background: none;
     backdrop-filter: none;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
     transform: none;
+    visibility: visible;
+    pointer-events: auto;
     transition: none;
+  }
+
+  .nav-links::before {
+    display: none;
+  }
+
+  .nav-links .nav-panel-head,
+  .nav-links .nav-panel-foot,
+  .nav-links .nav-close {
+    display: none;
   }
 
   .nav-backdrop {
     display: none;
   }
 
-  #topnav .nav-links a {
+  .nav-links a {
     font-size: 0.75rem;
+    opacity: 1;
+    transform: none;
   }
 
-  body.normal-mode #topnav .nav-links {
+  .nav-links li {
+    margin: 0;
+  }
+
+  body.normal-mode .nav-links {
     background: none;
-  }
-
-  .nav-close {
-    display: none;
   }
 
   #topnav {
@@ -166,24 +186,23 @@
     margin-right: 0;
   }
 
-  #right-nav {
+  body:not(.normal-mode) #right-nav {
     display: flex;
   }
 
-  #topnav .nav-links,
-  #topnav .ham-btn {
+  body:not(.normal-mode) #topnav .ham-btn {
     display: none;
   }
 
-  #topnav {
-    right: 72px;
+  body:not(.normal-mode) .nav-links {
+    display: none;
   }
 
   .wave-div {
     margin-right: 72px;
   }
 
-  footer {
+  body:not(.normal-mode) footer {
     margin-right: 72px;
   }
 }
@@ -233,10 +252,6 @@
 
   .bar-num {
     font-size: 1.2rem;
-  }
-
-  .hobbies-grid {
-    grid-template-columns: 1fr;
   }
 
   

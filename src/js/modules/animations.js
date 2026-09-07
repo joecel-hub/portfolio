@@ -130,6 +130,15 @@ export function initAnimations() {
     })
   })
 
+  gsap.from('.t-card', {
+    scrollTrigger: { trigger: '#testimonials', start: 'top 72%' },
+    opacity: 0, y: 50, duration: 0.8, stagger: 0.12, ease: 'power3.out'
+  })
+  gsap.from('.client-logo', {
+    scrollTrigger: { trigger: '#testimonials', start: 'top 80%' },
+    opacity: 0, duration: 0.6, stagger: 0.05, ease: 'power2.out'
+  })
+
   ;[
     { sel: '#wave1a', d: 'M80 90 Q200 25 300 90 Q400 155 520 90', delay: 0 },
     { sel: '#wave1b', d: 'M80 110 Q200 45 300 110 Q400 175 520 110', delay: 0.5 }

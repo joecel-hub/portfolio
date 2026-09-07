@@ -1,5 +1,6 @@
+import gsap from 'gsap'
 import './styles/style.css'
-import { initLoader } from './js/modules/loader.js'
+import { playLoader } from './js/modules/loader.js'
 import { initModeToggle } from './js/modules/mode-toggle.js'
 import { initNavigation } from './js/modules/navigation.js'
 import { initAnimations } from './js/modules/animations.js'
@@ -13,35 +14,59 @@ import { initTextMorph } from './js/modules/text-morph.js'
 import { setLenis } from './js/modules/navigation.js'
 import { mountPixelBlast } from './js/modules/mountPixelBlast.jsx'
 import { initProfile } from './js/modules/profile.js'
+import { initApiContent } from './js/modules/api-content.js'
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  const particles = initDevParticles(document.getElementById('dev-particles-canvas'), {
-    count: 50,
-    color: '124, 110, 255',
-    maxOpacity: 0.35,
-    speed: 0.15,
-    mouseRadius: 100,
-    mouseStrength: 0.4
-  })
+  // Normal (Gio) is the default front door. Boot into the light profile;
+  // Dev (Stryg.Bytes) is reached via the loader transition.
+  document.body.classList.add('normal-mode')
 
-  const heroBot = initHeroBot(document.getElementById('hero-bot'))
+  // Wire the navigation (hamburger open/close, scrollspy, nav-link mapping)
+  // FIRST — before any optional mounts — so the menu always works even if
+  // WebGL/particles fail on a device.
+  initNavigation()
 
-  // Normal mode only exists behind the "Meet Gio" gate — the site always
-  // opens in Dev mode — so these are mounted lazily on first switch rather
-  // than eagerly here. Mounting them on load ran a full WebGL shader
-  // background and two animation loops the whole time a visitor was
-  // looking at the (unrelated) Dev mode hero, for no visible benefit.
+  // Hydrate the Dev-mode Projects, client-logo marquee, and Testimonials from
+  // the CMS API when it's reachable. If the API is down, the hardcoded static
+  // sections remain intact (graceful fallback).
+  try { initApiContent() } catch (e) { console.error('api-content init failed:', e) }
+
+  let particles = null
+  try {
+    particles = initDevParticles(document.getElementById('dev-particles-canvas'), {
+      count: 50,
+      color: '124, 110, 255',
+      maxOpacity: 0.35,
+      speed: 0.15,
+      mouseRadius: 100,
+      mouseStrength: 0.4
+    })
+    if (particles) particles.setPaused(true)
+  } catch (e) {
+    console.error('dev-particles init failed:', e)
+  }
+
+  let heroBot = null
+  try {
+    heroBot = initHeroBot(document.getElementById('hero-bot'))
+    if (heroBot) heroBot.setPaused(true)
+  } catch (e) {
+    console.error('hero-bot init failed:', e)
+  }
+
+  // Normal (Gio) is the default mode, so the profile stack mounts on boot
+  // rather than behind a gate. The guards keep re-entry (switching back from
+  // Dev) from double-mounting.
   let textType = null
   const typeContainer = document.getElementById('pf-role')
 
   let unmountPixel = null
   const pixelContainer = document.getElementById('pixel-blast-container')
 
-  const { toggleMode } = initModeToggle(particles, {
-    onToNormal: () => {
-      if (heroBot) heroBot.setPaused(true)
-      if (pixelContainer && !unmountPixel) {
+  function mountPixel() {
+    if (pixelContainer && !unmountPixel) {
+      try {
         unmountPixel = mountPixelBlast(pixelContainer, {
           variant: 'square',
           pixelSize: 3.5,
@@ -51,37 +76,70 @@ document.addEventListener('DOMContentLoaded', () => {
           speed: 0.25,
           edgeFade: 0.55
         })
+      } catch (e) {
+        console.error('PixelBlast mount failed:', e)
       }
-      if (typeContainer && !textType) {
+    }
+  }
+
+  function mountType() {
+    if (typeContainer && !textType) {
+      try {
         textType = initTextType(typeContainer, {
           words: [
-            'IT Engineer & Full Stack Developer',
-            'Full-Stack Web Developer',
-            'IT Support Specialist',
-            'Creative Problem Solver'
+            'IT Support Engineer',
+            'Web Developer',
+            'IT Infrastructure & Networking',
+            'Expanding into AI Engineering'
           ],
           typingSpeed: 60,
           deletingSpeed: 30,
           pauseDuration: 2500,
           initialDelay: 1000
         })
-      }
-      initProfile()
-    },
-    onToDev: () => {
-      if (heroBot) heroBot.setPaused(false)
-      if (textType) {
-        textType.destroy()
-        textType = null
-      }
-      if (unmountPixel) {
-        unmountPixel()
-        unmountPixel = null
+      } catch (e) {
+        console.error('typewriter init failed:', e)
       }
     }
-  })
+  }
 
-  initNavigation()
+  function mountNormal() {
+    mountPixel()
+    mountType()
+    try { initProfile() } catch (e) { console.error('profile init failed:', e) }
+  }
+
+  function unmountNormal() {
+    if (textType) {
+      textType.destroy()
+      textType = null
+    }
+    if (unmountPixel) {
+      unmountPixel()
+      unmountPixel = null
+    }
+  }
+
+  // Boot: run the pixel background + typewriter behind the Gio loader; the
+  // profile entrance plays as the grid wipes away (in the loader onComplete).
+  mountPixel()
+  mountType()
+
+  let toggleMode = () => {}
+  try {
+    ({ toggleMode } = initModeToggle(particles, {
+      onToNormal: () => {
+        if (heroBot) heroBot.setPaused(true)
+        mountNormal()
+      },
+      onToDev: () => {
+        if (heroBot) heroBot.setPaused(false)
+        unmountNormal()
+      }
+    }))
+  } catch (e) {
+    console.error('mode-toggle init failed:', e)
+  }
 
   function scrollToHero() {
     // In normal mode the dev hero is hidden, so land on the profile cover.
@@ -95,34 +153,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const gateBtn = document.querySelector('.gate-btn')
-  if (gateBtn) {
-    gateBtn.addEventListener('click', () => {
-      toggleMode()
-      setTimeout(scrollToHero, 450)
-    })
-  }
-
-  // Two-way mode switch: "Meet Gio" (above) goes Dev -> Normal.
-  // The logo and the "Studio" pill go back Normal -> Dev, so visitors
-  // are never stuck in one mode with no way out.
+  // The nav logo always returns to the top of the current mode; the floating
+  // circular mode-switch below handles switching identities.
   const navLogo = document.getElementById('nav-logo')
-
-  function goHomeOrSwitchBack() {
-    if (document.body.classList.contains('normal-mode')) {
-      toggleMode()
-      setTimeout(scrollToHero, 450)
-    } else {
-      scrollToHero()
-    }
-  }
-
   if (navLogo) {
-    navLogo.addEventListener('click', goHomeOrSwitchBack)
+    navLogo.addEventListener('click', scrollToHero)
     navLogo.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault()
-        goHomeOrSwitchBack()
+        scrollToHero()
       }
     })
   }
@@ -134,6 +173,16 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(scrollToHero, 450)
     })
   })
+
+  // Floating circular mode switch — spins and swaps identity on click.
+  const modeSwitch = document.getElementById('mode-switch')
+  if (modeSwitch) {
+    modeSwitch.addEventListener('click', () => {
+      gsap.to(modeSwitch, { rotation: '+=360', duration: 0.6, ease: 'power2.inOut' })
+      toggleMode()
+      setTimeout(scrollToHero, 450)
+    })
+  }
 
   // Footer year, kept current automatically
   const footerYear = document.getElementById('footer-year')
@@ -151,20 +200,34 @@ document.addEventListener('DOMContentLoaded', () => {
       const note = contactForm.querySelector('.form-note')
 
       const body = `${message}\n\n— ${name}${email ? ' (' + email + ')' : ''}`
-      const mailto = `mailto:hello@stryg.bytes?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      const mailto = `mailto:joecelpergis@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
       window.location.href = mailto
 
       if (note) note.textContent = 'Opening your email app with this message pre-filled…'
     })
   })
 
-  initHelpers()
-  initTextReveal()
-  initTextMorph()
-  initLoader(() => {
-    const lenis = initLenis()
-    window.lenisInstance = lenis
-    setLenis(lenis)
-    initAnimations()
-  })
+  try { initHelpers() } catch (e) { console.error('helpers init failed:', e) }
+  try { initTextReveal() } catch (e) { console.error('text-reveal init failed:', e) }
+  try { initTextMorph() } catch (e) { console.error('text-morph init failed:', e) }
+  try {
+    playLoader({
+      brand: 'Gio',
+      onComplete: () => {
+        initProfile()
+        const lenis = initLenis()
+        window.lenisInstance = lenis
+        setLenis(lenis)
+        // Hydrate CMS content before animations so ScrollTrigger picks up the
+        // dynamically-rendered project cards / testimonials. Falls back to the
+        // static sections when the API is unreachable.
+        initApiContent().finally(() => {
+          try { initAnimations() } catch (e) { console.error('animations init failed:', e) }
+        })
+      }
+    })
+  } catch (e) {
+    console.error('loader init failed:', e)
+    initProfile()
+  }
 })

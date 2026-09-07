@@ -13,7 +13,7 @@
   <link rel="modulepreload" href="/src/main.js" />
 </head>
 
-<body>
+<body class="normal-mode">
 
   <!-- ── NOISE ── -->
   <div class="noise"></div>
@@ -21,7 +21,7 @@
   <!-- ── LOADER ── -->
   <div id="loader">
     <div class="ld-bg"></div>
-    <div class="ld-logo">Stryg<span>.</span><span>Bytes</span></div>
+    <div class="ld-logo">Gio</div>
     <div class="ld-loading">Loading</div>
   </div>
 
@@ -38,8 +38,6 @@
     <button class="rn-btn dev-only" data-target="projects">Work</button>
     <div class="rn-sep"></div>
     <button class="rn-btn dev-only" data-target="process">Process</button>
-    <button class="rn-btn normal-only" data-target="pf-resume">Experience</button>
-    <div class="rn-sep"></div>
     <button class="rn-btn" data-target="contact">Contact</button>
   </nav>
 
@@ -50,22 +48,39 @@
         <span class="dev-only">Stryg.<span>Bytes</span></span>
         <span class="normal-only">Gio</span>
       </div>
-      <button class="back-to-studio normal-only" id="back-to-studio" type="button">&larr; Studio</button>
+      <button class="back-to-studio normal-only" id="back-to-studio" type="button">&larr; Creative Work</button>
     </div>
-    <ul class="nav-links" id="nav-links">
-      <li><button class="nav-close" id="nav-close">&times;</button></li>
-      <li><a href="#about" id="nav-about">About</a></li>
-      <li><a href="#skills-dev" id="nav-skills">Services</a></li>
-      <li><a href="#projects" id="nav-work">Work</a></li>
-      <li><a href="#contact" id="nav-contact">Contact</a></li>
-    </ul>
     <div class="nav-right">
       <button class="ham-btn" id="ham-btn" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
     </div>
+  <ul class="nav-links" id="nav-links">
+    <li class="nav-panel-head">
+      <span class="nav-panel-brand"><span class="dev-only">Stryg<span>.</span><span>Bytes</span></span><span class="normal-only">Gio</span></span>
+      <button class="nav-close" id="nav-close" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </li>
+    <li><a href="#about" id="nav-about">About</a></li>
+    <li class="dev-only"><a href="#skills-dev" id="nav-skills">Services</a></li>
+    <li class="dev-only"><a href="#process" id="nav-process">Process</a></li>
+    <li><a href="#projects" id="nav-work">Work</a></li>
+    <li class="normal-only"><a href="#pf-hobbies" id="nav-hobbies">Hobbies</a></li>
+    <li><a href="#contact" id="nav-contact">Contact</a></li>
+    <li class="nav-panel-foot">
+      <a class="nav-foot-email" href="mailto:joecelpergis@gmail.com">joecelpergis@gmail.com</a>
+      <span class="nav-foot-status"><span class="nav-foot-dot"></span><span class="dev-only">Stryg.Bytes &middot; Full-Stack Studio</span><span class="normal-only">Available for projects</span></span>
+    </li>
+  </ul>
   </nav>
   <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <!-- ── FLOATING MODE SWITCH ── -->
+  <button class="mode-switch" id="mode-switch" type="button" aria-label="Switch between Gio profile and Stryg.Bytes studio">
+    <span class="ms-mark ms-mark--gio">G</span>
+    <span class="ms-mark ms-mark--studio">S&middot;B</span>
+  </button>
 
   <!-- ── FULL-PAGE BACKGROUND ── -->
   <div class="dev-bg-gradient dev-only" id="dev-bg-gradient">
@@ -86,7 +101,7 @@
       <div class="dev-only" id="hero-dev-content">
         <div class="hero-split-dev">
           <div class="hero-info-dev">
-            <div class="hero-eyebrow">Stryg.Bytes | Full-Stack Development</div>
+            <div class="hero-eyebrow">Stryg.Bytes | Interactive Web Experiences</div>
             <h1 class="hero-title" id="hero-title-dev">
               <span class="line"><span class="word">Welcome</span></span>
               <span class="line"><span class="word">to</span> <span class="word">the</span></span>
@@ -526,7 +541,7 @@
           <div class="pf-id">
             <h1 class="pf-name">Gio</h1>
             <div class="pf-role" id="pf-role"></div>
-            <p class="pf-loc">Dubai &middot; IT Engineer &amp; Full Stack Developer</p>
+            <p class="pf-loc">Dubai/Sharjah, UAE &middot; IT Support Engineer | IT Infrastructure | Web Developer</p>
           </div>
 
           <div class="pf-actions">
@@ -543,7 +558,7 @@
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
               LinkedIn
             </a>
-            <a class="pf-soc" href="mailto:hello@stryg.bytes" title="Email">
+            <a class="pf-soc" href="mailto:joecelpergis@gmail.com" title="Email">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
               Email
             </a>
@@ -559,20 +574,30 @@
           <div class="section-label">About</div>
           <h2 class="section-title">About <span style="color:var(--a1)">me</span></h2>
           <p class="pf-sec-text">
-            Full-stack developer &amp; hands-on IT engineer at Al Ghurair CEW. I build clean, user-focused websites and systems &mdash; and back them up with real IT support, from networks to workstations.
+            IT Support Engineer with hands-on experience in IT infrastructure, desktop support, network troubleshooting, Windows environments, CCTV, and IT asset management. I also build internal web applications &mdash; including an IT Asset Inventory Management System with PHP, MySQL, and Tailwind CSS.
           </p>
           <p class="pf-sec-text">
-            Based in Dubai, open to freelance projects, full-time roles, and interesting collaborations.
+            Passionate about improving IT operations through automation and continuous learning &mdash; now expanding into AI engineering and intelligent automation.
+          </p>
+          <p class="pf-sec-text">
+            Based in Dubai/Sharjah, open to freelance projects, full-time roles, and interesting collaborations.
           </p>
 
           <h3 class="pf-sub">What I'm doing</h3>
           <div class="pf-services">
             <div class="pf-service">
               <div class="pf-service-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4m-2 0h4"/><circle cx="12" cy="14" r="2"/><path d="M9 14H4m11 0h5"/></svg>
+              </div>
+              <h4 class="pf-service-name">AI &amp; Automation</h4>
+              <p class="pf-service-text">Exploring and building with AI tools &mdash; ChatGPT, Claude, GitHub Copilot, and Cursor AI &mdash; plus prompt engineering and intelligent automation.</p>
+            </div>
+            <div class="pf-service">
+              <div class="pf-service-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
               </div>
               <h4 class="pf-service-name">Web Development</h4>
-              <p class="pf-service-text">Full-stack web apps with PHP, MySQL, JavaScript, and Tailwind CSS &mdash; front to back, built to scale.</p>
+              <p class="pf-service-text">Internal web apps and systems with PHP, MySQL, JavaScript, and Tailwind CSS &mdash; built to improve real workflows.</p>
             </div>
             <div class="pf-service">
               <div class="pf-service-icon">
@@ -596,79 +621,229 @@
               <p class="pf-service-text">Video editing, photography, music production, and 3D modeling for polished, original content.</p>
             </div>
           </div>
-
-          <h3 class="pf-sub">Stack</h3>
-          <div class="pf-chips">
-            <span class="pf-chip">PHP</span>
-            <span class="pf-chip">MySQL</span>
-            <span class="pf-chip">JavaScript</span>
-            <span class="pf-chip">Tailwind CSS</span>
-            <span class="pf-chip">HTML &amp; CSS</span>
-            <span class="pf-chip">Networking</span>
-            <span class="pf-chip">Hardware</span>
-            <span class="pf-chip">Troubleshooting</span>
-            <span class="pf-chip">IT Support</span>
-            <span class="pf-chip">React</span>
-            <span class="pf-chip">GSAP</span>
-            <span class="pf-chip">Three.js</span>
-            <span class="pf-chip">Git</span>
-            <span class="pf-chip">Linux</span>
-          </div>
         </section>
 
         <!-- ── Experience & Skills ── -->
         <section class="pf-sec" id="pf-resume">
-          <div class="section-label">Resume</div>
+          <div class="section-label">Experience</div>
           <h2 class="section-title">Career <span style="color:var(--a1)">path</span></h2>
 
           <ol class="pf-timeline">
             <li class="pf-tl-item">
-              <h4 class="pf-tl-role">Full Stack Developer</h4>
-              <span class="pf-tl-meta">Al Ghurair CEW LLC &middot; 2024 &mdash; Present</span>
-              <p class="pf-tl-text">Building and maintaining the company website, internal dashboards, and inventory systems with PHP, MySQL, Tailwind CSS, and JavaScript.</p>
-              <div class="pf-tl-tags"><span class="pf-tag">PHP</span><span class="pf-tag">MySQL</span><span class="pf-tag">Tailwind</span><span class="pf-tag">JavaScript</span></div>
+              <h4 class="pf-tl-role">IT Support Assistant Engineer | Internal Systems Developer</h4>
+              <span class="pf-tl-meta">Al Ghurair Contracting &amp; Engineering Works LLC &middot; 2024 &mdash; Present</span>
+              <p class="pf-tl-text">Level 1/2 technical support for desktops, laptops, printers, network devices, CCTV, and Windows environments. Designed and developed an IT Asset Inventory Management System and internal web applications using PHP, MySQL, JavaScript, and Tailwind CSS.</p>
+              <div class="pf-tl-tags"><span class="pf-tag">IT Support</span><span class="pf-tag">PHP</span><span class="pf-tag">MySQL</span><span class="pf-tag">Tailwind</span><span class="pf-tag">JavaScript</span></div>
             </li>
             <li class="pf-tl-item">
-              <h4 class="pf-tl-role">IT Support / IT Specialist</h4>
-              <span class="pf-tl-meta">Al Ghurair CEW LLC &middot; 2024 &mdash; Present</span>
-              <p class="pf-tl-text">Managing network infrastructure, servers, and workstations. Providing hardware/software troubleshooting and IT security support for staff.</p>
-              <div class="pf-tl-tags"><span class="pf-tag">Networking</span><span class="pf-tag">Hardware</span><span class="pf-tag">Troubleshooting</span><span class="pf-tag">IT Security</span></div>
-            </li>
-            <li class="pf-tl-item">
-              <h4 class="pf-tl-role">I.T Assistant</h4>
+              <h4 class="pf-tl-role">IT Assistant</h4>
               <span class="pf-tl-meta">Currimao National High School (LGU Funded) &middot; 2019 &mdash; 2024</span>
-              <p class="pf-tl-text">Delivered on-site technical support for computer labs and faculty devices. Maintained network connectivity and assisted in deploying educational technology.</p>
-              <div class="pf-tl-tags"><span class="pf-tag">IT Support</span><span class="pf-tag">Networking</span><span class="pf-tag">Education</span></div>
+              <p class="pf-tl-text">Provided technical support for computer laboratories, users, and IT equipment. Installed and configured computers, software, printers, and network devices; maintained daily operations.</p>
+              <div class="pf-tl-tags"><span class="pf-tag">IT Support</span><span class="pf-tag">Networking</span><span class="pf-tag">Hardware</span><span class="pf-tag">Education</span></div>
             </li>
           </ol>
 
           <h3 class="pf-sub">Skills</h3>
-          <ul class="pf-skills">
-            <li class="pf-skill">
-              <div class="pf-skill-head"><span>Web Development</span><span>90%</span></div>
-              <div class="skill-bar-bg"><div class="skill-bar" data-width="90"></div></div>
-            </li>
-            <li class="pf-skill">
-              <div class="pf-skill-head"><span>Networking &amp; IT Support</span><span>88%</span></div>
-              <div class="skill-bar-bg"><div class="skill-bar" data-width="88"></div></div>
-            </li>
-            <li class="pf-skill">
-              <div class="pf-skill-head"><span>UI/UX Design</span><span>85%</span></div>
-              <div class="skill-bar-bg"><div class="skill-bar" data-width="85"></div></div>
-            </li>
-            <li class="pf-skill">
-              <div class="pf-skill-head"><span>Video Editing</span><span>90%</span></div>
-              <div class="skill-bar-bg"><div class="skill-bar" data-width="90"></div></div>
-            </li>
-            <li class="pf-skill">
-              <div class="pf-skill-head"><span>Photography</span><span>88%</span></div>
-              <div class="skill-bar-bg"><div class="skill-bar" data-width="88"></div></div>
-            </li>
-            <li class="pf-skill">
-              <div class="pf-skill-head"><span>Music Production</span><span>72%</span></div>
-              <div class="skill-bar-bg"><div class="skill-bar" data-width="72"></div></div>
-            </li>
-          </ul>
+          <div class="pf-skill-group">
+            <h4 class="pf-skill-group-label">Web Development &amp; Systems</h4>
+            <div class="pf-stack-grid">
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#777BB4" aria-hidden="true"><path d="M7.01 10.207h-.944l-.515 2.648h.838c.556 0 .97-.105 1.242-.314.272-.21.455-.559.55-1.049.092-.47.05-.802-.124-.995-.175-.193-.523-.29-1.047-.29zM12 5.688C5.373 5.688 0 8.514 0 12s5.373 6.313 12 6.313S24 15.486 24 12c0-3.486-5.373-6.312-12-6.312zm-3.26 7.451c-.261.25-.575.438-.917.551-.336.108-.765.164-1.285.164H5.357l-.327 1.681H3.652l1.23-6.326h2.65c.797 0 1.378.209 1.744.628.366.418.476 1.002.33 1.752a2.836 2.836 0 0 1-.305.847c-.143.255-.33.49-.561.703zm4.024.715l.543-2.799c.063-.318.039-.536-.068-.651-.107-.116-.336-.174-.687-.174H11.46l-.704 3.625H9.388l1.23-6.327h1.367l-.327 1.682h1.218c.767 0 1.295.134 1.586.401s.378.7.263 1.299l-.572 2.944h-1.389zm7.597-2.265a2.782 2.782 0 0 1-.305.847c-.143.255-.33.49-.561.703a2.44 2.44 0 0 1-.917.551c-.336.108-.765.164-1.286.164h-1.18l-.327 1.682h-1.378l1.23-6.326h2.649c.797 0 1.378.209 1.744.628.366.417.477 1.001.331 1.751zM17.766 10.207h-.943l-.516 2.648h.838c.557 0 .971-.105 1.242-.314.272-.21.455-.559.551-1.049.092-.47.049-.802-.125-.995s-.524-.29-1.047-.29z"/></svg>
+              </span>
+              <span class="pf-skill-name">PHP</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#4479A1" aria-hidden="true"><path d="M16.405 5.501c-.115 0-.193.014-.274.033v.013h.014c.054.104.146.18.214.273.054.107.1.214.154.32l.014-.015c.094-.066.14-.172.14-.333-.04-.047-.046-.094-.08-.14-.04-.067-.126-.1-.18-.153zM5.77 18.695h-.927a50.854 50.854 0 00-.27-4.41h-.008l-1.41 4.41H2.45l-1.4-4.41h-.01a72.892 72.892 0 00-.195 4.41H0c.055-1.966.192-3.81.41-5.53h1.15l1.335 4.064h.008l1.347-4.064h1.095c.242 2.015.384 3.86.428 5.53zm4.017-4.08c-.378 2.045-.876 3.533-1.492 4.46-.482.716-1.01 1.073-1.583 1.073-.153 0-.34-.046-.566-.138v-.494c.11.017.24.026.386.026.268 0 .483-.075.647-.222.197-.18.295-.382.295-.605 0-.155-.077-.47-.23-.944L6.23 14.615h.91l.727 2.36c.164.536.233.91.205 1.123.4-1.064.678-2.227.835-3.483zm12.325 4.08h-2.63v-5.53h.885v4.85h1.745zm-3.32.135l-1.016-.5c.09-.076.177-.158.255-.25.433-.506.648-1.258.648-2.253 0-1.83-.718-2.746-2.155-2.746-.704 0-1.254.232-1.65.697-.43.508-.646 1.256-.646 2.245 0 .972.19 1.686.574 2.14.35.41.877.615 1.583.615.264 0 .506-.033.725-.098l1.325.772.36-.622zM15.5 17.588c-.225-.36-.337-.94-.337-1.736 0-1.393.424-2.09 1.27-2.09.443 0 .77.167.977.5.224.362.336.936.336 1.723 0 1.404-.424 2.108-1.27 2.108-.445 0-.77-.167-.978-.5zm-1.658-.425c0 .47-.172.856-.516 1.156-.344.3-.803.45-1.384.45-.543 0-1.064-.172-1.573-.515l.237-.476c.438.22.833.328 1.19.328.332 0 .593-.073.783-.22a.754.754 0 00.3-.615c0-.33-.23-.61-.648-.845-.388-.213-1.163-.657-1.163-.657-.422-.307-.632-.636-.632-1.177 0-.45.157-.81.47-1.085.315-.278.72-.415 1.22-.415.512 0 .98.136 1.4.41l-.213.476a2.726 2.726 0 00-1.064-.23c-.283 0-.502.068-.654.206a.685.685 0 00-.248.524c0 .328.234.61.666.85.393.215 1.187.67 1.187.67.433.305.648.63.648 1.168zm9.382-5.852c-.535-.014-.95.04-1.297.188-.1.04-.26.04-.274.167.055.053.063.14.11.214.08.134.218.313.346.407.14.11.28.216.427.31.26.16.555.255.81.416.145.094.293.213.44.313.073.05.12.14.214.172v-.02c-.046-.06-.06-.147-.105-.214-.067-.067-.134-.127-.2-.193a3.223 3.223 0 00-.695-.75c-.14-.147-.304-.267-.47-.367-.164-.1-.328-.168-.48-.24a9.02 9.02 0 00-1.14-.42c-.45-.15-.93-.27-1.41-.36a9.29 9.29 0 00-1.5-.15c-.47 0-.93.04-1.38.15a6.24 6.24 0 00-1.2.3c-.14.06-.3.12-.44.2-.36.19-.72.42-1.05.69-.09.06-.17.14-.24.2-.2.19-.37.39-.5.61-.13.22-.25.45-.36.69-.22.49-.36 1-.45 1.5-.09.5-.12 1-.12 1.5 0 .5.03 1 .12 1.5.09.5.23 1.01.45 1.5.11.24.23.47.36.69.13.22.3.42.5.61.07.06.15.14.24.2.33.27.69.5 1.05.69.14.08.3.14.44.2.39.18.79.27 1.2.3.45.11.91.15 1.38.15.5 0 1-.04 1.5-.15.57-.12 1.11-.33 1.62-.6.16-.08.31-.18.45-.3.14-.12.28-.27.42-.45.14-.18.27-.36.39-.57.12-.21.23-.42.33-.66.2-.48.33-1 .39-1.5.06-.5.09-1.02.09-1.5v-1.8l-1.5.06z"/></svg>
+              </span>
+              <span class="pf-skill-name">MySQL</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#F7DF1E" aria-hidden="true"><path d="M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z"/></svg>
+              </span>
+              <span class="pf-skill-name">JavaScript</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#E34F26" aria-hidden="true"><path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.564-2.438L1.5 0zm7.031 9.75l-.232-2.718 10.059.003.23-2.622L5.412 4.41l.698 8.01h9.126l-.326 3.426-2.91.804-2.955-.81-.188-2.11H6.248l.33 4.171L12 19.351l5.379-1.443.744-8.157H8.531z"/></svg>
+              </span>
+              <span class="pf-skill-name">HTML5</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#1572B6" aria-hidden="true"><path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.565-2.438L1.5 0zm17.09 4.413L5.41 4.41l.213 2.622 10.125.002-.255 2.716h-6.64l.24 2.573h6.182l-.366 3.523-2.91.804-2.956-.81-.188-2.11h-2.61l.29 3.855L12 19.288l5.373-1.53L18.59 4.414z"/></svg>
+              </span>
+              <span class="pf-skill-name">CSS3</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#06B6D4" aria-hidden="true"><path d="M12.001,4.8c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 C13.666,10.618,15.027,12,18.001,12c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C16.337,6.182,14.976,4.8,12.001,4.8z M6.001,12c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 c1.177,1.194,2.538,2.576,5.512,2.576c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C10.337,13.382,8.976,12,6.001,12z"/></svg>
+              </span>
+              <span class="pf-skill-name">Tailwind CSS</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#61DAFB" aria-hidden="true"><path d="M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.41 0-.783.093-1.106.278-1.375.793-1.683 3.264-.973 6.365C1.98 8.917 0 10.42 0 12.004c0 1.59 1.99 3.097 5.043 4.03-.704 3.113-.39 5.588.988 6.38.32.187.69.275 1.102.275 1.345 0 3.107-.96 4.888-2.624 1.78 1.654 3.542 2.603 4.887 2.603.41 0 .783-.09 1.106-.275 1.374-.792 1.683-3.263.973-6.365C22.02 15.096 24 13.59 24 12.004c0-1.59-1.99-3.097-5.043-4.032.704-3.11.39-5.587-.988-6.38-.318-.184-.688-.277-1.092-.278zm-.005 1.09v.006c.225 0 .406.044.558.127.666.382.955 1.835.73 3.704-.054.46-.142.945-.25 1.44-.96-.236-2.006-.417-3.107-.534-.66-.905-1.345-1.727-2.035-2.447 1.592-1.48 3.087-2.292 4.105-2.295zm-9.77.02c1.012 0 2.514.808 4.11 2.28-.686.72-1.37 1.537-2.02 2.442-1.107.117-2.154.298-3.113.538-.112-.49-.195-.964-.254-1.42-.23-1.868.054-3.32.714-3.707.19-.09.4-.127.563-.132zm4.882 3.05c.455.468.91.992 1.36 1.564-.44-.02-.89-.034-1.345-.034-.46 0-.915.01-1.36.034.44-.572.895-1.096 1.345-1.565zM12 8.1c.74 0 1.477.034 2.202.093.406.582.802 1.203 1.183 1.86.372.64.71 1.29 1.018 1.946-.308.655-.646 1.31-1.013 1.95-.38.66-.773 1.288-1.18 1.87-.728.063-1.466.098-2.21.098-.74 0-1.477-.035-2.202-.093-.406-.582-.802-1.204-1.183-1.86-.372-.64-.71-1.29-1.018-1.946.303-.657.646-1.313 1.013-1.954.38-.66.773-1.286 1.18-1.868.728-.064 1.466-.098 2.21-.098zm-3.635.254c-.24.377-.48.763-.704 1.16-.225.39-.435.782-.635 1.174-.265-.656-.49-1.31-.676-1.947.64-.15 1.315-.283 2.015-.386zm7.26 0c.695.103 1.365.23 2.006.387-.18.632-.405 1.282-.66 1.933-.2-.39-.41-.783-.64-1.174-.225-.392-.465-.774-.705-1.146zm3.063.675c.484.15.944.317 1.375.498 1.732.74 2.852 1.708 2.852 2.476-.005.768-1.125 1.74-2.857 2.475-.42.18-.88.342-1.355.493-.28-.958-.646-1.956-1.1-2.98.45-1.017.81-2.01 1.085-2.964zm-13.395.004c.278.96.645 1.957 1.1 2.98-.45 1.017-.812 2.01-1.086 2.964-.484-.15-.944-.318-1.37-.5-1.732-.737-2.852-1.706-2.852-2.474 0-.768 1.12-1.742 2.852-2.476.42-.18.88-.342 1.356-.494zm11.678 4.28c.265.657.49 1.312.676 1.948-.64.157-1.316.29-2.016.39.24-.375.48-.762.705-1.158.225-.39.435-.788.636-1.18zm-9.945.02c.2.392.41.783.64 1.175.23.39.465.772.705 1.143-.695-.102-1.365-.23-2.006-.386.18-.63.406-1.282.66-1.933zM17.92 16.32c.112.493.2.968.254 1.423.23 1.868-.054 3.32-.714 3.708-.147.09-.338.128-.563.128-1.012 0-2.514-.807-4.11-2.28.686-.72 1.37-1.536 2.02-2.44 1.107-.118 2.154-.3 3.113-.54zm-11.83.01c.96.234 2.006.415 3.107.532.66.905 1.345 1.727 2.035 2.446-1.595 1.483-3.092 2.295-4.11 2.295-.22-.005-.406-.05-.553-.132-.666-.38-.955-1.834-.73-3.703.054-.46.142-.944.25-1.438zm4.56.64c.44.02.89.034 1.345.034.46 0 .915-.01 1.36-.034-.44.572-.895 1.095-1.345 1.565-.455-.47-.91-.993-1.36-1.565z"/></svg>
+              </span>
+              <span class="pf-skill-name">React</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#646CFF" aria-hidden="true"><path d="M13.056 23.238a.57.57 0 0 1-1.02-.355v-5.202c0-.63-.512-1.143-1.144-1.143H5.148a.57.57 0 0 1-.464-.903l3.777-5.29c.54-.753 0-1.804-.93-1.804H.57a.574.574 0 0 1-.543-.746.6.6 0 0 1 .08-.157L5.008.78a.57.57 0 0 1 .467-.24h14.589a.57.57 0 0 1 .466.903l-3.778 5.29c-.54.755 0 1.806.93 1.806h5.745c.238 0 .424.138.513.322a.56.56 0 0 1-.063.603z"/></svg>
+              </span>
+              <span class="pf-skill-name">Vite</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#000000" aria-hidden="true"><path d="M.38 0a.268.268 0 0 0-.256.332l2.894 11.716a.268.268 0 0 0 .01.04l2.89 11.708a.268.268 0 0 0 .447.128L23.802 7.15a.268.268 0 0 0-.112-.45l-5.784-1.667a.268.268 0 0 0-.123-.035L6.38 1.715a.268.268 0 0 0-.144-.04L.456.01A.268.268 0 0 0 .38 0zm.374.654L5.71 2.08 1.99 5.664zM6.61 2.34l4.864 1.4-3.65 3.515zm-.522.12l1.217 4.926-4.877-1.4zm6.28 1.538l4.878 1.404-3.662 3.53zm-.52.13l1.208 4.9-4.853-1.392zm6.3 1.534l4.947 1.424-3.715 3.574zm-.524.12l1.215 4.926-4.876-1.398zm-15.432.696l4.964 1.424-3.726 3.586zM8.047 8.15l4.877 1.4-3.66 3.527zm-.518.137l1.236 5.017-4.963-1.432zm6.274 1.535l4.965 1.425-3.73 3.586zm-.52.127l1.235 5.012-4.958-1.43zm-9.63 2.438l4.873 1.406-3.656 3.523zm5.854 1.687l4.863 1.403-3.648 3.51zm-.54.04l1.214 4.927-4.875-1.4zm-3.896 4.02l5.037 1.442-3.782 3.638z"/></svg>
+              </span>
+              <span class="pf-skill-name">Three.js</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#2496ED" aria-hidden="true"><path d="M13.983 11.078h-2.393a.559.559 0 0 0-.555.559v2.402c0 .309.249.559.555.559h2.393a.561.561 0 0 0 .555-.559v-2.402a.559.559 0 0 0-.555-.559zm-1.833 11.335a1.714 1.714 0 0 1-1.714-1.714V20.27H7.724a1.44 1.44 0 0 1-1.437-1.437v-2.808H4.714a1.714 1.714 0 0 1 0-3.428h1.573v-2.808a1.44 1.44 0 0 1 1.437-1.437h2.712V7.3a1.714 1.714 0 0 1 3.428 0v1.453h2.712a1.44 1.44 0 0 1 1.437 1.437v2.808h1.573a1.714 1.714 0 0 1 0 3.428h-1.573v2.808a1.44 1.44 0 0 1-1.437 1.437h-2.712v1.43a1.714 1.714 0 0 1-1.714 1.71z"/></svg>
+              </span>
+              <span class="pf-skill-name">Docker</span>
+            </div>
+            </div>
+          </div>
+          <div class="pf-skill-group">
+            <h4 class="pf-skill-group-label">IT Infrastructure &amp; Support</h4>
+            <div class="pf-stack-grid">
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#0078D6" aria-hidden="true"><path d="M0,0H11.377V11.372H0ZM12.623,0H24V11.372H12.623ZM0,12.623H11.377V24H0Zm12.623,0H24V24H12.623"/></svg>
+              </span>
+              <span class="pf-skill-name">Windows 10/11</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="pf-skill-gen"><rect x="2" y="3" width="20" height="7" rx="2"/><rect x="2" y="14" width="20" height="7" rx="2"/><line x1="6" y1="6.5" x2="6.01" y2="6.5"/><line x1="6" y1="17.5" x2="6.01" y2="17.5"/><line x1="10" y1="6.5" x2="18" y2="6.5"/><line x1="10" y1="17.5" x2="18" y2="17.5"/></svg>
+              </span>
+              <span class="pf-skill-name">Windows Server</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#D83B01" aria-hidden="true"><path d="M21.53 4.306v15.363q0 .807-.472 1.433-.472.627-1.253.85l-6.888 1.974q-.136.037-.29.055-.156.019-.293.019-.396 0-.72-.105-.321-.106-.656-.292l-4.505-2.544q-.248-.137-.391-.366-.143-.23-.143-.515 0-.434.304-.738.304-.305.739-.305h5.831V4.964l-4.38 1.563q-.533.187-.856.658-.322.472-.322 1.03v8.078q0 .496-.248.912-.25.416-.683.651l-2.072 1.13q-.286.148-.571.148-.497 0-.844-.347-.348-.347-.348-.844V6.563q0-.62.33-1.19.328-.571.874-.881L11.07.285q.248-.136.534-.21.285-.075.57-.075.211 0 .38.031.166.031.364.093l6.888 1.899q.384.11.7.329.317.217.547.52.23.305.353.67.125.367.125.764zm-1.588 15.363V4.306q0-.273-.16-.478-.163-.204-.423-.28l-3.388-.93q-.397-.111-.794-.23-.397-.117-.794-.216v19.68l4.976-1.427q.26-.074.422-.28.161-.204.161-.477z"/></svg>
+              </span>
+              <span class="pf-skill-name">Microsoft 365</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="pf-skill-gen"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 2v4m6-4v4M9 18v4m6-4v4M2 9h4m-4 6h4m12-6h4m-4 6h4"/></svg>
+              </span>
+              <span class="pf-skill-name">Hardware</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="pf-skill-gen"><path d="M3 9h11a2 2 0 0 1 2 2v7H5a2 2 0 0 1-2-2z"/><circle cx="8" cy="12.5" r="2.2"/><path d="M16 13l5-2v6l-5-2"/></svg>
+              </span>
+              <span class="pf-skill-name">CCTV &amp; NVR</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="pf-skill-gen"><path d="M21 8v8l-9 5-9-5V8l9-5z"/><path d="M3 8l9 5 9-5M12 21V13"/></svg>
+              </span>
+              <span class="pf-skill-name">IT Asset Mgmt</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="pf-skill-gen"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              </span>
+              <span class="pf-skill-name">Troubleshooting</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="pf-skill-gen"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              </span>
+              <span class="pf-skill-name">IT Support</span>
+            </div>
+            </div>
+          </div>
+          <div class="pf-skill-group">
+            <h4 class="pf-skill-group-label">Networking</h4>
+            <div class="pf-stack-grid">
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="pf-skill-gen"><path d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 0v-3m6 6h3M3 12h3m-4.3-1.5 2.3 1.5-2.3 1.5M21.3 10.5 19 12l2.3 1.5M6.7 4.5 8 6.6M17.3 4.5 16 6.6"/></svg>
+              </span>
+              <span class="pf-skill-name">Networking</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="pf-skill-gen"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M10.5 6.5 6 16M13.5 6.5 18 16M8 18h8"/></svg>
+              </span>
+              <span class="pf-skill-name">LAN/WAN</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="pf-skill-gen"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18"/></svg>
+              </span>
+              <span class="pf-skill-name">DNS/DHCP</span>
+            </div>
+            </div>
+          </div>
+          <div class="pf-skill-group">
+            <h4 class="pf-skill-group-label">Tools &amp; AI</h4>
+            <div class="pf-stack-grid">
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#F03C2E" aria-hidden="true"><path d="M13.09 23.549a1.54 1.54 0 0 1-2.18 0L.451 13.089a1.54 1.54 0 0 1 0-2.179l7.191-7.19 2.733 2.733a1.85 1.85 0 0 0 .964 2.326v6.66a1.849 1.849 0 1 0 1.54 0V8.957l2.508 2.508a1.85 1.85 0 1 0 1.09-1.09l-2.634-2.634a1.85 1.85 0 0 0-2.378-2.377L8.73 2.63 10.91.451a1.54 1.54 0 0 1 2.179 0l10.459 10.46a1.54 1.54 0 0 1 0 2.179z"/></svg>
+              </span>
+              <span class="pf-skill-name">Git</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#181717" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+              </span>
+              <span class="pf-skill-name">GitHub</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#007ACC" aria-hidden="true"><path d="M23.15 2.587L18.21.21a1.494 1.494 0 0 0-1.705.29l-9.46 8.63-4.12-3.128a.999.999 0 0 0-1.276.057L.327 7.261A1 1 0 0 0 .326 8.74L3.899 12 .326 15.26a1 1 0 0 0 .001 1.479L1.65 17.94a.999.999 0 0 0 1.276.057l4.12-3.128 9.46 8.63a1.492 1.492 0 0 0 1.704.29l4.942-2.377A1.5 1.5 0 0 0 24 20.06V3.939a1.5 1.5 0 0 0-.85-1.352zm-5.146 14.861L10.826 12l7.178-5.448v10.896z"/></svg>
+              </span>
+              <span class="pf-skill-name">VS Code</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#FF6C37" aria-hidden="true"><path d="M13.527.099C6.955-.744.942 3.9.099 10.473c-.843 6.572 3.8 12.584 10.373 13.428 6.573.843 12.587-3.801 13.428-10.374C24.744 6.955 20.101.943 13.527.099zm2.471 7.485a.855.855 0 0 0-.593.25l-4.453 4.453-.307-.307-.643-.643c4.389-4.376 5.18-4.418 5.996-3.753zm-4.863 4.861l4.44-4.44a.62.62 0 1 1 .847.903l-4.699 4.125-.588-.588zm.33.694l-1.1.238a.06.06 0 0 1-.067-.032.06.06 0 0 1 .01-.073l.645-.645.512.512zm-2.803-.459l1.172-1.172.879.878-1.979.426a.074.074 0 0 1-.085-.039.072.072 0 0 1 .013-.093zm-3.646 6.058a.076.076 0 0 1-.069-.083.077.077 0 0 1 .022-.046h.002l.946-.946 1.222 1.222-2.123-.147zm2.425-1.256a.228.228 0 0 0-.117.256l.203.865a.125.125 0 0 1-.211.117h-.003l-.934-.934-.294-.295 3.762-3.758 1.82-.393.874.874c-1.255 1.102-2.971 2.201-5.1 3.268zm5.279-3.428h-.002l-.839-.839 4.699-4.125a.952.952 0 0 0 .119-.127c-.148 1.345-2.029 3.245-3.977 5.091zm3.657-6.46l-.003-.002a1.822 1.822 0 0 1 2.459-2.684l-1.61 1.613a.119.119 0 0 0 0 .169l1.247 1.247a1.817 1.817 0 0 1-2.093-.343zm2.578 0a1.714 1.714 0 0 1-.271.218h-.001l-1.207-1.207 1.533-1.533c.661.72.637 1.832-.054 2.522zM18.855 6.05a.143.143 0 0 0-.053.157.416.416 0 0 1-.053.45.14.14 0 0 0 .023.197.141.141 0 0 0 .084.03.14.14 0 0 0 .106-.05.691.691 0 0 0 .087-.751.138.138 0 0 0-.194-.033z"/></svg>
+              </span>
+              <span class="pf-skill-name">Postman</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#10A37F" aria-hidden="true"><path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"/></svg>
+              </span>
+              <span class="pf-skill-name">ChatGPT</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#D97757" aria-hidden="true"><path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"/></svg>
+              </span>
+              <span class="pf-skill-name">Claude</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#000000" aria-hidden="true"><path d="M23.922 16.997C23.061 18.492 18.063 22.02 12 22.02 5.937 22.02.939 18.492.078 16.997A.641.641 0 0 1 0 16.741v-2.869a.883.883 0 0 1 .053-.22c.372-.935 1.347-2.292 2.605-2.656.167-.429.414-1.055.644-1.517a10.098 10.098 0 0 1-.052-1.086c0-1.331.282-2.499 1.132-3.368.397-.406.89-.717 1.474-.952C7.255 2.937 9.248 1.98 11.978 1.98c2.731 0 4.767.957 6.166 2.093.584.235 1.077.546 1.474.952.85.869 1.132 2.037 1.132 3.368 0 .368-.014.733-.052 1.086.23.462.477 1.088.644 1.517 1.258.364 2.233 1.721 2.605 2.656a.841.841 0 0 1 .053.22v2.869a.641.641 0 0 1-.078.256Zm-11.75-5.992h-.344a4.359 4.359 0 0 1-.355.508c-.77.947-1.918 1.492-3.508 1.492-1.725 0-2.989-.359-3.782-1.259a2.137 2.137 0 0 1-.085-.104L4 11.746v6.585c1.435.779 4.514 2.179 8 2.179 3.486 0 6.565-1.4 8-2.179v-6.585l-.098-.104s-.033.045-.085.104c-.793.9-2.057 1.259-3.782 1.259-1.59 0-2.738-.545-3.508-1.492a4.359 4.359 0 0 1-.355-.508Zm2.328 3.25c.549 0 1 .451 1 1v2c0 .549-.451 1-1 1-.549 0-1-.451-1-1v-2c0-.549.451-1 1-1Zm-5 0c.549 0 1 .451 1 1v2c0 .549-.451 1-1 1-.549 0-1-.451-1-1v-2c0-.549.451-1 1-1Zm3.313-6.185c.136 1.057.403 1.913.878 2.497.442.544 1.134.938 2.344.938 1.573 0 2.292-.337 2.657-.751.384-.435.558-1.15.558-2.361 0-1.14-.243-1.847-.705-2.319-.477-.488-1.319-.862-2.824-1.025-1.487-.161-2.192.138-2.533.529-.269.307-.437.808-.438 1.578v.021c0 .265.021.562.063.893Zm-1.626 0c.042-.331.063-.628.063-.894v-.02c-.001-.77-.169-1.271-.438-1.578-.341-.391-1.046-.69-2.533-.529-1.505.163-2.347.537-2.824 1.025-.462.472-.705 1.179-.705 2.319 0 1.211.175 1.926.558 2.361.365.414 1.084.751 2.657.751 1.21 0 1.902-.394 2.344-.938.475-.584.742-1.44.878-2.497Z"/></svg>
+              </span>
+              <span class="pf-skill-name">GitHub Copilot</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#000000" aria-hidden="true"><path d="M11.503.131 1.891 5.678a.84.84 0 0 0-.42.726v11.188c0 .3.162.575.42.724l9.609 5.55a1 1 0 0 0 .998 0l9.61-5.55a.84.84 0 0 0 .42-.724V6.404a.84.84 0 0 0-.42-.726L12.497.131a1.01 1.01 0 0 0-.996 0M2.657 6.338h18.55c.263 0 .43.287.297.515L12.23 22.918c-.062.107-.229.064-.229-.06V12.335a.59.59 0 0 0-.295-.51l-9.11-5.257c-.109-.063-.064-.23.061-.23"/></svg>
+              </span>
+              <span class="pf-skill-name">Cursor AI</span>
+            </div>
+            <div class="pf-skill-card">
+              <span class="pf-skill-logo">
+                <svg viewBox="0 0 24 24" fill="#3776AB" aria-hidden="true"><path d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z"/></svg>
+              </span>
+              <span class="pf-skill-name">Python</span>
+            </div>
+            </div>
+          </div>
         </section>
 
         <!-- ── Portfolio ── -->
@@ -685,19 +860,19 @@
 
           <div class="pf-projects">
             <div class="pf-project" data-vc-cat="development">
-              <div class="pf-project-tags"><span class="pf-tag">PHP</span><span class="pf-tag">MySQL</span></div>
-              <h4 class="pf-project-name">Company Website &amp; Systems <span class="pf-project-arrow">↗</span></h4>
-              <p class="pf-project-desc">Corporate website, internal dashboards, and inventory systems at Al Ghurair CEW.</p>
+              <div class="pf-project-tags"><span class="pf-tag">PHP</span><span class="pf-tag">MySQL</span><span class="pf-tag">JavaScript</span><span class="pf-tag">Tailwind</span></div>
+              <h4 class="pf-project-name">IT Asset Inventory Management System <span class="pf-project-arrow">↗</span></h4>
+              <p class="pf-project-desc">Web-based asset management system with tracking, inventory records, transfers, reporting, and dashboards.</p>
             </div>
             <div class="pf-project" data-vc-cat="development">
-              <div class="pf-project-tags"><span class="pf-tag">Tailwind</span><span class="pf-tag">JavaScript</span></div>
-              <h4 class="pf-project-name">Internal Dashboards <span class="pf-project-arrow">↗</span></h4>
-              <p class="pf-project-desc">Custom internal dashboards for operations and reporting.</p>
+              <div class="pf-project-tags"><span class="pf-tag">PHP</span><span class="pf-tag">MySQL</span><span class="pf-tag">Tailwind</span></div>
+              <h4 class="pf-project-name">Company Internal Website &amp; Web Apps <span class="pf-project-arrow">↗</span></h4>
+              <p class="pf-project-desc">Internal web applications built to improve business workflows and IT operations.</p>
             </div>
             <div class="pf-project" data-vc-cat="development">
-              <div class="pf-project-tags"><span class="pf-tag">MySQL</span><span class="pf-tag">PHP</span></div>
-              <h4 class="pf-project-name">Inventory System <span class="pf-project-arrow">↗</span></h4>
-              <p class="pf-project-desc">Inventory tracking and management integrated with existing tooling.</p>
+              <div class="pf-project-tags"><span class="pf-tag">MySQL</span><span class="pf-tag">JavaScript</span></div>
+              <h4 class="pf-project-name">Dashboards &amp; Reports <span class="pf-project-arrow">↗</span></h4>
+              <p class="pf-project-desc">Database structures, dashboards, and reports for operations and asset tracking.</p>
             </div>
             <div class="pf-project" data-vc-cat="design">
               <div class="pf-project-tags"><span class="pf-tag">GSAP</span><span class="pf-tag">D3</span></div>
@@ -717,6 +892,80 @@
           </div>
         </section>
 
+        <!-- ── Hobbies & Certificates ── -->
+        <section class="pf-sec" id="pf-hobbies">
+          <div class="section-label">Beyond Work</div>
+          <h2 class="section-title">Hobbies &amp; <span style="color:var(--a1)">certificates</span></h2>
+
+          <h3 class="pf-sub">Hobbies</h3>
+          <div class="pf-hobbies">
+            <div class="pf-hobby">
+              <div class="pf-hobby-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"/></svg>
+              </div>
+              <h4 class="pf-hobby-name">Gaming</h4>
+              <p class="pf-hobby-text">Competitive and story-driven games across PC and console — strategy, reflexes, and good stories.</p>
+            </div>
+            <div class="pf-hobby">
+              <div class="pf-hobby-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="14" height="14" rx="2"/><path d="m22 9-6.5 4.5L9 9"/><path d="M16 9l5.5-4"/><path d="M2 20h20"/></svg>
+              </div>
+              <h4 class="pf-hobby-name">Video Editing</h4>
+              <p class="pf-hobby-text">Cutting, motion graphics, and pacing — turning raw footage into polished stories.</p>
+            </div>
+            <div class="pf-hobby">
+              <div class="pf-hobby-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+              </div>
+              <h4 class="pf-hobby-name">3D Modeling</h4>
+              <p class="pf-hobby-text">Hard-surface and stylized assets with Blender — exploring real-time 3D and WebGL.</p>
+            </div>
+            <div class="pf-hobby">
+              <div class="pf-hobby-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+              </div>
+              <h4 class="pf-hobby-name">Music Production</h4>
+              <p class="pf-hobby-text">Producing, recording and editing music — writing and mixing tracks from idea to final cut.</p>
+            </div>
+          </div>
+
+          <h3 class="pf-sub">Certificates</h3>
+          <div class="pf-certs" id="pf-certs-track">
+            <a class="pf-cert" href="/images/certs/cert-1.png" target="_blank" rel="noopener" title="View certificate">
+              <span class="pf-cert-img-wrap">
+                <svg class="pf-cert-fallback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                <img class="pf-cert-img" src="/images/certs/cert-1.png" alt="AI Tools &amp; ChatGPT Workshop" loading="lazy" onerror="this.style.display='none'" />
+              </span>
+              <span class="pf-cert-name">AI Tools &amp; ChatGPT Workshop</span>
+              <span class="pf-cert-meta">Be10X &middot; July 2026</span>
+            </a>
+            <a class="pf-cert" href="/images/certs/cert-2.png" target="_blank" rel="noopener" title="View certificate">
+              <span class="pf-cert-img-wrap">
+                <svg class="pf-cert-fallback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                <img class="pf-cert-img" src="/images/certs/cert-2.png" alt="Cybersecurity: Fastest Growing Careers 2026" loading="lazy" onerror="this.style.display='none'" />
+              </span>
+              <span class="pf-cert-name">Cybersecurity: Fastest Growing Careers 2026</span>
+              <span class="pf-cert-meta">GBS Dubai &middot; July 2026</span>
+            </a>
+            <a class="pf-cert" href="/images/certs/cert-3.png" target="_blank" rel="noopener" title="View certificate">
+              <span class="pf-cert-img-wrap">
+                <svg class="pf-cert-fallback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                <img class="pf-cert-img" src="/images/certs/cert-3.png" alt="Intelligent Governance: AI &amp; GRC" loading="lazy" onerror="this.style.display='none'" />
+              </span>
+              <span class="pf-cert-name">Intelligent Governance: AI &amp; GRC</span>
+              <span class="pf-cert-meta">GSDC &middot; July 2026</span>
+            </a>
+            <a class="pf-cert" href="https://www.gsdcouncil.org/share-certificate?cnid=6a830524255df609b5331fe3&amp;ctid=ISO-27001-Cybersecurity-Masterclass-Participant-Certificate-14th-Aug-2026&amp;templateId=ISO-27001-Cybersecurity-Masterclass-Participant-Certificate-14th-Aug-2026" target="_blank" rel="noopener" title="View certificate">
+              <span class="pf-cert-img-wrap">
+                <svg class="pf-cert-fallback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                <img class="pf-cert-img" src="/images/certs/cert-4.png" alt="ISO/IEC 27001 Cybersecurity Masterclass" loading="lazy" onerror="this.style.display='none'" />
+              </span>
+              <span class="pf-cert-name">ISO/IEC 27001 Cybersecurity Masterclass</span>
+              <span class="pf-cert-meta">GSDC &middot; August 2026</span>
+            </a>
+          </div>
+        </section>
+
         <!-- ── Contact ── -->
         <section class="pf-sec" id="pf-contact">
           <div class="section-label">Contact</div>
@@ -727,13 +976,22 @@
 
           <div class="pf-contact-grid">
             <div class="pf-contact-links">
-              <a class="pf-contact-row" href="mailto:hello@stryg.bytes">
+              <a class="pf-contact-row" href="mailto:joecelpergis@gmail.com">
                 <span class="pf-c-icon">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
                 </span>
                 <span>
                   <span class="pf-row-label">Email</span>
-                  <span class="pf-row-value">hello@stryg.bytes</span>
+                  <span class="pf-row-value">joecelpergis@gmail.com</span>
+                </span>
+              </a>
+              <a class="pf-contact-row" href="tel:+971542217404">
+                <span class="pf-c-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                </span>
+                <span>
+                  <span class="pf-row-label">Phone</span>
+                  <span class="pf-row-value">+971 54 221 7404</span>
                 </span>
               </a>
               <div class="pf-contact-row">
@@ -742,7 +1000,7 @@
                 </span>
                 <span>
                   <span class="pf-row-label">Location</span>
-                  <span class="pf-row-value">Dubai, UAE</span>
+                  <span class="pf-row-value">Dubai/Sharjah, UAE</span>
                 </span>
               </div>
               <div class="pf-contact-row">
@@ -770,7 +1028,7 @@
         </section>
 
         <!-- Switch back to dev -->
-        <button class="btn btn-ghost back-to-studio pf-back" type="button">View Stryg.Bytes &rarr;</button>
+        <button class="btn btn-ghost back-to-studio pf-back" type="button">View Creative Work &rarr;</button>
 
       </div>
     </section>
@@ -780,10 +1038,17 @@
       <div class="sec-inner">
         <div class="section-label">Selected Work</div>
         <h2 class="section-title">Featured <span style="color:var(--a1)">Projects</span></h2>
-        <p class="projects-note">Concept builds showcasing motion, 3D, and full-stack craft &mdash; not client work.</p>
+        <p class="projects-note">Selected builds from the studio &amp; client work &mdash; mixing motion, 3D, and full-stack craft.</p>
+      </div>
+      <div class="projects-filters" role="group" aria-label="Filter projects by category">
+        <button class="filter-chip active" data-filter="all" type="button">All</button>
+        <button class="filter-chip" data-filter="client" type="button">Client Projects</button>
+        <button class="filter-chip" data-filter="saas" type="button">SaaS Templates</button>
+        <button class="filter-chip" data-filter="template" type="button">Templates</button>
+        <button class="filter-chip" data-filter="apps" type="button">Systems &amp; Apps</button>
       </div>
       <div class="projects-grid">
-        <div class="project-card">
+        <div class="project-card" data-category="client">
           <div class="project-arrow">↗</div>
           <div class="project-thumb" style="background:linear-gradient(135deg,#0d0d1a,#1a1040)">
             <svg viewBox="0 0 600 200" fill="none">
@@ -800,23 +1065,22 @@
                 fill="none" id="wave1b" />
               <circle cx="300" cy="100" r="28" fill="rgba(124,110,255,0.18)" stroke="rgba(124,110,255,0.5)"
                 stroke-width="1" />
-              <text x="284" y="108" font-family="JetBrains Mono" font-size="16" fill="rgba(124,110,255,0.9)">3D</text>
+              <text x="284" y="108" font-family="JetBrains Mono" font-size="16" fill="rgba(124,110,255,0.9)">2D</text>
             </svg>
           </div>
           <div class="project-info">
-            <div class="project-tags"><span class="ptag">GSAP</span><span class="ptag">Three.js</span><span
-                class="ptag">WebGL</span></div>
-            <div class="project-name">Immersive 3D Landing</div>
-            <div class="project-desc">Full-screen interactive 3D experience with dynamic particle systems, custom
-              shaders, and scroll-driven camera movement.</div>
-            <div class="code-snip"><span class="cm">// ScrollTrigger + camera morph</span><br><span
-                class="kw">const</span> tl = gsap.<span class="fn">timeline</span>({ scrollTrigger:
-              {<br>&nbsp;&nbsp;trigger: <span class="str">'#scene'</span>, scrub: <span class="nm">1.5</span>
-              }});<br>tl.<span class="fn">to</span>(camera.position, { z: <span class="nm">3</span>, ease: <span
-                class="str">'power2.inOut'</span> });</div>
+            <div class="project-tags"><span class="ptag">HTML/CSS</span><span class="ptag">JS</span><span
+                class="ptag">Booking</span></div>
+            <div class="project-name">Tanken's Mountain Resort</div>
+            <div class="project-desc">Resort website for Dinalungan, Aurora — services, events, gallery, cottage pricing
+              and a reservation flow.</div>
+            <div class="code-snip"><span class="cm">// live client site</span><br>&lt;<span class="fn">a</span> <span
+                class="nm">href</span>=<span class="str">"https://tankenresort.com/"</span> <span
+                class="nm">target</span>=<span class="str">"_blank"</span>&gt;View live &lt;<span
+                class="fn">span</span>&gt;↗&lt;/<span class="fn">span</span>&gt;&lt;/<span class="fn">a</span>&gt;</div>
           </div>
         </div>
-        <div class="project-card">
+        <div class="project-card" data-category="apps">
           <div class="project-arrow">↗</div>
           <div class="project-thumb" style="background:linear-gradient(135deg,#0d1a12,#0a2010)">
             <svg viewBox="0 0 600 200" fill="none">
@@ -831,25 +1095,22 @@
                 stroke="rgba(67,233,123,0.25)" stroke-width="1" />
               <rect x="168" y="58" width="80" height="11" rx="2" fill="rgba(67,233,123,0.35)" />
               <rect x="168" y="76" width="120" height="8" rx="2" fill="rgba(255,255,255,0.1)" />
-              <rect x="290" y="110" width="14" height="30" rx="2" fill="rgba(67,233,123,0.6)" />
-              <rect x="310" y="95" width="14" height="45" rx="2" fill="rgba(67,233,123,0.85)" />
-              <rect x="330" y="103" width="14" height="37" rx="2" fill="rgba(67,233,123,0.5)" />
-              <rect x="350" y="88" width="14" height="52" rx="2" fill="rgba(67,233,123,0.95)" />
+              <circle cx="330" cy="120" r="18" fill="rgba(67,233,123,0.15)" stroke="rgba(67,233,123,0.6)"
+                stroke-width="1" />
             </svg>
           </div>
           <div class="project-info">
-            <div class="project-tags"><span class="ptag">React</span><span class="ptag">D3.js</span><span
-                class="ptag">GSAP</span></div>
-            <div class="project-name">Analytics SaaS Dashboard</div>
-            <div class="project-desc">Real-time data visualisation platform with animated charts, WebSocket streaming,
-              and drag-and-drop widgets.</div>
-            <div class="code-snip"><span class="cm">// Animated bar entrance</span><br>gsap.<span
-                class="fn">from</span>(<span class="str">'.bar'</span>, {<br>&nbsp;&nbsp;scaleY: <span
-                class="nm">0</span>, transformOrigin: <span class="str">'bottom'</span>,<br>&nbsp;&nbsp;stagger: <span
-                class="nm">0.04</span>, ease: <span class="str">'back.out(1.7)'</span><br>});</div>
+            <div class="project-tags"><span class="ptag">AI</span><span class="ptag">LLM</span><span
+                class="ptag">Web App</span></div>
+            <div class="project-name">AI-Powered Assistant Build</div>
+            <div class="project-desc">Experimenting with LLM-powered tooling and AI workflows from the Be10X AI &amp;
+              ChatGPT track — prototyping assistants and automation for real tasks.</div>
+            <div class="code-snip"><span class="cm">// tool-calling assistant loop</span><br><span class="kw">const</span>
+              reply = <span class="kw">await</span> model.<span class="fn">run</span>({<br>&nbsp;&nbsp;tools: [web,
+              code], role: <span class="str">'assistant'</span><br>});</div>
           </div>
         </div>
-        <div class="project-card">
+        <div class="project-card" data-category="client">
           <div class="project-arrow">↗</div>
           <div class="project-thumb" style="background:linear-gradient(135deg,#1a0a10,#200a18)">
             <svg viewBox="0 0 600 200" fill="none">
@@ -860,30 +1121,29 @@
                 </radialGradient>
               </defs>
               <circle cx="300" cy="100" r="160" fill="url(#pg3)" opacity="0.35" />
-              <rect x="255" y="20" width="90" height="160" rx="14" fill="rgba(255,110,188,0.05)"
-                stroke="rgba(255,110,188,0.35)" stroke-width="1.5" />
-              <rect x="268" y="44" width="64" height="86" rx="5" fill="rgba(255,110,188,0.07)" />
-              <rect x="276" y="52" width="48" height="10" rx="2" fill="rgba(255,110,188,0.4)" />
-              <rect x="276" y="68" width="36" height="6" rx="2" fill="rgba(255,255,255,0.14)" />
-              <rect x="276" y="108" width="48" height="16" rx="4" fill="rgba(255,110,188,0.5)" />
-              <circle cx="300" cy="167" r="5" fill="none" stroke="rgba(255,110,188,0.4)" stroke-width="1.5" />
+              <rect x="120" y="40" width="360" height="120" rx="6" fill="rgba(255,110,188,0.04)"
+                stroke="rgba(255,110,188,0.28)" stroke-width="1" />
+              <circle cx="152" cy="70" r="6" fill="rgba(255,110,188,0.6)" />
+              <circle cx="176" cy="70" r="6" fill="rgba(255,255,255,0.2)" />
+              <circle cx="200" cy="70" r="6" fill="rgba(255,255,255,0.2)" />
+              <rect x="120" y="96" width="200" height="10" rx="3" fill="rgba(255,110,188,0.45)" />
+              <rect x="120" y="116" width="260" height="8" rx="3" fill="rgba(255,255,255,0.12)" />
+              <rect x="120" y="132" width="160" height="8" rx="3" fill="rgba(255,255,255,0.12)" />
             </svg>
           </div>
           <div class="project-info">
-            <div class="project-tags"><span class="ptag">Next.js</span><span class="ptag">Stripe</span><span
-                class="ptag">PostgreSQL</span></div>
-            <div class="project-name">Mobile-First E-Commerce</div>
-            <div class="project-desc">Luxury brand storefront with gesture animations, micro-interactions, and a
-              zero-layout-shift cart.</div>
-            <div class="code-snip"><span class="cm">// Page transition wrapper</span><br><span class="kw">export
-                function</span> <span class="fn">PageWrap</span>({ children }) {<br>&nbsp;&nbsp;<span
-                class="kw">const</span> tl = <span class="fn">useRef</span>(gsap.<span
-                class="fn">timeline</span>());<br>&nbsp;&nbsp;<span class="kw">return</span> &lt;<span
-                class="fn">div</span> <span class="nm">ref</span>={el}&gt;{children}&lt;/<span
-                class="fn">div</span>&gt;<br>}</div>
+            <div class="project-tags"><span class="ptag">Corporate</span><span class="ptag">CMS</span><span
+                class="ptag">Portfolio</span></div>
+            <div class="project-name">Al Ghurair Contracting &amp; Engineering Works (AGCEW)</div>
+            <div class="project-desc">Corporate site for a UAE construction &amp; engineering contractor — company
+              profile, project portfolio, news, careers and contact.</div>
+            <div class="code-snip"><span class="cm">// live client site</span><br>&lt;<span class="fn">a</span> <span
+                class="nm">href</span>=<span class="str">"https://agcew.com/"</span> <span
+                class="nm">target</span>=<span class="str">"_blank"</span>&gt;View live &lt;<span
+                class="fn">span</span>&gt;↗&lt;/<span class="fn">span</span>&gt;&lt;/<span class="fn">a</span>&gt;</div>
           </div>
         </div>
-        <div class="project-card">
+        <div class="project-card" data-category="apps">
           <div class="project-arrow">↗</div>
           <div class="project-thumb" style="background:linear-gradient(135deg,#080d1a,#0a1040)">
             <svg viewBox="0 0 600 200" fill="none">
@@ -915,13 +1175,13 @@
           </div>
           <div class="project-info">
             <div class="project-tags"><span class="ptag">GSAP</span><span class="ptag">SVG</span><span
-                class="ptag">Canvas API</span></div>
-            <div class="project-name">Interactive Data Narrative</div>
-            <div class="project-desc">Scroll-driven data storytelling with animated network graphs, morphing SVG charts,
-              and voice sync.</div>
-            <div class="code-snip"><span class="cm">// Morph SVG path on scroll</span><br>gsap.<span
+                class="ptag">Motion</span></div>
+            <div class="project-name">Interactive Motion Experiment</div>
+            <div class="project-desc">A craft demo exploring scroll-driven narratives, animated SVG, and micro-interaction
+              details — a sandbox for ideas that feed back into client builds.</div>
+            <div class="code-snip"><span class="cm">// experiment — morph on scroll</span><br>gsap.<span
                 class="fn">to</span>(<span class="str">'#graph'</span>, {<br>&nbsp;&nbsp;attr: { d: newPath
-                },<br>&nbsp;&nbsp;scrollTrigger: { scrub: <span class="nm">2</span>, start: <span class="str">'top
+                },<br>&nbsp;&nbsp;scrollTrigger: { scrub: <span class="nm">1</span>, start: <span class="str">'top
                   60%'</span> }<br>});</div>
           </div>
         </div>
@@ -1011,15 +1271,35 @@
       </div>
     </section>
 
-    <!-- ══ PERSONAL GATE (Dev → Normal transition) ══ -->
-    <section id="personal-gate" class="dev-only" style="background:var(--bg2)">
-      <div class="sec-inner" style="text-align:center">
-        <div class="section-label">Beyond the Code</div>
-        <h2 class="section-title">Want to know the <span style="color:var(--a1)">person</span> behind the pixels?</h2>
-        <p style="color:var(--muted);max-width:44ch;margin:0 auto 2.5rem;line-height:1.8">
-          There's more to me than code — my experience, hobbies, and what drives me.
-        </p>
-        <button class="btn btn-primary gate-btn">Meet Gio →</button>
+    <!-- ══ DEV: TESTIMONIALS + CLIENTS ══ -->
+    <section id="testimonials" class="dev-only testimonials-section">
+      <div class="sec-inner">
+        <div class="testimonials-head">
+          <div class="section-label">Social Proof</div>
+          <h2 class="section-title">Trusted <span style="color:var(--a1)">by teams &amp; founders</span></h2>
+          <p class="testimonials-sub">
+            Selected feedback and collaborations — real projects, real people.
+          </p>
+        </div>
+
+        <span class="client-logo-tag">// working with</span>
+        <div class="client-marquee" aria-hidden="true">
+          <div class="client-track" id="client-track"></div>
+        </div>
+
+        <div class="testimonials-grid" id="testimonials-grid">
+          <div class="t-card t-card--placeholder">
+            <div class="t-stars">★★★★★</div>
+            <p class="t-quote">Loading client feedback…</p>
+            <div class="t-who">
+              <span class="t-ava" aria-hidden="true">?</span>
+              <div>
+                <div class="t-who-name">[ Client / Colleague Name ]</div>
+                <div class="t-who-role">Role &middot; Company</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1032,7 +1312,7 @@
         style="text-align:center;color:var(--muted);max-width:42ch;margin:0 auto 2rem;font-size:0.95rem;line-height:1.8">
         Open to freelance projects, full-time roles, and interesting collaborations.
       </p>
-      <a href="mailto:hello@stryg.bytes" class="contact-email">hello@stryg.bytes</a>
+      <a href="mailto:joecelpergis@gmail.com" class="contact-email">joecelpergis@gmail.com</a>
       <div class="social-row">
         <a href="https://github.com/joecel-hub" class="soc-link" title="GitHub"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path
@@ -1060,7 +1340,7 @@
     <!-- ══ FOOTER ══ -->
     <footer>
       <span>&copy; <span id="footer-year">2026</span> <span class="brand">Stryg.Bytes</span> &mdash; </span>
-      <span id="footer-contact"><a href="mailto:hello@stryg.bytes" class="acc">hello@stryg.bytes</a></span>
+      <span id="footer-contact"><a href="mailto:joecelpergis@gmail.com" class="acc">joecelpergis@gmail.com</a></span>
     </footer>
 
   </div><!-- /app -->

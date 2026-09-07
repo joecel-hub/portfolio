@@ -12,18 +12,21 @@ export function initTextType(container, options = {}) {
 
   if (!container || words.length === 0) return
 
+  const textNode = document.createTextNode('')
+  container.appendChild(textNode)
+
   const cursor = document.createElement('span')
   cursor.className = 'type-cursor'
   cursor.textContent = '|'
-  container.after(cursor)
+  container.appendChild(cursor)
 
   gsap.set(cursor, { opacity: 1 })
   gsap.to(cursor, {
     opacity: 0,
-    duration: 0.5,
+    duration: 0.6,
     repeat: -1,
     yoyo: true,
-    ease: 'power2.inOut'
+    ease: 'steps(1)'
   })
 
   let currentWordIndex = 0
@@ -48,13 +51,13 @@ export function initTextType(container, options = {}) {
         timeout = setTimeout(type, pauseDuration)
       } else {
         displayedText = displayedText.slice(0, -1)
-        container.textContent = displayedText
+        textNode.nodeValue = displayedText
         timeout = setTimeout(type, deletingSpeed)
       }
     } else {
       if (charIndex < word.length) {
         displayedText += word[charIndex]
-        container.textContent = displayedText
+        textNode.nodeValue = displayedText
         charIndex++
         timeout = setTimeout(type, typingSpeed)
       } else if (words.length >= 1) {

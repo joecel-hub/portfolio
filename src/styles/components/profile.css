@@ -8,8 +8,7 @@ body.normal-mode #hero,
 body.normal-mode #about,
 body.normal-mode #skills-dev,
 body.normal-mode #projects,
-body.normal-mode #process,
-body.normal-mode #personal-gate {
+body.normal-mode #process {
   display: none;
 }
 
@@ -216,8 +215,8 @@ body.normal-mode #contact {
 }
 
 .pf-sec {
-  margin-bottom: 3.5rem;
-  padding-bottom: 3.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 2.5rem;
   border-bottom: 1px solid rgba(25, 29, 54, 0.12);
 }
 
@@ -317,30 +316,6 @@ body.normal-mode #contact {
   opacity: 0.92;
 }
 
-/* Chips */
-.pf-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.pf-chip {
-  padding: 0.5rem 0.95rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid rgba(25, 29, 54, 0.14);
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text);
-  transition: border-color 0.25s, color 0.25s;
-}
-
-.pf-chip:hover {
-  border-color: var(--a1);
-  color: var(--a1);
-}
-
 /* Timeline */
 .pf-timeline {
   list-style: none;
@@ -423,37 +398,73 @@ body.normal-mode #contact {
   color: var(--text);
 }
 
-/* Skills */
-.pf-skills {
-  list-style: none;
-  display: grid;
-  gap: 1.1rem;
+/* Skills stack */
+.pf-skill-group {
+  margin-top: 1.6rem;
 }
 
-.pf-skill-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 0.45rem;
-  font-size: 0.86rem;
-  font-weight: 600;
+.pf-skill-group:first-of-type {
+  margin-top: 0;
 }
 
-.pf-skill-head span:last-child {
+.pf-skill-group-label {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a1);
+  margin-bottom: 0.85rem;
+}
+
+.pf-stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 0.9rem;
+}
+
+.pf-skill-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1.2rem 0.8rem;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(25, 29, 54, 0.14);
+  border-radius: 14px;
+  transition: border-color 0.25s, transform 0.2s, box-shadow 0.3s;
+}
+
+.pf-skill-card:hover {
+  border-color: var(--a1);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px var(--glow1);
+}
+
+.pf-skill-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+}
+
+.pf-skill-logo svg {
+  width: 30px;
+  height: 30px;
+}
+
+.pf-skill-gen {
+  width: 26px;
+  height: 26px;
   color: var(--a1);
 }
 
-.pf-skills .skill-bar-bg {
-  height: 7px;
-  border-radius: 99px;
-  background: rgba(23, 26, 45, 0.1);
-  overflow: hidden;
-}
-
-.pf-skills .skill-bar {
-  border-radius: 99px;
+.pf-skill-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.3;
 }
 
 /* Portfolio */
@@ -549,6 +560,132 @@ body.normal-mode #contact {
   color: var(--text);
   line-height: 1.65;
   opacity: 0.92;
+}
+
+/* Hobbies & Certificates */
+.pf-hobbies {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.pf-hobby {
+  padding: 1.4rem;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(25, 29, 54, 0.14);
+  border-radius: 14px;
+  transition: border-color 0.25s, transform 0.2s, box-shadow 0.3s;
+}
+
+.pf-hobby:hover {
+  border-color: var(--a1);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px var(--glow1);
+}
+
+.pf-hobby-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.9rem;
+  color: var(--a1);
+  background: rgba(124, 110, 255, 0.12);
+  border: 1px solid rgba(124, 110, 255, 0.25);
+}
+
+.pf-hobby-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pf-hobby-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.pf-hobby-text {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.65;
+  opacity: 0.92;
+}
+
+.pf-certs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.pf-cert {
+  display: block;
+  padding: 0.9rem;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(25, 29, 54, 0.14);
+  border-radius: 14px;
+  transition: border-color 0.25s, transform 0.2s, box-shadow 0.3s;
+}
+
+a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
+
+.pf-cert:hover {
+  border-color: var(--a1);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px var(--glow1);
+}
+
+.pf-cert-img-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+  background: linear-gradient(135deg, rgba(124, 110, 255, 0.14), rgba(0, 212, 255, 0.1));
+  border: 1px solid rgba(25, 29, 54, 0.1);
+}
+
+.pf-cert-fallback {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  color: var(--a1);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.pf-cert-img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.pf-cert:hover .pf-cert-img {
+  transform: scale(1.04);
+}
+
+.pf-cert-name {
+  display: block;
+  font-size: 0.96rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.pf-cert-meta {
+  display: block;
+  margin-top: 0.25rem;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--a2);
 }
 
 /* Contact */

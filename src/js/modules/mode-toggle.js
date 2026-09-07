@@ -1,10 +1,11 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { playLoader } from './loader.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export function initModeToggle(devBg, callbacks = {}) {
-  let isNormal = false
+  let isNormal = true // Normal (Gio) is the default mode
 
   function closeMenu() {
     const links = document.getElementById('nav-links')
@@ -32,19 +33,35 @@ export function initModeToggle(devBg, callbacks = {}) {
         if (isNormal && callbacks.onToNormal) callbacks.onToNormal()
         if (!isNormal && callbacks.onToDev) callbacks.onToDev()
 
-        gsap.to('#app', { opacity: 1, duration: 0.4, ease: 'power2.out' })
-        // The Dev Process section is pinned by ScrollTrigger. Recalculate its
-        // spacer after either mode changes visibility so it remains reachable.
-        requestAnimationFrame(() => ScrollTrigger.refresh())
-        setTimeout(() => {
-          document.querySelectorAll('.skill-bar').forEach(bar => {
-            const w = bar.getAttribute('data-width') || 80
-            bar.style.width = '0%'
-            setTimeout(() => { bar.style.width = w + '%'; bar.style.transition = 'width 1.2s ease' }, 50)
+        if (isNormal) {
+          // Back to the profile — a quick fade is enough.
+          gsap.to('#app', { opacity: 1, duration: 0.4, ease: 'power2.out' })
+          finalize()
+        } else {
+          // Entering the studio — replay the Stryg.Bytes grid loader.
+          playLoader({
+            brand: 'Stryg.Bytes',
+            onComplete: () => {
+              gsap.to('#app', { opacity: 1, duration: 0.4, ease: 'power2.out' })
+              finalize()
+            }
           })
-        }, 350)
+        }
       }
     })
+  }
+
+  function finalize() {
+    // The Dev Process section is pinned by ScrollTrigger. Recalculate its
+    // spacer after either mode changes visibility so it remains reachable.
+    requestAnimationFrame(() => ScrollTrigger.refresh())
+    setTimeout(() => {
+      document.querySelectorAll('.skill-bar').forEach(bar => {
+        const w = bar.getAttribute('data-width') || 80
+        bar.style.width = '0%'
+        setTimeout(() => { bar.style.width = w + '%'; bar.style.transition = 'width 1.2s ease' }, 50)
+      })
+    }, 350)
   }
 
   return { toggleMode }

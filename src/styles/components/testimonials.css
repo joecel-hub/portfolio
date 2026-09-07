@@ -1,0 +1,200 @@
+/* Testimonials + client logo band (Dev showcase) */
+
+.testimonials-section {
+  overflow: hidden;
+}
+
+.testimonials-head {
+  text-align: center;
+}
+
+.testimonials-sub {
+  color: var(--muted);
+  max-width: 46ch;
+  margin: 0 auto 2.6rem;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+/* ── Client logo marquee ── */
+.client-marquee {
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto 3rem;
+  max-width: 900px;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.client-marquee::before,
+.client-marquee::after {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.client-marquee::after {
+  content: '';
+  right: -1px;
+  background: linear-gradient(90deg, transparent, var(--bg2));
+}
+
+.client-track {
+  display: flex;
+  align-items: center;
+  gap: 3.5rem;
+  width: max-content;
+  animation: clientScroll 26s linear infinite;
+}
+
+.client-marquee:hover .client-track {
+  animation-play-state: paused;
+}
+
+.client-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  white-space: nowrap;
+  opacity: 0.75;
+  transition: color 0.3s, opacity 0.3s;
+}
+
+.client-logo:hover {
+  color: var(--a1);
+  opacity: 1;
+}
+
+.client-logo-img {
+  height: 2rem;
+  width: auto;
+  max-width: 150px;
+  object-fit: contain;
+  opacity: 0.85;
+}
+
+.client-logo:hover .client-logo-img {
+  opacity: 1;
+}
+
+.client-logo-tag {
+  display: block;
+  margin: 0 auto 2.4rem;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+}
+
+@keyframes clientScroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* ── Testimonial cards ── */
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.t-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 1.75rem 1.8rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  transition: border-color 0.4s, transform 0.4s, box-shadow 0.4s;
+}
+
+.t-card:hover {
+  border-color: var(--a1);
+  transform: translateY(-6px);
+  box-shadow: 0 30px 80px var(--glow1);
+}
+
+.t-stars {
+  color: var(--a2);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  line-height: 1;
+}
+
+.t-quote {
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: var(--text);
+  margin: 0;
+}
+
+.t-quote::before {
+  content: '“';
+  color: var(--a1);
+  font-size: 1.6em;
+  line-height: 0;
+  margin-right: 2px;
+  vertical-align: -0.35em;
+}
+
+.t-card.t-card--placeholder .t-quote {
+  color: var(--muted);
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.t-who {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.t-ava {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--a1), var(--a2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--head);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.t-who-name {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.t-who-role {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+@media (min-width: 768px) {
+  .testimonials-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
