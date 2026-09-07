@@ -9,3 +9,6 @@ server/*.db
 server/*.db-wal
 server/*.db-shm
 server/public/uploads/
+
+.vercel
+.env*
