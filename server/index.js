@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { existsSync } from 'node:fs'
 import { seedIfEmpty } from './db.js'
+import { UPLOAD_DIR } from './middleware/upload.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const PORT = process.env.PORT || 5175
@@ -32,7 +33,7 @@ app.use('/api/reviews', reviewRoutes)
 app.use('/api/certificates', certificateRoutes)
 
 // Uploaded images (client logos, etc.)
-app.use('/uploads', express.static(join(__dirname, 'public', 'uploads')))
+app.use('/uploads', express.static(UPLOAD_DIR))
 
 // Public client review page
 app.get('/review', (_req, res) => {

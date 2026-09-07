@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: gio-portfolio
+    runtime: node
+    repo: https://github.com/joecel-hub/portfolio
+    plan: starter
+    region: singapore
+    buildCommand: npm ci && npm run build
+    startCommand: npm run server
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_FILE
+        value: /data/portfolio.db
+      - key: UPLOAD_DIR
+        value: /data/uploads
+      - key: ADMIN_PASS
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1

@@ -128,11 +128,12 @@ server/
 
 ## Deployment
 
-> **Important:** the current Vercel deploy is **static-only**. Vercel serves the built `dist/` site; the Express/SQLite backend (and therefore the admin panel and API-driven content) **does not run on Vercel** — those run locally via `npm run dev:full` / `npm run server`. The static site renders its built-in fallback content (projects/certs/hobbies/contact).
+The app is designed to run as **one full-stack service** — the Express server builds and serves the `dist/` frontend, the admin panel, and the API on a single origin. Production can therefore be a simple Node host with a **persistent filesystem** (required for the SQLite DB and uploaded files).
 
 - Source lives in a **private** GitHub repo (`joecel-hub/portfolio`, `main` branch).
-- **Vercel (static)**: link the repo (`vercel link --repo`), framework preset **Vite**, push → preview + production URLs. `dist/` is built on deploy.
-- **Full-stack hosting (future option)**: to make admin edits go live, host the whole Express app on a service with a persistent filesystem (Render, Railway, or a VPS), set the env vars in `server/.env`, and point the site at the hosted backend. The `server/public/uploads/` dir must be persisted there.
+- **Render (recommended, paid)**: `render.yaml` provisions a Web Service (Starter plan, Singapore region) with a 1 GB persistent disk mounted at `/data`. Build = `npm ci && npm run build`, start = `npm run server`, health check = `/api/health`. Auto-deploys on push to `main`.
+  - Set `ADMIN_PASS` and `JWT_SECRET` as **secrets** in the Render dashboard (marked `sync: false` in the blueprint). `DB_FILE=/data/portfolio.db` and `UPLOAD_DIR=/data/uploads` are set automatically so the DB and uploads survive redeploys.
+- **Local / dev**: `npm run dev:full` (or `npm run server`) — Vite proxies `/api` and `/uploads` to `localhost:5175`.
 - `dist/`, `.vercel/`, `server/.env`, all `server/*.db*`, and `server/public/uploads/` are git-ignored; never commit build output, credentials, runtime databases, or uploaded files.
 
 ## Notes

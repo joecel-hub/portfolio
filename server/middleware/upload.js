@@ -4,7 +4,7 @@ import { dirname, join, extname } from 'node:path'
 import { mkdirSync } from 'node:fs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
-export const UPLOAD_DIR = join(__dirname, '..', 'public', 'uploads')
+export const UPLOAD_DIR = process.env.UPLOAD_DIR || join(__dirname, '..', 'public', 'uploads')
 
 mkdirSync(UPLOAD_DIR, { recursive: true })
 
