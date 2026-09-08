@@ -38,6 +38,14 @@ app.get('/review', (_req, res) => {
   res.sendFile(join(__dirname, 'public', 'review', 'index.html'))
 })
 
+// Static legal pages (must be registered before the dist SPA catch-all)
+const legalPages = ['privacy', 'terms', 'cookies', 'refund']
+for (const page of legalPages) {
+  app.get(`/${page}`, (_req, res) => {
+    res.sendFile(join(__dirname, 'public', page, 'index.html'))
+  })
+}
+
 // Admin SPA (login + dashboard)
 app.get('/admin', (_req, res) => {
   res.sendFile(join(__dirname, 'public', 'admin', 'index.html'))

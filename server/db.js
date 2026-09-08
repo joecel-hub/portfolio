@@ -50,6 +50,8 @@ export function initSchema() {
       quote TEXT NOT NULL,
       stars INTEGER NOT NULL DEFAULT 5,
       status TEXT NOT NULL DEFAULT 'pending',
+      consent INTEGER NOT NULL DEFAULT 0,
+      consent_at TEXT NOT NULL DEFAULT '',
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -87,6 +89,16 @@ function migrateSchema() {
   }
   try {
     db.exec(`ALTER TABLE projects ADD COLUMN image TEXT NOT NULL DEFAULT ''`)
+  } catch {
+    // column already exists
+  }
+  try {
+    db.exec(`ALTER TABLE reviews ADD COLUMN consent INTEGER NOT NULL DEFAULT 0`)
+  } catch {
+    // column already exists
+  }
+  try {
+    db.exec(`ALTER TABLE reviews ADD COLUMN consent_at TEXT NOT NULL DEFAULT ''`)
   } catch {
     // column already exists
   }

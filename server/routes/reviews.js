@@ -6,18 +6,20 @@ import { schedulePushback } from '../pushback.js'
 const router = Router()
 
 function serialize(row) {
-  return { id: row.id, project: row.project, name: row.name, role: row.role, quote: row.quote, stars: row.stars, status: row.status, created_at: row.created_at }
+  return { id: row.id, project: row.project, name: row.name, role: row.role, quote: row.quote, stars: row.stars, status: row.status, consent: Boolean(row.consent), consent_at: row.consent_at, created_at: row.created_at }
 }
 
 // Public: client submits a review -> saved as pending (approval gate)
 router.post('/', (req, res) => {
-  const { project, name, role, quote, stars } = req.body || {}
+  const { project, name, role, quote, stars, consent } = req.body || {}
   if (!name || !quote) return res.status(400).json({ error: 'name and quote are required' })
+  if (consent !== true) return res.status(400).json({ error: 'consent to publish is required' })
   if (!quote.trim() || quote.trim().length < 3) return res.status(400).json({ error: 'quote must be at least 3 characters' })
-  const info = db.prepare("INSERT INTO reviews (project, name, role, quote, stars, status) VALUES (?, ?, ?, ?, ?, 'pending')")
-    .run(String(project || '').slice(0, 120), name.slice(0, 120), String(role || '').slice(0, 160), quote.slice(0, 2000), Math.min(5, Math.max(1, Number(stars) || 5)))
+  const consentAt = new Date().toISOString()
+  const info = db.prepare("INSERT INTO reviews (project, name, role, quote, stars, status, consent, consent_at) VALUES (?, ?, ?, ?, ?, 'pending', 1, ?)")
+    .run(String(project || '').slice(0, 120), name.slice(0, 120), String(role || '').slice(0, 160), quote.slice(0, 2000), Math.min(5, Math.max(1, Number(stars) || 5)), consentAt)
   schedulePushback()
-  res.status(201).json({ ok: true, id: info.lastInsertRowid, status: 'pending' })
+  res.status(201).json({ ok: true, id: info.lastInsertRowid, status: 'pending', consent: true })
 })
 
 // Authed: admin review inbox (all, incl pending) + approve / delete

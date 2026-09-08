@@ -215,10 +215,11 @@ test('reviews: public submit -> pending, admin list requires auth, approve -> te
 
   const pub = await j('/api/reviews', {
     method: 'POST',
-    body: { project: 'AGCEW', name: 'Jane', role: 'Client', quote: 'Great work!', stars: 5 },
+    body: { project: 'AGCEW', name: 'Jane', role: 'Client', quote: 'Great work!', stars: 5, consent: true },
   })
   assert.equal(pub.status, 201)
   assert.equal(pub.data.status, 'pending')
+  assert.equal(pub.data.consent, true)
 
   const anon = await j('/api/reviews')
   assert.equal(anon.status, 401)
@@ -227,6 +228,8 @@ test('reviews: public submit -> pending, admin list requires auth, approve -> te
   assert.equal(list.status, 200)
   const mine = list.data.find((r) => r.id === pub.data.id)
   assert.ok(mine && mine.status === 'pending')
+  assert.equal(mine.consent, true)
+  assert.ok(mine.consent_at && mine.consent_at.length > 0)
 
   const approv = await j(`/api/reviews/${pub.data.id}/approve`, { method: 'POST', token })
   assert.equal(approv.status, 200)
@@ -236,10 +239,18 @@ test('reviews: public submit -> pending, admin list requires auth, approve -> te
   assert.ok(t.data.some((x) => x.name === 'Jane' && x.quote === 'Great work!'))
 })
 
+test('reviews: consent to publish is required', async () => {
+  const r = await j('/api/reviews', {
+    method: 'POST',
+    body: { name: 'June', quote: 'No consent here', stars: 5 },
+  })
+  assert.equal(r.status, 400)
+})
+
 test('reviews: short quotes are rejected', async () => {
   const r = await j('/api/reviews', {
     method: 'POST',
-    body: { name: 'Bob', quote: 'ok' },
+    body: { name: 'Bob', quote: 'ok', consent: true },
   })
   assert.equal(r.status, 400)
 })

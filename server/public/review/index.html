@@ -27,6 +27,11 @@
   }
   .field textarea { resize: vertical; min-height: 110px; }
   .field input:focus, .field textarea:focus { outline: none; border-color: var(--acc); }
+  .consent { margin: 1.1rem 0; }
+  .consent-box { display: flex; gap: .65rem; align-items: flex-start; cursor: pointer; font-size: .88rem; color: var(--muted); line-height: 1.55; }
+  .consent-box input { width: 17px; height: 17px; margin-top: .18rem; accent-color: var(--acc); cursor: pointer; flex: 0 0 auto; }
+  .consent-box a { color: var(--acc); text-decoration: underline; }
+  .consent-box strong { color: var(--text); font-weight: 600; }
   .star-row { display: flex; gap: .5rem; font-size: 1.7rem; color: #2c3050; cursor: pointer; user-select: none; }
   .star-row .on { color: #ffc75c; }
   .hint { color: var(--muted); font-size: .8rem; margin-top: .35rem; }
@@ -68,6 +73,12 @@
         <div class="field"><label>Name</label><input name="name" placeholder="Your full name" required maxlength="120"></div>
         <div class="field"><label>Role / title</label><input name="role" placeholder="e.g. Operations Manager" maxlength="160"></div>
         <div class="field"><label>Your review</label><textarea name="quote" placeholder="Share what it was like working together..." required minlength="3" maxlength="2000"></textarea></div>
+        <div class="field consent">
+          <label class="consent-box">
+            <input type="checkbox" id="consent" required>
+            <span>I consent to my <strong>name</strong>, <strong>role/title</strong>, and this <strong>review</strong> being stored and published publicly on this site, as described in the <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</span>
+          </label>
+        </div>
         <button class="btn" type="submit" id="submit-btn">Send review →</button>
         <div class="err" id="form-err"></div>
       </form>`
@@ -88,7 +99,8 @@
         name: form.name.value.trim(),
         role: form.role ? form.role.value.trim() : '',
         quote: form.quote.value.trim(),
-        stars
+        stars,
+        consent: document.getElementById('consent').checked
       }
       try {
         const res = await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })

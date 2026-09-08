@@ -31,3 +31,26 @@ footer .acc,
 footer .brand {
   color: var(--a1);
 }
+
+footer .footer-legal {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.1rem;
+}
+
+footer .footer-legal a {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+footer .footer-legal a:hover {
+  color: var(--a1);
+}
+
+footer .footer-legal span {
+  color: var(--muted);
+  opacity: 0.5;
+}
