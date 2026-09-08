@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { db } from '../db.js'
 import { requireAuth } from '../auth.js'
+import { schedulePushback } from '../pushback.js'
 
 const router = Router()
 
@@ -15,6 +16,7 @@ router.post('/', (req, res) => {
   if (!quote.trim() || quote.trim().length < 3) return res.status(400).json({ error: 'quote must be at least 3 characters' })
   const info = db.prepare("INSERT INTO reviews (project, name, role, quote, stars, status) VALUES (?, ?, ?, ?, ?, 'pending')")
     .run(String(project || '').slice(0, 120), name.slice(0, 120), String(role || '').slice(0, 160), quote.slice(0, 2000), Math.min(5, Math.max(1, Number(stars) || 5)))
+  schedulePushback()
   res.status(201).json({ ok: true, id: info.lastInsertRowid, status: 'pending' })
 })
 
@@ -33,11 +35,13 @@ router.post('/:id/approve', (req, res) => {
   // Move approved review into testimonials so it appears on the live portfolio
   db.prepare("INSERT INTO testimonials (name, role, quote, stars, status) VALUES (?, ?, ?, ?, 'approved')")
     .run(existing.name, existing.role, existing.quote, existing.stars)
+  schedulePushback()
   res.json({ ok: true, status: 'approved' })
 })
 
 router.delete('/:id', (req, res) => {
   db.prepare('DELETE FROM reviews WHERE id = ?').run(req.params.id)
+  schedulePushback()
   res.json({ ok: true })
 })
 

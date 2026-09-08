@@ -71,6 +71,20 @@ During development, Vite proxies `/api` and `/uploads` to the backend at `localh
 | `ADMIN_USER` | `admin` | Admin username |
 | `ADMIN_PASS` | `admin123` | Admin password (set a real one) |
 | `JWT_SECRET` | `dev-secret-change-me` | JWT signing secret (set a long random one) |
+| `GIT_PAT` | *(unset → disabled)* | GitHub fine-grained PAT ("Contents: Read and write") enabling git pushback persistence |
+| `GIT_CMS_REMOTE` | `github.com/joecel-hub/portfolio` | Repo the CMS snapshots are pushed to |
+| `GIT_CMS_BRANCH` | `main` | Branch CMS snapshots are pushed to |
+
+## CMS data persistence
+
+Running the SQLite DB + uploads on the free tier means the filesystem is wiped on every redeploy. To keep CMS edits without a disk, the server can **push data back to the repo** after every write:
+
+1. Seed `server/portfolio.db` (and optional `server/public/uploads/`) is committed and checked out on build.
+2. `server/pushback.js` debounces ~3 s after any write, checkpoints the SQLite WAL, stages `portfolio.db` + uploads, and commits + pushes them to `GIT_CMS_REMOTE` on `GIT_CMS_BRANCH`.
+3. That push triggers Render's auto-deploy, which checks out the updated snapshot — so content survives redeploys at zero cost.
+4. On shutdown (`SIGTERM`/`SIGINT`) a synchronous best-effort flush is attempted.
+
+Trade-off: every CMS save causes an auto-deploy (~1 min), and two overlapping deploys editing the same time can race (the push retries up to 3×).
 
 ## Sections
 
@@ -129,13 +143,14 @@ server/
 
 ## Deployment
 
-The app is designed to run as **one full-stack service** — the Express server builds and serves the `dist/` frontend, the admin panel, and the API on a single origin. Production can therefore be a simple Node host with a **persistent filesystem** (required for the SQLite DB and uploaded files).
+The app is designed to run as **one full-stack service** — the Express server builds and serves the `dist/` frontend, the admin panel, and the API on a single origin.
 
 - Source lives in a **private** GitHub repo (`joecel-hub/portfolio`, `main` branch).
-- **Render (recommended, paid)**: `render.yaml` provisions a Web Service (Starter plan, Singapore region) with a 1 GB persistent disk mounted at `/data`. Build = `npm ci && npm run build`, start = `npm run server`, health check = `/api/health`. Auto-deploys on push to `main`.
-  - Set `ADMIN_PASS` and `JWT_SECRET` as **secrets** in the Render dashboard (marked `sync: false` in the blueprint). `DB_FILE=/data/portfolio.db` and `UPLOAD_DIR=/data/uploads` are set automatically so the DB and uploads survive redeploys.
+- **Render (paid)**: `render.yaml` provisions a Web Service (Starter plan, Singapore region) with a 1 GB persistent disk mounted at `/data`. Build = `npm ci --include=dev && npm run build`, start = `npm run server`, health check = `/api/health`. Auto-deploys on push to `main`.
+  - Set `ADMIN_PASS`, `JWT_SECRET`, and `GIT_PAT` as **secrets** in the Render dashboard. `DB_FILE=/data/portfolio.db` and `UPLOAD_DIR=/data/uploads` are set automatically so the DB and uploads survive redeploys.
+- **Render (free, current)**: no disk is available, so persistence runs through **git pushback** (see [CMS data persistence](#cms-data-persistence)). Add the `GIT_PAT` secret to the service; set `DB_FILE`/`UPLOAD_DIR` to their defaults (inside the checkout) so the committed paths are the ones written and pushed back.
 - **Local / dev**: `npm run dev:full` (or `npm run server`) — Vite proxies `/api` and `/uploads` to `localhost:5175`.
-- `dist/`, `.vercel/`, `server/.env`, all `server/*.db*`, and `server/public/uploads/` are git-ignored; never commit build output, credentials, runtime databases, or uploaded files.
+- `dist/`, `.vercel/`, `server/.env`, `server/*.db-wal` / `*.db-shm`, and the contents of `server/public/uploads/` are git-ignored. `server/portfolio.db` **is** committed (it is the pushback snapshot); do not commit `server/.env`.
 
 ## Notes
 

@@ -5,10 +5,10 @@ dist
 .vercel
 vite.config.js.timestamp-*.mjs
 server/.env
-server/*.db
 server/*.db-wal
 server/*.db-shm
-server/public/uploads/
+server/public/uploads/*
+!server/public/uploads/.gitkeep
 
 .vercel
 .env*

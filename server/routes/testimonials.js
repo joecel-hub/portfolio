@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { db } from '../db.js'
 import { requireAuth } from '../auth.js'
+import { schedulePushback } from '../pushback.js'
 
 const router = Router()
 
@@ -23,6 +24,7 @@ router.post('/', (req, res) => {
   const info = db.prepare("INSERT INTO testimonials (name, role, quote, stars, status) VALUES (?, ?, ?, ?, 'approved')")
     .run(name, role || '', quote, Number(stars) || 5)
   const row = db.prepare('SELECT * FROM testimonials WHERE id = ?').get(info.lastInsertRowid)
+  schedulePushback()
   res.status(201).json(serialize(row))
 })
 
@@ -33,11 +35,13 @@ router.put('/:id', (req, res) => {
   db.prepare('UPDATE testimonials SET name = ?, role = ?, quote = ?, stars = ?, status = ? WHERE id = ?')
     .run(name ?? existing.name, role ?? existing.role, quote ?? existing.quote, Number(stars) ?? existing.stars, status ?? existing.status, req.params.id)
   const row = db.prepare('SELECT * FROM testimonials WHERE id = ?').get(req.params.id)
+  schedulePushback()
   res.json(serialize(row))
 })
 
 router.delete('/:id', (req, res) => {
   db.prepare('DELETE FROM testimonials WHERE id = ?').run(req.params.id)
+  schedulePushback()
   res.json({ ok: true })
 })
 

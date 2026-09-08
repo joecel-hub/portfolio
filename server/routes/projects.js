@@ -4,6 +4,7 @@ import { unlink } from 'node:fs'
 import { db } from '../db.js'
 import { requireAuth } from '../auth.js'
 import { upload, UPLOAD_DIR } from '../middleware/upload.js'
+import { schedulePushback } from '../pushback.js'
 
 const router = Router()
 
@@ -42,6 +43,7 @@ router.post('/', (req, res) => {
   const info = db.prepare('INSERT INTO projects (name, desc, tags, url, demo_url, thumb, category, sort) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
     .run(name, desc || '', JSON.stringify(tags || []), url || '', demoUrl || '', thumb || 'wave', cleanCategory(category), Number(sort) || 0)
   const row = db.prepare('SELECT * FROM projects WHERE id = ?').get(info.lastInsertRowid)
+  schedulePushback()
   res.status(201).json(rowToProject(row))
 })
 
@@ -56,6 +58,7 @@ router.put('/:id', (req, res) => {
   db.prepare('UPDATE projects SET name = ?, desc = ?, tags = ?, url = ?, demo_url = ?, thumb = ?, category = ?, sort = ? WHERE id = ?')
     .run(name ?? existing.name, desc ?? existing.desc, JSON.stringify(tags ?? existingTags), url ?? existing.url, demoUrl ?? existing.demo_url, thumb ?? existing.thumb, cleanCategory(category ?? existing.category), nextSort, req.params.id)
   const row = db.prepare('SELECT * FROM projects WHERE id = ?').get(req.params.id)
+  schedulePushback()
   res.json(rowToProject(row))
 })
 
@@ -78,6 +81,7 @@ router.put('/:id/image', upload.single('image'), (req, res) => {
   if (newImage) removeImageFile(existing.image)
   else if (image === '' && existing.image) removeImageFile(existing.image)
   const row = db.prepare('SELECT * FROM projects WHERE id = ?').get(req.params.id)
+  schedulePushback()
   res.json(rowToProject(row))
 })
 
@@ -86,6 +90,7 @@ router.delete('/:id', (req, res) => {
   if (!existing) return res.status(404).json({ error: 'Not found' })
   removeImageFile(existing.image)
   db.prepare('DELETE FROM projects WHERE id = ?').run(req.params.id)
+  schedulePushback()
   res.json({ ok: true })
 })
 

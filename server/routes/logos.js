@@ -4,6 +4,7 @@ import { unlink } from 'node:fs'
 import { db } from '../db.js'
 import { requireAuth } from '../auth.js'
 import { upload, UPLOAD_DIR } from '../middleware/upload.js'
+import { schedulePushback } from '../pushback.js'
 
 const router = Router()
 
@@ -40,6 +41,7 @@ router.post('/', upload.single('image'), (req, res) => {
   const image = req.file ? `/uploads/${req.file.filename}` : ''
   const info = db.prepare('INSERT INTO client_logos (name, image, sort, enabled) VALUES (?, ?, ?, 1)')
     .run(name, image, Number(sort) || 0)
+  schedulePushback()
   res.status(201).json({ id: info.lastInsertRowid, name, image, sort: Number(sort) || 0, enabled: 1 })
 })
 
@@ -67,6 +69,7 @@ router.put('/:id', upload.single('image'), (req, res) => {
   if (newImage) removeImageFile(existing.image)
   else if (image === '' && existing.image) removeImageFile(existing.image)
   const row = db.prepare('SELECT * FROM client_logos WHERE id = ?').get(req.params.id)
+  schedulePushback()
   res.json(toPublic(row))
 })
 
@@ -74,6 +77,7 @@ router.delete('/:id', (req, res) => {
   const row = db.prepare('SELECT * FROM client_logos WHERE id = ?').get(req.params.id)
   if (row) removeImageFile(row.image)
   db.prepare('DELETE FROM client_logos WHERE id = ?').run(req.params.id)
+  schedulePushback()
   res.json({ ok: true })
 })
 

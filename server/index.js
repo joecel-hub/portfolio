@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path'
 import { existsSync } from 'node:fs'
 import { seedIfEmpty } from './db.js'
 import { UPLOAD_DIR } from './middleware/upload.js'
+import { flushSync } from './pushback.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const PORT = process.env.PORT || 5175
@@ -71,3 +72,13 @@ app.listen(PORT, () => {
   console.log(`  • Review     http://localhost:${PORT}/review`)
   console.log(`  • Portfolio  http://localhost:${PORT} (when dist/ built)\n`)
 })
+
+let shuttingDown = false
+const shutdown = () => {
+  if (shuttingDown) return
+  shuttingDown = true
+  flushSync()
+  process.exit(0)
+}
+process.on('SIGTERM', shutdown)
+process.on('SIGINT', shutdown)

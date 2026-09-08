@@ -4,6 +4,7 @@ import { unlink } from 'node:fs'
 import { db } from '../db.js'
 import { requireAuth } from '../auth.js'
 import { upload, UPLOAD_DIR } from '../middleware/upload.js'
+import { schedulePushback } from '../pushback.js'
 
 const router = Router()
 
@@ -63,6 +64,7 @@ router.post('/', FIELDS, (req, res) => {
     'INSERT INTO certificates (name, issuer, cert_date, image, pdf, link, sort, enabled) VALUES (?, ?, ?, ?, ?, ?, ?, 1)',
   ).run(String(name), issuer || '', cert_date || '', image, pdf, link || '', Number(sort) || 0)
   const row = db.prepare('SELECT * FROM certificates WHERE id = ?').get(info.lastInsertRowid)
+  schedulePushback()
   res.status(201).json(toPublic(row))
 })
 
@@ -97,6 +99,7 @@ router.put('/:id', FIELDS, (req, res) => {
   if (newPdf) removeFile(existing.pdf)
   else if (isClear(req.body?.clearPdf)) removeFile(existing.pdf)
   const row = db.prepare('SELECT * FROM certificates WHERE id = ?').get(req.params.id)
+  schedulePushback()
   res.json(toPublic(row))
 })
 
@@ -107,6 +110,7 @@ router.delete('/:id', (req, res) => {
     removeFile(row.pdf)
   }
   db.prepare('DELETE FROM certificates WHERE id = ?').run(req.params.id)
+  schedulePushback()
   res.json({ ok: true })
 })
 
