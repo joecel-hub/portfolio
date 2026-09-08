@@ -23,6 +23,34 @@ app.use(express.json({ limit: '256kb' }))
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }))
 
+// Temporary diagnostic — remove after debugging
+import { isEnabled } from './pushback.js'
+import { execSync } from 'node:child_process'
+import { existsSync, statSync } from 'node:fs'
+app.get('/api/diagnose', (_req, res) => {
+  const patLen = (process.env.GIT_PAT || '').length
+  const repoRoot = join(__dirname, '..')
+  const gitDir = join(repoRoot, '.git')
+  let gitAvail = false
+  try { execSync('git --version', { encoding: 'utf8', timeout: 3000 }); gitAvail = true } catch {}
+  let remoteUrl = ''
+  try { remoteUrl = execSync('git remote -v', { encoding: 'utf8', timeout: 3000, cwd: repoRoot }).trim() } catch {}
+  let lastCommit = ''
+  try { lastCommit = execSync('git log --oneline -1', { encoding: 'utf8', timeout: 3000, cwd: repoRoot }).trim() } catch {}
+  res.json({
+    pushbackEnabled: isEnabled(),
+    gitPatLength: patLen,
+    repoRootExists: existsSync(repoRoot),
+    repoRootIsDir: existsSync(repoRoot) ? statSync(repoRoot).isDirectory() : false,
+    gitDirExists: existsSync(gitDir),
+    gitAvail,
+    remoteUrl,
+    lastCommit,
+    nodeEnv: process.env.NODE_ENV,
+    port: process.env.PORT,
+  })
+})
+
 app.use('/api/auth', authRoutes)
 app.use('/api/projects', projectRoutes)
 app.use('/api/testimonials', testimonialRoutes)
