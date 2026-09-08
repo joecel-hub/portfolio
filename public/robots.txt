@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /review
 Disallow: /uploads
 
-Sitemap: https://gio-portfolio.onrender.com/sitemap.xml
+Sitemap: https://gio-portfolio-6f1d.onrender.com/sitemap.xml
