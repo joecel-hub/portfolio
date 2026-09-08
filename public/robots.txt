@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /review
+Disallow: /uploads
+
+Sitemap: https://gio-portfolio.onrender.com/sitemap.xml

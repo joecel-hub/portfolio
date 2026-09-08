@@ -67,6 +67,7 @@ During development, Vite proxies `/api` and `/uploads` to the backend at `localh
 |---|---|---|
 | `PORT` | `5175` | Backend port |
 | `DB_FILE` | `server/portfolio.db` | SQLite database path |
+| `UPLOAD_DIR` | `server/public/uploads` | Uploaded files directory (set to `/data/uploads` on Render) |
 | `ADMIN_USER` | `admin` | Admin username |
 | `ADMIN_PASS` | `admin123` | Admin password (set a real one) |
 | `JWT_SECRET` | `dev-secret-change-me` | JWT signing secret (set a long random one) |
