@@ -33,6 +33,9 @@ Dual-mode portfolio for **Stryg.Bytes** (full-stack development studio) and **Gi
 - **Client logos marquee** — logo images or text-only fallback
 - **Certificates** — thumbnail image + optional PDF or external verification link (e.g. GSD Council), managed in admin
 - **PixelBlast background** / **Lenis smooth scroll** / **Scroll-triggered text reveals**
+- **Self-hosted fonts** — JetBrains Mono, Inter and Syne are bundled as variable woff2 files (`src/assets/fonts/`), so no requests go to Google Fonts
+- **Legal pages** — stand-alone `/privacy`, `/terms`, `/cookies` and `/refund` pages (see [Legal pages](#legal-pages))
+- **Review consent** — the review form requires an explicit consent checkbox before submission; consent and timestamp are stored with the review
 
 ## Commands
 
@@ -59,7 +62,7 @@ During development, Vite proxies `/api` and `/uploads` to the backend at `localh
   - Testimonials — name, role, quote, stars (approve from the Reviews inbox or add manually)
   - Client logos — name + image, sort, show/hide
   - Certificates — name, issuer, date, thumbnail image, PDF, verification link, sort, show/hide
-  - Reviews — public submission page (`/review?c=<name>`) + approve/delete in admin
+  - Reviews — public submission page (`/review?c=<name>`) + approve/delete in admin. Submitting requires ticking a **consent checkbox** (stored as `consent` + `consent_at`); submissions without consent are rejected.
 - **Uploads** live in `server/public/uploads/` (gitignored user content), served at `/uploads`.
 
 ## Env Variables (`server/.env`)
@@ -90,9 +93,26 @@ Running the SQLite DB + uploads on the free tier means the filesystem is wiped o
 
 Trade-off: every CMS save causes an auto-deploy (~1 min), and two overlapping deploys editing the same time can race (the push retries up to 3×). Raising `PERSIST_DEBOUNCE_MS` coalesces more edits into fewer pushes → fewer redeploys.
 
+## Legal pages
+
+The site ships four stand-alone legal pages served by the backend before the SPA catch-all:
+
+| Route | Page | Location |
+|---|---|---|
+| `/privacy` | Privacy Policy | `server/public/privacy/index.html` |
+| `/terms` | Terms & Conditions | `server/public/terms/index.html` |
+| `/cookies` | Cookie Policy | `server/public/cookies/index.html` |
+| `/refund` | Refund & Cancellation Policy | `server/public/refund/index.html` |
+
+- Each page is a self-contained static HTML file (no build step) themed to match the portfolio, with a "← Back to portfolio" link to `/`.
+- Routers are registered in `server/app.js` **before** the `dist` SPA catch-all.
+- The same four pages are mirrored under `public/{privacy,terms,cookies,refund}/` (the Vite public dir), so they are copied into `dist/` and also work on a static-only host (e.g. Vercel) with no Express routing.
+- Content (updated: 8 September 2026): individual studio identity **Joecel Jaygee Pergis trading as Stryg.Bytes**; governing law **UAE**; GDPR-aligned privacy sections covering EU visitors; CCPA/CPRA notes; **no tracking cookies or analytics**; trademark attribution line for client names/logos in Terms.
+- `public/sitemap.xml` includes the four legal URLs; `public/robots.txt` keeps `/admin`, `/review` and `/uploads` out of search results.
+
 ## Tests
 
-`npm test` runs the backend integration suite against an isolated temp SQLite DB + upload dir (pushback is disabled there, so nothing is committed). It covers health, seeded public lists, login + the rate limiter, authed project CRUD, validation, and the public-review → approve → testimonial flow. Run it locally before pushing backend changes.
+`npm test` runs the backend integration suite against an isolated temp SQLite DB + upload dir (pushback is disabled there, so nothing is committed). It covers health, seeded public lists, login + the rate limiter, authed project CRUD, validation, the public-review → approve → testimonial flow, and the consent-required rejection. Run it locally before pushing backend changes.
 
 ## Sections
 
@@ -118,7 +138,10 @@ Single profile page (`#profile`, light theme):
 ```
 src/
 ├── main.js                   # Entry point
+├── assets/
+│   └── fonts/                # Self-hosted variable woff2 (jetbrainsmono, inter, syne) + OFL.txt
 ├── styles/
+│   ├── fonts.css             # @font-face declarations for the bundled fonts
 │   ├── tokens.css            # CSS custom properties (dev + --nm-* normal tokens)
 │   ├── base.css              # Reset, body, normal-mode remapping
 │   ├── utilities.css         # Wave dividers, mode visibility, noise
@@ -148,8 +171,20 @@ server/
 │   └── reviews.js            # Public submit + admin approve/delete
 └── public/
     ├── admin/index.html      # Admin SPA (login + dashboard)
-    ├── review/index.html     # Public review submission page
+    ├── review/index.html     # Public review submission page (with required consent checkbox)
+    ├── privacy/index.html    # Privacy Policy
+    ├── terms/index.html      # Terms & Conditions
+    ├── cookies/index.html    # Cookie Policy
+    ├── refund/index.html     # Refund & Cancellation Policy
     └── uploads/              # User-uploaded files (gitignored)
+
+public/                            # Vite public dir → copied verbatim into dist/
+├── privacy/index.html             # Legal page mirror (also served static on Vercel)
+├── terms/index.html
+├── cookies/index.html
+├── refund/index.html
+├── sitemap.xml                    # SEO sitemap (includes the 4 legal URLs)
+└── robots.txt
 
 tests/
 └── server.test.mjs           # Backend integration tests (npm test)
@@ -164,7 +199,7 @@ The app is designed to run as **one full-stack service** — the Express server 
   - Set `ADMIN_PASS`, `JWT_SECRET`, and `GIT_PAT` as **secrets** in the Render dashboard. `DB_FILE=/data/portfolio.db` and `UPLOAD_DIR=/data/uploads` are set automatically so the DB and uploads survive redeploys.
 - **Render (free, current)**: no disk is available, so persistence runs through **git pushback** (see [CMS data persistence](#cms-data-persistence)). Add the `GIT_PAT` secret to the service; set `DB_FILE`/`UPLOAD_DIR` to their defaults (inside the checkout) so the committed paths are the ones written and pushed back.
 - **Local / dev**: `npm run dev:full` (or `npm run server`) — Vite proxies `/api` and `/uploads` to `localhost:5175`.
-- `dist/`, `.vercel/`, `server/.env`, `server/*.db-wal` / `*.db-shm`, and the contents of `server/public/uploads/` are git-ignored. `server/portfolio.db` **is** committed (it is the pushback snapshot); do not commit `server/.env`.
+- `dist/`, `.vercel/`, `server/.env`, `server/*.db-wal` / `*.db-shm`, and the contents of `server/public/uploads/` are git-ignored. `server/portfolio.db` **is** committed (it is the pushback snapshot); do not commit `server/.env`. The legal pages under `server/public/` and their mirrors under `public/` are committed so they exist in both the backend and the static build.
 
 ## Notes
 
