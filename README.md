@@ -44,6 +44,7 @@ Dual-mode portfolio for **Stryg.Bytes** (full-stack development studio) and **Gi
 | `npm run build` | Production build to `dist/` |
 | `npm run preview` | Preview production build |
 | `npm run seed` | Start backend (seeds database on first run) |
+| `npm test` | Run the backend integration test suite (`tests/`, Node's built-in runner) |
 
 During development, Vite proxies `/api` and `/uploads` to the backend at `localhost:5175`.
 
@@ -71,20 +72,27 @@ During development, Vite proxies `/api` and `/uploads` to the backend at `localh
 | `ADMIN_USER` | `admin` | Admin username |
 | `ADMIN_PASS` | `admin123` | Admin password (set a real one) |
 | `JWT_SECRET` | `dev-secret-change-me` | JWT signing secret (set a long random one) |
+| `LOGIN_RATE_LIMIT` | `5` | Max `POST /api/auth/login` attempts per IP before a 429 (in-memory, resets on success) |
+| `LOGIN_RATE_WINDOW_MS` | `900000` | Rate-limit window (15 min) |
 | `GIT_PAT` | *(unset → disabled)* | GitHub fine-grained PAT ("Contents: Read and write") enabling git pushback persistence |
 | `GIT_CMS_REMOTE` | `github.com/joecel-hub/portfolio` | Repo the CMS snapshots are pushed to |
 | `GIT_CMS_BRANCH` | `main` | Branch CMS snapshots are pushed to |
+| `PERSIST_DEBOUNCE_MS` | `8000` | Coalescing window for git pushback — quick edits collapse into one snapshot push (and one auto-deploy) |
 
 ## CMS data persistence
 
 Running the SQLite DB + uploads on the free tier means the filesystem is wiped on every redeploy. To keep CMS edits without a disk, the server can **push data back to the repo** after every write:
 
 1. Seed `server/portfolio.db` (and optional `server/public/uploads/`) is committed and checked out on build.
-2. `server/pushback.js` debounces ~3 s after any write, checkpoints the SQLite WAL, stages `portfolio.db` + uploads, and commits + pushes them to `GIT_CMS_REMOTE` on `GIT_CMS_BRANCH`.
+2. `server/pushback.js` debounces ~8 s after any write (`PERSIST_DEBOUNCE_MS`), checkpoints the SQLite WAL, stages `portfolio.db` + uploads, and commits + pushes them to `GIT_CMS_REMOTE` on `GIT_CMS_BRANCH`.
 3. That push triggers Render's auto-deploy, which checks out the updated snapshot — so content survives redeploys at zero cost.
 4. On shutdown (`SIGTERM`/`SIGINT`) a synchronous best-effort flush is attempted.
 
-Trade-off: every CMS save causes an auto-deploy (~1 min), and two overlapping deploys editing the same time can race (the push retries up to 3×).
+Trade-off: every CMS save causes an auto-deploy (~1 min), and two overlapping deploys editing the same time can race (the push retries up to 3×). Raising `PERSIST_DEBOUNCE_MS` coalesces more edits into fewer pushes → fewer redeploys.
+
+## Tests
+
+`npm test` runs the backend integration suite against an isolated temp SQLite DB + upload dir (pushback is disabled there, so nothing is committed). It covers health, seeded public lists, login + the rate limiter, authed project CRUD, validation, and the public-review → approve → testimonial flow. Run it locally before pushing backend changes.
 
 ## Sections
 
@@ -125,10 +133,13 @@ src/
 │       ├── PixelBlast.jsx    # Three.js shader background (Normal)
 │       └── mountPixelBlast.jsx
 server/
-├── index.js                  # Express app entry + route mounting + SPA fallback
+├── index.js                  # Entry point: env load, listen, shutdown flush
+├── app.js                    # Express app (exported so tests can mount it)
 ├── db.js                     # SQLite schema, migrations, seeding
 ├── auth.js                   # JWT login + requireAuth middleware
-├── middleware/upload.js      # multer config (images + PDFs)
+├── middleware/
+│   ├── upload.js             # multer config (images + PDFs)
+│   └── rateLimit.js          # in-memory login rate limiter (per IP)
 ├── routes/
 │   ├── projects.js           # Project CRUD + screenshot upload
 │   ├── testimonials.js       # Testimonial CRUD
@@ -139,6 +150,9 @@ server/
     ├── admin/index.html      # Admin SPA (login + dashboard)
     ├── review/index.html     # Public review submission page
     └── uploads/              # User-uploaded files (gitignored)
+
+tests/
+└── server.test.mjs           # Backend integration tests (npm test)
 ```
 
 ## Deployment

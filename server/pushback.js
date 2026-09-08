@@ -9,7 +9,14 @@ export const REPO_ROOT = join(__dirname, '..')
 const GIT_PAT = process.env.GIT_PAT || ''
 const REMOTE = process.env.GIT_CMS_REMOTE || 'github.com/joecel-hub/portfolio'
 const BRANCH = process.env.GIT_CMS_BRANCH || 'main'
-const DEBOUNCE_MS = 3000
+// Coalescing window: quick bursts of edits collapse into one snapshot push
+// (and therefore one auto-deploy). Tune via PERSIST_DEBOUNCE_MS.
+const DEBOUNCE_MS = positiveInt(process.env.PERSIST_DEBOUNCE_MS, 8000)
+
+function positiveInt(value, fallback) {
+  const n = Number(value)
+  return Number.isInteger(n) && n > 0 ? n : fallback
+}
 
 const PUSH_URL = `https://x-access-token:${GIT_PAT}@${REMOTE}.git`
 const TRACKED_PATHS = ['server/portfolio.db', 'server/public/uploads']
