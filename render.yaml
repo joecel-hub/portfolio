@@ -19,6 +19,8 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
+      - key: GIT_PAT
+        sync: false
     disk:
       name: data
       mountPath: /data
