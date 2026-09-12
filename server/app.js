@@ -12,6 +12,7 @@ import testimonialRoutes from './routes/testimonials.js'
 import logoRoutes from './routes/logos.js'
 import reviewRoutes from './routes/reviews.js'
 import certificateRoutes from './routes/certificates.js'
+import hobbyClipRoutes from './routes/hobbyClips.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -29,6 +30,7 @@ app.use('/api/testimonials', testimonialRoutes)
 app.use('/api/logos', logoRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/certificates', certificateRoutes)
+app.use('/api/hobby-clips', hobbyClipRoutes)
 
 // Uploaded images (client logos, etc.)
 app.use('/uploads', express.static(UPLOAD_DIR))

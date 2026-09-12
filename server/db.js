@@ -66,6 +66,18 @@ export function initSchema() {
       sort INTEGER NOT NULL DEFAULT 0,
       enabled INTEGER NOT NULL DEFAULT 1
     );
+
+    CREATE TABLE IF NOT EXISTS hobby_clips (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category TEXT NOT NULL DEFAULT 'gaming',
+      title TEXT NOT NULL DEFAULT '',
+      description TEXT NOT NULL DEFAULT '',
+      video_url TEXT NOT NULL DEFAULT '',
+      thumbnail TEXT NOT NULL DEFAULT '',
+      sort INTEGER NOT NULL DEFAULT 0,
+      enabled INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `)
 
   migrateSchema()
@@ -232,6 +244,23 @@ export function seedIfEmpty() {
       for (const c of rows) ins.run(c.name, c.issuer, c.date, c.link, c.sort)
     })
     tx(certs)
+  }
+
+  if (count('hobby_clips') === 0) {
+    const ins = db.prepare(
+      `INSERT INTO hobby_clips (category, title, description, video_url, sort, enabled) VALUES (?, ?, ?, '', ?, 0)`,
+    )
+    const clips = [
+      { category: 'gaming', title: 'Add your gaming clip', description: 'Paste a YouTube/Vimeo link or upload a short clip, then enable it here.', sort: 1 },
+      { category: 'editing', title: 'Add your edited reel', description: 'Paste a YouTube/Vimeo link or upload a short clip, then enable it here.', sort: 2 },
+      { category: 'modeling', title: 'Add your 3D showcase', description: 'A turntable render or WebGL demo clip works well here.', sort: 3 },
+      { category: 'music', title: 'Add your music/dance clip', description: 'Paste a YouTube/Vimeo link or upload a short clip, then enable it here.', sort: 4 },
+      { category: 'choreography', title: 'Add your choreography clip', description: 'Paste a YouTube/Vimeo link or upload a short clip, then enable it here.', sort: 5 },
+    ]
+    const tx = db.transaction((rows) => {
+      for (const c of rows) ins.run(c.category, c.title, c.description, c.sort)
+    })
+    tx(clips)
   }
 
   return MTOKEN

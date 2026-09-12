@@ -7,8 +7,10 @@ export default defineConfig({
     assetsDir: 'assets',
     rollupOptions: {
       output: {
-        manualChunks: {
-          three: ['three', 'postprocessing'],
+        manualChunks(id) {
+          if (id.includes('node_modules/three') || id.includes('node_modules/postprocessing')) {
+            return 'three'
+          }
         },
       },
     },

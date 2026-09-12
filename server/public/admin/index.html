@@ -113,10 +113,12 @@
 (function(){
   const API = ''
   let TOKEN = localStorage.getItem('sb_token') || ''
-  const TAB = { projects: 'Projects', testimonials: 'Testimonials', logos: 'Client Logos', certificates: 'Certificates', reviews: 'Reviews' }
+  const TAB = { projects: 'Projects', testimonials: 'Testimonials', logos: 'Client Logos', certificates: 'Certificates', hobbyClips: 'Hobby Clips', reviews: 'Reviews' }
   const CATEGORIES = { client: 'Client Project', saas: 'SaaS Template', apps: 'Systems & Apps', template: 'Template' }
+  const HOBBY_CATEGORIES = { gaming: 'Gaming', editing: 'Video Editing', modeling: '3D Modeling', music: 'Music', choreography: 'Choreography' }
   function catLabel(c) { return CATEGORIES[c] || 'Client Project' }
-  let state = { tab: 'projects', projects: [], testimonials: [], logos: [], certificates: [], reviews: [], form: {} }
+  function hobbyCatLabel(c) { return HOBBY_CATEGORIES[c] || c }
+  let state = { tab: 'projects', projects: [], testimonials: [], logos: [], certificates: [], hobbyClips: [], reviews: [], form: {} }
   const $app = document.getElementById('app')
   const $toast = document.getElementById('toast')
   let toastTimer = null
@@ -220,6 +222,19 @@
     })
   }
 
+  // Single-file upload helper (used by hobby clips: separate video/thumbnail endpoints)
+  function apiUploadFile(path, fieldName, file) {
+    const fd = new FormData()
+    fd.append(fieldName, file)
+    const headers = {}
+    if (TOKEN) headers['Authorization'] = 'Bearer ' + TOKEN
+    return fetch(API + path, { method: 'PUT', headers, body: fd }).then(async res => {
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status))
+      return data
+    })
+  }
+
   /* ---------- LOGIN ---------- */
   function renderLogin() {
     $app.innerHTML = `
@@ -257,10 +272,10 @@
 
   /* ---------- DATA ---------- */
   async function load() {
-    const [projects, testimonials, logos, certificates, reviews] = await Promise.all([
-      api('/api/projects'), api('/api/testimonials'), api('/api/logos/all'), api('/api/certificates/all'), api('/api/reviews')
+    const [projects, testimonials, logos, certificates, hobbyClips, reviews] = await Promise.all([
+      api('/api/projects'), api('/api/testimonials'), api('/api/logos/all'), api('/api/certificates/all'), api('/api/hobby-clips/all'), api('/api/reviews')
     ])
-    state.projects = projects; state.testimonials = testimonials; state.logos = logos; state.certificates = certificates; state.reviews = reviews
+    state.projects = projects; state.testimonials = testimonials; state.logos = logos; state.certificates = certificates; state.hobbyClips = hobbyClips; state.reviews = reviews
   }
 
   /* ---------- RENDER ---------- */
@@ -297,6 +312,7 @@
     else if (state.tab === 'testimonials') body.innerHTML = tabTestimonials()
     else if (state.tab === 'logos') body.innerHTML = tabLogos()
     else if (state.tab === 'certificates') body.innerHTML = tabCertificates()
+    else if (state.tab === 'hobbyClips') body.innerHTML = tabHobbyClips()
     else if (state.tab === 'reviews') body.innerHTML = tabReviews()
     wireTab()
   }
@@ -383,6 +399,29 @@
               <button class="btn sm danger" onclick="SB.delCertificate(${c.id})">Delete</button>
             </div>
           </div>`).join('') || '<div class="empty">No certificates yet.</div>'}
+      </div>
+    `
+  }
+
+  function tabHobbyClips() {
+    return `
+      <div class="titlebar"><h2>Hobby clips (video showcase)</h2><button class="btn primary sm" onclick="SB.newHobbyClip()">+ Add clip</button></div>
+      <div class="muted" style="margin-bottom:1rem">Shown as a card in the Video Showcase section (below Hobbies) — hover to preview, click to watch. Paste a YouTube/Vimeo URL, or upload a short video file directly.</div>
+      <div class="card-list">
+        ${state.hobbyClips.map(c => `
+          <div class="item">
+            ${c.thumbnail ? `<img class="logo-thumb" src="${esc(c.thumbnail)}" alt="">` : ''}
+            <div class="grow">
+              <div class="row"><div class="title">${esc(c.title || '(untitled)')}</div><span class="tag">${esc(hobbyCatLabel(c.category))}</span></div>
+              <div class="sub">${esc(c.description)}</div>
+              <div class="sub">sort ${c.sort} · ${c.enabled ? 'enabled' : 'hidden'}${c.videoUrl ? ' · has video' : ' · no video yet'}</div>
+            </div>
+            <div class="row">
+              <button class="btn sm" onclick="SB.toggleHobbyClip(${c.id})">${c.enabled ? 'Hide' : 'Show'}</button>
+              <button class="btn sm" onclick="SB.editHobbyClip(${c.id})">Edit</button>
+              <button class="btn sm danger" onclick="SB.delHobbyClip(${c.id})">Delete</button>
+            </div>
+          </div>`).join('') || '<div class="empty">No hobby clips yet.</div>'}
       </div>
     `
   }
@@ -538,6 +577,42 @@
     })
   }
 
+  function hobbyClipFormModal() {
+    const f = state.form
+    const isEdit = !!f?.id
+    openModal({
+      title: isEdit ? 'Edit hobby clip' : 'New hobby clip',
+      wide: true,
+      body: `
+        <div class="form-grid">
+          <div class="field"><label>Hobby</label>
+            <select id="hf-category">${Object.entries(HOBBY_CATEGORIES).map(([v, l]) => `<option value="${v}" ${(f?.category || 'gaming') === v ? 'selected' : ''}>${l}</option>`).join('')}</select>
+          </div>
+          <div class="field"><label>Sort order</label><input id="hf-sort" type="number" value="${f?.sort ?? 0}"></div>
+          <div class="field full"><label>Title</label><input id="hf-title" value="${esc(f?.title || '')}" placeholder="Ranked highlights — Season 4"></div>
+          <div class="field full"><label>Description</label><textarea id="hf-desc">${esc(f?.description || '')}</textarea></div>
+          <div class="field full"><label>Video URL (YouTube/Vimeo link — recommended for anything over ~30s)</label>
+            <input id="hf-url" value="${esc(!f?.videoUrl || f.videoUrl.startsWith('/uploads/') ? '' : f.videoUrl)}" placeholder="https://www.youtube.com/watch?v=...">
+          </div>
+          <div class="field full"><label>Or upload a short video file (mp4/webm/mov, max 60MB)${isEdit && f?.videoUrl && f.videoUrl.startsWith('/uploads/') ? ' — leave empty to keep current' : ''}</label>
+            ${isEdit && f?.videoUrl && f.videoUrl.startsWith('/uploads/') ? `<div class="muted" style="margin-bottom:.4rem;font-size:.82rem">Current: ${esc(f.videoUrl)}</div>` : ''}
+            <input id="hf-video" type="file" accept="video/mp4,video/webm,.mp4,.webm,.mov">
+          </div>
+          <div class="field full"><label>Thumbnail image ${isEdit && f?.thumbnail ? '(leave empty to keep current)' : '(optional — auto-derived for YouTube links if left blank)'}</label>
+            <img class="preview-img" id="hf-thumb-preview" src="${esc(f?.thumbnail || '')}" alt="preview" ${f?.thumbnail ? '' : 'hidden'}>
+            <input id="hf-thumb" type="file" accept="image/png,image/jpeg,image/webp,image/gif" onchange="SB.previewHobbyThumb(this)">
+          </div>
+          <div class="field"><label>Visible on site</label>
+            <select id="hf-enabled"><option value="1" ${f?.enabled !== 0 ? 'selected' : ''}>Enabled</option><option value="0" ${f?.enabled === 0 ? 'selected' : ''}>Hidden</option></select>
+          </div>
+          <div class="field full" style="display:flex;gap:.6rem;align-items:center">
+            <button class="btn primary" onclick="SB.saveHobbyClip()">${isEdit ? 'Save changes' : 'Add clip'}</button>
+            <button class="btn" onclick="SB.cancelForm()">Cancel</button>
+          </div>
+        </div>`,
+    })
+  }
+
   /* ---------- ACTIONS ---------- */
   const SB = window.SB = {
     logout,
@@ -671,6 +746,50 @@
     },
     async toggleCertificate(id) { const c = state.certificates.find(x => x.id === id); if (!c) return; try { await api('/api/certificates/' + id, { method: 'PUT', body: JSON.stringify({ enabled: c.enabled ? 0 : 1 }) }); await load(); render() } catch (e) { toast(e.message, false) } },
     async delCertificate(id) { confirmModal('Delete this certificate?', { onConfirm: async () => { await api('/api/certificates/' + id, { method: 'DELETE' }); await load(); render(); toast('Certificate deleted', true) } }) },
+    newHobbyClip() { state.form = { mode: 'hobbyClip', category: 'gaming', title: '', description: '', videoUrl: '', thumbnail: '', sort: state.hobbyClips.length + 1, enabled: 1 }; hobbyClipFormModal() },
+    editHobbyClip(id) {
+      const c = state.hobbyClips.find(x => x.id === id); if (!c) return
+      state.form = { mode: 'hobbyClip', id: c.id, category: c.category, title: c.title, description: c.description, videoUrl: c.videoUrl, thumbnail: c.thumbnail, sort: c.sort, enabled: c.enabled }
+      hobbyClipFormModal()
+    },
+    previewHobbyThumb(input) {
+      const img = document.getElementById('hf-thumb-preview')
+      if (!img) return
+      const f = input.files && input.files[0]
+      if (!f) return
+      img.src = URL.createObjectURL(f)
+      img.hidden = false
+    },
+    async saveHobbyClip() {
+      const f = state.form
+      const payload = {
+        category: document.getElementById('hf-category').value,
+        title: document.getElementById('hf-title').value.trim(),
+        description: document.getElementById('hf-desc').value.trim(),
+        sort: Number(document.getElementById('hf-sort').value) || 0,
+        enabled: document.getElementById('hf-enabled').value === '1' ? 1 : 0,
+      }
+      const urlInput = document.getElementById('hf-url').value.trim()
+      const videoFile = domFile('hf-video')
+      // Only send the pasted URL as videoUrl when there's no file upload for this save —
+      // the file upload endpoint sets videoUrl itself after saving the file.
+      if (!videoFile) payload.videoUrl = urlInput
+      try {
+        let id = f.id
+        if (id) await api('/api/hobby-clips/' + id, { method: 'PUT', body: JSON.stringify(payload) })
+        else {
+          const created = await api('/api/hobby-clips', { method: 'POST', body: JSON.stringify(payload) })
+          id = created.id
+          if (payload.enabled === 0) await api('/api/hobby-clips/' + id, { method: 'PUT', body: JSON.stringify({ enabled: 0 }) })
+        }
+        if (videoFile) await apiUploadFile('/api/hobby-clips/' + id + '/video', 'video', videoFile)
+        const thumbFile = domFile('hf-thumb')
+        if (thumbFile) await apiUploadFile('/api/hobby-clips/' + id + '/thumbnail', 'thumbnail', thumbFile)
+        closeModal(); state.form = {}; await load(); render(); toast('Hobby clip saved', true)
+      } catch (e) { toast(e.message, false) }
+    },
+    async toggleHobbyClip(id) { const c = state.hobbyClips.find(x => x.id === id); if (!c) return; try { await api('/api/hobby-clips/' + id, { method: 'PUT', body: JSON.stringify({ enabled: c.enabled ? 0 : 1 }) }); await load(); render() } catch (e) { toast(e.message, false) } },
+    async delHobbyClip(id) { confirmModal('Delete this hobby clip?', { onConfirm: async () => { await api('/api/hobby-clips/' + id, { method: 'DELETE' }); await load(); render(); toast('Hobby clip deleted', true) } }) },
     async approveReview(id) { try { await api('/api/reviews/' + id + '/approve', { method: 'POST' }); await load(); render(); toast('Review approved & published', true) } catch (e) { toast(e.message, false) } },
     async delReview(id) { confirmModal('Delete this review?', { onConfirm: async () => { await api('/api/reviews/' + id, { method: 'DELETE' }); await load(); render(); toast('Review deleted', true) } }) }
   }

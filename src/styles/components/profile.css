@@ -614,6 +614,117 @@ body.normal-mode #contact {
   opacity: 0.92;
 }
 
+/* Video Showcase */
+.pf-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.1rem;
+}
+
+.pf-showcase-empty {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-style: italic;
+  text-align: center;
+  padding: 2rem 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 14px;
+}
+
+.pf-showcase-card {
+  position: relative;
+  border: 1px solid rgba(25, 29, 54, 0.14);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.3s ease, border-color 0.25s ease;
+  z-index: 1;
+}
+
+.pf-showcase-card:hover,
+.pf-showcase-card:focus-visible {
+  transform: scale(1.06);
+  box-shadow: 0 22px 50px var(--glow1);
+  border-color: var(--a1);
+  z-index: 2;
+}
+
+.pf-showcase-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, rgba(124, 110, 255, 0.18), rgba(0, 212, 255, 0.12));
+  overflow: hidden;
+}
+
+.pf-showcase-thumb img,
+.pf-showcase-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pf-showcase-preview {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.pf-showcase-card.is-previewing .pf-showcase-preview {
+  opacity: 1;
+}
+
+.pf-showcase-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: rgba(5, 6, 12, 0.18);
+  transition: background 0.2s ease;
+}
+
+.pf-showcase-card:hover .pf-showcase-play {
+  background: rgba(5, 6, 12, 0.28);
+}
+
+.pf-showcase-card.is-previewing .pf-showcase-play {
+  opacity: 0;
+}
+
+.pf-showcase-play svg {
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+  transition: transform 0.2s ease;
+}
+
+.pf-showcase-card:hover .pf-showcase-play svg {
+  transform: scale(1.15);
+}
+
+.pf-showcase-info {
+  padding: 0.85rem 1rem 1rem;
+}
+
+.pf-showcase-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: var(--a2);
+  margin-bottom: 0.3rem;
+}
+
+.pf-showcase-title {
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
 .pf-certs {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
