@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support Desk — Live Demo</title>
+<link rel="icon" href="assets/logo.svg">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="tkt-demo-banner">Live demo — sample data only. Nothing you submit is saved; refreshing resets it.</div>
+
+<!-- Public: submit ticket -->
+<div id="view-submit">
+  <header class="tkt-public-header">
+    <div class="tkt-public-brand"><img src="assets/logo.svg" style="width:26px;height:26px"><span>Support Desk</span></div>
+    <button class="tkt-btn" id="tkt-admin-link"><i class="fa-solid fa-lock mr-1"></i>Admin login</button>
+  </header>
+  <div id="view-submit-body"></div>
+</div>
+
+<!-- Public: success -->
+<div id="view-success" class="hidden"></div>
+
+<!-- Admin: login -->
+<div id="view-login" class="hidden"></div>
+
+<!-- Admin: shell -->
+<div id="view-admin" class="hidden">
+  <div class="tkt-shell" style="display:flex">
+    <aside class="tkt-sidebar" id="tkt-sidebar">
+      <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.5rem 1.25rem">
+        <img src="assets/logo.svg" style="width:26px;height:26px">
+        <strong style="color:#fff;letter-spacing:-0.01em">Support Desk</strong>
+      </div>
+      <nav id="tkt-nav" style="display:flex;flex-direction:column;gap:0.2rem"></nav>
+      <a href="/" target="_blank" rel="noopener" class="tkt-sidebar-credit">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        <span>Built by Stryg.Bytes</span>
+      </a>
+    </aside>
+    <div class="tkt-main">
+      <header class="tkt-topbar">
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <button id="tkt-ham-btn" class="tkt-icon-btn" style="display:inline-flex;align-items:center;justify-content:center" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+          <strong id="tkt-section-title" style="font-size:0.95rem"></strong>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <div style="text-align:right;line-height:1.2">
+            <div id="tkt-user-name" style="font-size:0.85rem;font-weight:600"></div>
+            <div id="tkt-user-role" style="font-size:0.7rem;color:var(--muted)"></div>
+          </div>
+          <div id="tkt-user-initials" style="width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600"></div>
+          <button id="tkt-logout-btn" class="tkt-icon-btn" title="Sign out"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>
+      </header>
+      <main class="tkt-content">
+        <section id="section-dashboard" class="tkt-admin-section"></section>
+        <section id="section-tickets" class="tkt-admin-section hidden"></section>
+        <section id="section-ticket-detail" class="tkt-admin-section hidden"></section>
+        <section id="section-admins" class="tkt-admin-section hidden"></section>
+      </main>
+    </div>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast" class="tkt-toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/render.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/views/submit.js"></script>
+<script src="js/views/login.js"></script>
+<script src="js/views/dashboard.js"></script>
+<script src="js/views/tickets.js"></script>
+<script src="js/views/ticket-detail.js"></script>
+<script src="js/views/admins.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ITMS — Live Demo</title>
+<link rel="icon" href="assets/logo.svg">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="logged-out">
+
+<div class="itms-demo-banner">Live demo — sample data only. Nothing you change here is saved; refreshing resets it.</div>
+
+<!-- Login -->
+<div class="itms-login-wrap">
+  <div class="itms-login-brand">
+    <img src="assets/logo.svg" alt="" style="width:50px;height:50px;margin-bottom:1.75rem">
+    <h1 style="font-size:1.9rem;font-weight:700;margin:0 0 0.75rem;letter-spacing:-0.01em">ITMS</h1>
+    <p style="opacity:0.82;max-width:340px;line-height:1.65;font-size:0.95rem">IT Asset Management System — track hardware, consumables, transfers and reports across every site, in one place.</p>
+    <div style="margin-top:2rem;display:flex;gap:1.5rem;font-size:0.8rem;opacity:0.65">
+      <span><i class="fa-solid fa-laptop mr-1"></i>Assets</span>
+      <span><i class="fa-solid fa-boxes-stacked mr-1"></i>Consumables</span>
+      <span><i class="fa-solid fa-right-left mr-1"></i>Transfers</span>
+      <span><i class="fa-solid fa-chart-pie mr-1"></i>Reports</span>
+    </div>
+    <a href="/" target="_blank" rel="noopener" class="itms-credit">
+      <span class="itms-credit-mark">S&middot;B</span>
+      <span>Built by <strong>Stryg.Bytes</strong> — view portfolio <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7em"></i></span>
+    </a>
+  </div>
+  <div class="itms-login-form-panel">
+    <div style="width:100%;max-width:360px">
+      <img src="assets/logo.svg" alt="" style="width:38px;height:38px;margin-bottom:1rem" class="itms-mobile-logo">
+      <h2 style="font-size:1.3rem;font-weight:700;margin:0 0 0.3rem">Sign in</h2>
+      <p style="color:var(--muted);font-size:0.88rem;margin:0 0 1.5rem">This is a self-contained demo — pick a role below to try it.</p>
+      <form id="itms-login-form">
+        <label class="itms-field" style="margin-bottom:0.9rem"><span>Username</span><input id="itms-login-user" required autocomplete="username"></label>
+        <label class="itms-field" style="margin-bottom:0.9rem"><span>Password</span><input id="itms-login-pass" type="password" required autocomplete="current-password"></label>
+        <button type="submit" class="itms-btn-primary" style="width:100%">Sign in</button>
+        <div style="color:#dc2626;font-size:0.82rem;min-height:1.2em;margin-top:0.5rem" id="itms-login-err"></div>
+      </form>
+      <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--line)">
+        <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.6rem">Quick demo logins</p>
+        <div style="display:flex;flex-wrap:wrap;gap:0.4rem">
+          <button type="button" class="itms-btn itms-demo-fill" data-user="admin" data-pass="admin123">Admin</button>
+          <button type="button" class="itms-btn itms-demo-fill" data-user="it" data-pass="it123">IT</button>
+          <button type="button" class="itms-btn itms-demo-fill" data-user="hr" data-pass="hr123">HR</button>
+          <button type="button" class="itms-btn itms-demo-fill" data-user="viewer" data-pass="viewer123">Viewer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- App shell -->
+<div class="itms-shell">
+  <aside class="itms-sidebar" id="itms-sidebar">
+    <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.5rem 1.25rem">
+      <img src="assets/logo.svg" style="width:26px;height:26px">
+      <strong style="color:#fff;letter-spacing:-0.01em">ITMS</strong>
+    </div>
+    <nav id="itms-nav" style="display:flex;flex-direction:column;gap:0.2rem"></nav>
+    <a href="/" target="_blank" rel="noopener" class="itms-sidebar-credit">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      <span>Built by Stryg.Bytes</span>
+    </a>
+  </aside>
+  <div class="itms-main">
+    <header class="itms-topbar">
+      <div style="display:flex;align-items:center;gap:0.75rem">
+        <button id="itms-ham-btn" class="itms-icon-btn" style="display:inline-flex;align-items:center;justify-content:center" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
+        <strong id="itms-section-title" style="font-size:0.95rem"></strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem">
+        <div style="text-align:right;line-height:1.2">
+          <div id="itms-user-name" style="font-size:0.85rem;font-weight:600"></div>
+          <div id="itms-user-role" style="font-size:0.7rem;color:var(--muted)"></div>
+        </div>
+        <div id="itms-user-initials" style="width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:600"></div>
+        <button id="itms-logout-btn" class="itms-icon-btn" title="Sign out"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+      </div>
+    </header>
+    <main class="itms-content">
+      <section id="section-dashboard" class="itms-section"></section>
+      <section id="section-assets" class="itms-section hidden"></section>
+      <section id="section-consumables" class="itms-section hidden"></section>
+      <section id="section-transfers" class="itms-section hidden"></section>
+      <section id="section-reports" class="itms-section hidden"></section>
+      <section id="section-logs" class="itms-section hidden"></section>
+      <section id="section-users" class="itms-section hidden"></section>
+      <section id="section-settings" class="itms-section hidden"></section>
+    </main>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast" class="itms-toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/render.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/sections/dashboard.js"></script>
+<script src="js/sections/assets.js"></script>
+<script src="js/sections/consumables.js"></script>
+<script src="js/sections/transfers.js"></script>
+<script src="js/sections/reports.js"></script>
+<script src="js/sections/logs.js"></script>
+<script src="js/sections/settings.js"></script>
+<script src="js/sections/users.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

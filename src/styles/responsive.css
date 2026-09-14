@@ -44,10 +44,6 @@
     max-width: 520px;
   }
 
-  .projects-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
   .resume-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;

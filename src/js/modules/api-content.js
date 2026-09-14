@@ -90,7 +90,7 @@ const THUMB_SVG = {
   </svg>`,
 }
 
-const CATEGORY_PILL = { client: 'Client', saas: 'SaaS', apps: 'App', template: 'Template' }
+const CATEGORY_PILL = { client: 'Client Project', saas: 'SaaS Template', apps: 'Systems & Apps', template: 'Template' }
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
@@ -109,7 +109,7 @@ function renderProjectCard(p) {
     ? `<img class="project-thumb-img" src="${esc(p.image)}" alt="${esc(p.name)} screenshot" loading="lazy">`
     : svg
   const cat = CATEGORY_PILL[p.category] ? `pc-${p.category}` : 'pc-client'
-  const tags = `<span class="pcategory ${cat}">${CATEGORY_PILL[p.category] || 'Client'}</span>` + (p.tags || []).map(t => `<span class="ptag">${esc(t)}</span>`).join('')
+  const tags = `<span class="pcategory ${cat}">${CATEGORY_PILL[p.category] || 'Client Project'}</span>` + (p.tags || []).map(t => `<span class="ptag">${esc(t)}</span>`).join('')
   const primary = p.demoUrl || p.url
   const arrow = primary ? `<div class="project-arrow">↗</div>` : ''
   const body = `
