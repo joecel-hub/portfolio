@@ -337,6 +337,7 @@ function renderShowcaseCard(clip) {
       <div class="pf-showcase-thumb">
         ${thumbImg}
         ${previewVideo}
+        <div class="pf-showcase-glare"></div>
         <div class="pf-showcase-play">${playIconSvg()}</div>
       </div>
       <div class="pf-showcase-info">
@@ -344,6 +345,30 @@ function renderShowcaseCard(clip) {
         <div class="pf-showcase-title">${esc(clip.title || 'Untitled clip')}</div>
       </div>
     </div>`
+}
+
+// Cursor-tracked 3D tilt: rotates the card toward the pointer with a moving
+// glare, then eases back flat on leave. Kept lightweight (no library).
+const TILT_MAX_DEG = 10
+
+function wireShowcaseTilt(el) {
+  const glare = el.querySelector('.pf-showcase-glare')
+  function onMove(e) {
+    const r = el.getBoundingClientRect()
+    const px = (e.clientX - r.left) / r.width // 0..1
+    const py = (e.clientY - r.top) / r.height
+    const rotY = (px - 0.5) * TILT_MAX_DEG * 2
+    const rotX = (0.5 - py) * TILT_MAX_DEG * 2
+    el.style.transform = `perspective(700px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.045,1.045,1.045)`
+    if (glare) glare.style.setProperty('--gx', `${(px * 100).toFixed(1)}%`)
+    if (glare) glare.style.setProperty('--gy', `${(py * 100).toFixed(1)}%`)
+  }
+  function onLeave() {
+    el.style.transform = ''
+  }
+  el.addEventListener('mousemove', onMove)
+  el.addEventListener('mouseleave', onLeave)
+  el.addEventListener('blur', onLeave)
 }
 
 function wireShowcaseCard(el, clip) {
@@ -361,9 +386,33 @@ function wireShowcaseCard(el, clip) {
     el.addEventListener('mouseleave', stop)
     el.addEventListener('blur', stop)
   }
+  wireShowcaseTilt(el)
   el.addEventListener('click', () => openLightbox(clip))
   el.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(clip) }
+  })
+}
+
+// Category chips above the grid — reuses the same filter-chip pattern the
+// Projects section already has, so clicking narrows the grid to one hobby.
+function renderShowcaseFilters(clips) {
+  const bar = document.getElementById('pf-showcase-filters')
+  if (!bar) return
+  const present = [...new Set(clips.map(c => c.category))]
+  if (present.length < 2) { bar.innerHTML = ''; return } // nothing to filter with one category
+  const chips = ['all', ...present]
+  bar.innerHTML = chips.map((cat, i) => `
+    <button type="button" class="filter-chip${i === 0 ? ' active' : ''}" data-cat="${esc(cat)}">
+      ${esc(cat === 'all' ? 'All' : (HOBBY_CATEGORY_LABEL[cat] || cat))}
+    </button>`).join('')
+  bar.addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-chip')
+    if (!btn) return
+    bar.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c === btn))
+    const cat = btn.dataset.cat
+    document.querySelectorAll('#pf-showcase-grid .pf-showcase-card').forEach(card => {
+      card.classList.toggle('is-hidden', cat !== 'all' && card.dataset.category !== cat)
+    })
   })
 }
 
@@ -376,6 +425,7 @@ async function loadHobbyClips() {
     const clips = await res.json()
     const withVideo = Array.isArray(clips) ? clips.filter(c => c.videoUrl) : []
     if (withVideo.length === 0) return // keep the static "add clips" placeholder
+    renderShowcaseFilters(withVideo)
     grid.innerHTML = withVideo.map(renderShowcaseCard).join('')
     grid.querySelectorAll('.pf-showcase-card').forEach((el, i) => wireShowcaseCard(el, withVideo[i]))
   } catch {
