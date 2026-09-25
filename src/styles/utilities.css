@@ -9,6 +9,11 @@
   background-size: 200px 200px;
 }
 
+/* The hidden attribute always wins (e.g. over .dev-only { display: block }). */
+[hidden] {
+  display: none !important;
+}
+
 /* Dev / Normal mode visibility */
 .dev-only {
   display: block;

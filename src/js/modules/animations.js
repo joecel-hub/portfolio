@@ -107,17 +107,17 @@ export function initAnimations() {
     })
   })
 
-  // Testimonial cards only exist once one is approved in admin.
-  if (document.querySelector('.t-card')) {
+  // The testimonials section is only shown once a testimonial is approved.
+  if (!document.getElementById('testimonials')?.hidden) {
     gsap.from('.t-card', {
       scrollTrigger: { trigger: '#testimonials', start: 'top 72%' },
       opacity: 0, y: 50, duration: 0.8, stagger: 0.12, ease: 'power3.out'
     })
+    gsap.from('.client-logo', {
+      scrollTrigger: { trigger: '#testimonials', start: 'top 80%' },
+      opacity: 0, duration: 0.6, stagger: 0.05, ease: 'power2.out'
+    })
   }
-  gsap.from('.client-logo', {
-    scrollTrigger: { trigger: '#testimonials', start: 'top 80%' },
-    opacity: 0, duration: 0.6, stagger: 0.05, ease: 'power2.out'
-  })
 
   const ptSteps = document.querySelectorAll('#process .pt-step')
   const ptTimeline = document.querySelector('#process .process-timeline')

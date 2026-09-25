@@ -632,16 +632,6 @@ body.normal-mode #contact {
   display: none;
 }
 
-.pf-showcase-empty {
-  grid-column: 1 / -1;
-  color: var(--muted);
-  font-style: italic;
-  text-align: center;
-  padding: 2rem 1rem;
-  border: 1px dashed var(--border);
-  border-radius: 14px;
-}
-
 .pf-showcase-card {
   position: relative;
   border: 1px solid rgba(25, 29, 54, 0.14);

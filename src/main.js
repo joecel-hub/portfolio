@@ -105,11 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeContainer && !textType) {
       try {
         textType = initTextType(typeContainer, {
+          // Primary positioning only; AI engineering is presented in About as
+          // an area of active development, not as a job title.
           words: [
             'IT Support Engineer',
-            'Web Developer',
-            'IT Infrastructure & Networking',
-            'Expanding into AI Engineering'
+            'IT Infrastructure',
+            'Web Developer'
           ],
           typingSpeed: 60,
           deletingSpeed: 30,

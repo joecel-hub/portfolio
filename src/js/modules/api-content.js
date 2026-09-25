@@ -234,10 +234,8 @@ async function loadTestimonials() {
     const res = await fetch(`${API_BASE}/testimonials`)
     if (!res.ok) return
     const items = await res.json()
-    if (!Array.isArray(items) || items.length === 0) {
-      grid.innerHTML = '' // no approved testimonials yet: the grid collapses (CSS :empty)
-      return
-    }
+    if (!Array.isArray(items) || items.length === 0) return // section stays hidden
+    document.getElementById('testimonials')?.removeAttribute('hidden')
     grid.innerHTML = items.map(t => `
       <div class="t-card">
         <div class="t-stars">${'★'.repeat(Math.max(1, Math.min(5, t.stars || 5)))}</div>
@@ -251,7 +249,7 @@ async function loadTestimonials() {
         </div>
       </div>`).join('')
   } catch {
-    // API down -> leave the grid empty (collapsed)
+    // API down -> the section stays hidden
   }
 }
 
@@ -481,12 +479,13 @@ async function loadHobbyClips() {
     if (!res.ok) return
     const clips = await res.json()
     const withVideo = Array.isArray(clips) ? clips.filter(c => c.videoUrl) : []
-    if (withVideo.length === 0) return // keep the static "add clips" placeholder
+    if (withVideo.length === 0) return // no active clips: the showcase stays hidden
+    document.getElementById('pf-showcase')?.removeAttribute('hidden')
     renderShowcaseFilters(withVideo)
     grid.innerHTML = withVideo.map(renderShowcaseCard).join('')
     grid.querySelectorAll('.pf-showcase-card').forEach((el, i) => wireShowcaseCard(el, withVideo[i]))
   } catch {
-    // API down -> keep static placeholder
+    // API down -> the showcase stays hidden
   }
 }
 

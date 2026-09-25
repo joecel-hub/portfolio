@@ -1,6 +1,6 @@
 # Stryg.Bytes — Portfolio
 
-Dual-mode portfolio for **Stryg.Bytes** (full-stack development studio) and **Gio** (personal IT Engineer profile), powered by a small self-hosted CMS.
+Dual-mode portfolio for **Stryg.Bytes** (full-stack development studio) and **Gio** (personal profile: IT Support Engineer | IT Infrastructure | Web Developer), powered by a small self-hosted CMS.
 
 ## Tech Stack
 
@@ -22,7 +22,7 @@ Dual-mode portfolio for **Stryg.Bytes** (full-stack development studio) and **Gi
 
 ## Features
 
-- **Dual mode** (Dev / Normal) — Stryg.Bytes studio vs personal IT Engineer profile
+- **Dual mode** (Dev / Normal) — Stryg.Bytes studio vs personal IT Support Engineer profile
 - **Grid loading screen** — Stryg.Bytes glitch → 144-block grid wipe → hero reveal
 - **Hero bot** — robot card in the Dev hero
 - **Premium split hero** — asymmetric two-column layout with glass robot card (Dev mode)
@@ -131,7 +131,7 @@ Single profile page (`#profile`, light theme):
 2. **About** (`#pf-about`) — bio + "What I'm doing" cards
 3. **Experience** (`#pf-resume`) — career timeline + skills with logos
 4. **Portfolio** (`#pf-portfolio`) — featured work with Development / Design / Concept filters
-5. **Hobbies & Certificates** (`#pf-hobbies`) — hobby cards, video showcase and certificates (managed in admin)
+5. **Hobbies & Certificates** (`#pf-hobbies`) — hobby cards, video showcase (hidden until a clip is enabled) and certificates (managed in admin)
 6. **Contact** (`#pf-contact`) — contact rows + form
 
 ### Dev mode (Stryg.Bytes)
@@ -140,7 +140,7 @@ Single profile page (`#profile`, light theme):
 3. **Services** (`#skills-dev`) — bento cards
 4. **Projects** (`#projects`) — CMS project grid with category filters (empty categories are hidden)
 5. **Process** (`#process`) — 5-step pinned timeline
-6. **Testimonials** (`#testimonials`) — client-logo marquee + approved testimonials (cards hidden until one is approved)
+6. **Testimonials** (`#testimonials`) — client-logo marquee + approved testimonials (whole section hidden until one is approved)
 7. **Contact** (`#contact`) — form + social links
 
 ## Project Structure
