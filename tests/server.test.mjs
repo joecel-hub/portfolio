@@ -337,3 +337,25 @@ test('contact: validates input, swallows honeypot, 503 without SMTP, rate limite
   }
   assert.ok(limited, 'expected a 429 after the per-IP contact limit')
 })
+
+test('certificates: kind and credential are stored, validated and returned', async () => {
+  const token = await login()
+  const created = await j('/api/certificates', {
+    method: 'POST',
+    token,
+    body: { name: 'Test Event', issuer: 'Org', kind: 'event', credential: 'Certificate of Attendance' },
+  })
+  assert.equal(created.status, 201)
+  assert.equal(created.data.kind, 'event')
+  assert.equal(created.data.credential, 'Certificate of Attendance')
+
+  const bogus = await j(`/api/certificates/${created.data.id}`, { method: 'PUT', token, body: { kind: 'bogus' } })
+  assert.equal(bogus.status, 200)
+  assert.equal(bogus.data.kind, 'event') // invalid kind keeps the existing value
+
+  const pub = await j('/api/certificates')
+  const mine = pub.data.find((c) => c.id === created.data.id)
+  assert.equal(mine.kind, 'event')
+
+  await j(`/api/certificates/${created.data.id}`, { method: 'DELETE', token })
+})

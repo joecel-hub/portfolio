@@ -391,7 +391,7 @@
             ${c.image ? `<img class="logo-thumb" src="${esc(c.image)}" alt="">` : ''}
             <div class="grow">
               <div class="title">${esc(c.name)}</div>
-              <div class="sub">${esc(c.issuer)} · ${esc(c.date)} · sort ${c.sort} · ${c.enabled ? 'enabled' : 'hidden'}${c.link ? ' · has link' : ''}${c.pdf ? ' · has PDF' : ''}${c.image ? ' · has image' : ''}</div>
+              <div class="sub">${esc(c.kind || 'training')}${c.credential ? ' (' + esc(c.credential) + ')' : ''} · ${esc(c.issuer)} · ${esc(c.date)} · sort ${c.sort} · ${c.enabled ? 'enabled' : 'hidden'}${c.link ? ' · has link' : ''}${c.pdf ? ' · has PDF' : ''}${c.image ? ' · has image' : ''}</div>
             </div>
             <div class="row">
               <button class="btn sm" onclick="SB.toggleCertificate(${c.id})">${c.enabled ? 'Hide' : 'Show'}</button>
@@ -555,6 +555,8 @@
           <div class="field"><label>Issuer / organization</label><input id="cf-issuer" value="${esc(f?.issuer || '')}" placeholder="GSDC"></div>
           <div class="field"><label>Date</label><input id="cf-date" value="${esc(f?.date || '')}" placeholder="August 2026"></div>
           <div class="field full"><label>Verification link (optional — opens external verification page)</label><input id="cf-link" value="${esc(f?.link || '')}" placeholder="https://..."></div>
+          <div class="field"><label>Type</label><select id="cf-kind">${[['training', 'Training / workshop'], ['event', 'Event / attendance'], ['certification', 'Professional certification']].map(([v, l]) => `<option value="${v}" ${(f?.kind || 'training') === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+          <div class="field"><label>Credential wording (optional)</label><input id="cf-credential" value="${esc(f?.credential || '')}" placeholder="Certificate of Completion"></div>
           <div class="field"><label>Sort order</label><input id="cf-sort" type="number" value="${f?.sort ?? 0}"></div>
           <div class="field"><label>Enabled on site</label>
             <select id="cf-enabled"><option value="1" ${f?.enabled !== 0 ? 'selected' : ''}>Enabled</option><option value="0" ${f?.enabled === 0 ? 'selected' : ''}>Hidden</option></select>
@@ -712,8 +714,8 @@
     },
     async toggleLogo(id) { const l = state.logos.find(x => x.id === id); if (!l) return; try { await api('/api/logos/' + id, { method: 'PUT', body: JSON.stringify({ enabled: l.enabled ? 0 : 1 }) }); await load(); render() } catch (e) { toast(e.message, false) } },
     async delLogo(id) { confirmModal('Delete this logo?', { onConfirm: async () => { await api('/api/logos/' + id, { method: 'DELETE' }); await load(); render(); toast('Logo deleted', true) } }) },
-    newCertificate() { state.form = { mode: 'certificate', name: '', issuer: '', date: '', link: '', image: '', pdf: '', sort: state.certificates.length + 1, enabled: 1 }; certificateFormModal() },
-    editCertificate(id) { const c = state.certificates.find(x => x.id === id); if (!c) return; state.form = { mode: 'certificate', id: c.id, name: c.name, issuer: c.issuer, date: c.date, link: c.link, image: c.image, pdf: c.pdf, sort: c.sort, enabled: c.enabled }; certificateFormModal() },
+    newCertificate() { state.form = { mode: 'certificate', kind: 'training', credential: '', name: '', issuer: '', date: '', link: '', image: '', pdf: '', sort: state.certificates.length + 1, enabled: 1 }; certificateFormModal() },
+    editCertificate(id) { const c = state.certificates.find(x => x.id === id); if (!c) return; state.form = { mode: 'certificate', id: c.id, kind: c.kind, credential: c.credential, name: c.name, issuer: c.issuer, date: c.date, link: c.link, image: c.image, pdf: c.pdf, sort: c.sort, enabled: c.enabled }; certificateFormModal() },
     previewCertImage(input) {
       const img = document.getElementById('cf-preview')
       if (!img) return
@@ -729,6 +731,8 @@
         issuer: (document.getElementById('cf-issuer').value || '').trim(),
         cert_date: (document.getElementById('cf-date').value || '').trim(),
         link: (document.getElementById('cf-link').value || '').trim(),
+        kind: document.getElementById('cf-kind').value,
+        credential: (document.getElementById('cf-credential').value || '').trim(),
         sort: String(Number(document.getElementById('cf-sort').value) || 0),
         enabled: document.getElementById('cf-enabled').value === '1' ? '1' : '0'
       }

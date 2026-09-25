@@ -114,6 +114,19 @@ function migrateSchema() {
   } catch {
     // column already exists
   }
+  // Certificates are grouped on the site as professional certifications,
+  // training/workshops, or events/attendance; credential is the wording on
+  // the certificate itself (e.g. "Certificate of Attendance").
+  try {
+    db.exec(`ALTER TABLE certificates ADD COLUMN kind TEXT NOT NULL DEFAULT 'training'`)
+  } catch {
+    // column already exists
+  }
+  try {
+    db.exec(`ALTER TABLE certificates ADD COLUMN credential TEXT NOT NULL DEFAULT ''`)
+  } catch {
+    // column already exists
+  }
   backfillCategories()
 }
 

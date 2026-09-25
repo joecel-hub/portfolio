@@ -1,0 +1,146 @@
+{
+  "_about": "Unified project content prepared for the future single projects model. Not wired into the app yet. Values come from the CV, the live CMS and the demos in public/demos. githubUrl is null where no repository link is known.",
+  "schema": [
+    "id",
+    "identity",
+    "title",
+    "description",
+    "category",
+    "technologies",
+    "image",
+    "githubUrl",
+    "liveUrl",
+    "demoUrl",
+    "featured",
+    "sortOrder"
+  ],
+  "categories": {
+    "systems": "Business Systems",
+    "web": "Web Development",
+    "client": "Client Websites",
+    "experiment": "Experiments"
+  },
+  "projects": [
+    {
+      "id": "itms",
+      "identity": "both",
+      "title": "IT Asset Inventory Management System",
+      "description": "An internal web-based system for centralized IT asset records — asset tracking, inventory records, transfers, reports and dashboards. The live demo runs in the browser with sample data.",
+      "category": "systems",
+      "technologies": [
+        "PHP",
+        "MySQL",
+        "JavaScript",
+        "Tailwind CSS"
+      ],
+      "image": "/uploads/1789383135967-logo.webp",
+      "githubUrl": null,
+      "liveUrl": null,
+      "demoUrl": "/demos/itms/index.html",
+      "featured": true,
+      "sortOrder": 1
+    },
+    {
+      "id": "support-desk",
+      "identity": "both",
+      "title": "Support Desk — Ticketing System",
+      "description": "An IT support ticketing app: users submit tickets, and admins manage statuses, priorities and replies. The live demo runs in the browser with sample data.",
+      "category": "systems",
+      "technologies": [
+        "PHP",
+        "MySQL",
+        "JavaScript"
+      ],
+      "image": "/uploads/1789383259401-logo.webp",
+      "githubUrl": null,
+      "liveUrl": null,
+      "demoUrl": "/demos/ticketing/index.html",
+      "featured": true,
+      "sortOrder": 2
+    },
+    {
+      "id": "internal-web-apps",
+      "identity": "gio",
+      "title": "Company Internal Website & Web Apps",
+      "description": "Internal company web applications developed and maintained to improve business workflows and IT operations.",
+      "category": "web",
+      "technologies": [
+        "PHP",
+        "MySQL",
+        "JavaScript",
+        "Tailwind CSS"
+      ],
+      "image": null,
+      "githubUrl": null,
+      "liveUrl": null,
+      "demoUrl": null,
+      "featured": true,
+      "sortOrder": 3
+    },
+    {
+      "id": "tanken-resort",
+      "identity": "studio",
+      "title": "Tanken's Mountain Resort",
+      "description": "Resort website for Dinalungan, Aurora — services, events, gallery, cottage pricing and a reservation flow.",
+      "category": "client",
+      "technologies": [
+        "HTML/CSS",
+        "JavaScript"
+      ],
+      "image": "/uploads/1788851701458-logo.webp",
+      "githubUrl": null,
+      "liveUrl": "https://tankenresort.com/",
+      "demoUrl": null,
+      "featured": true,
+      "sortOrder": 4
+    },
+    {
+      "id": "agcew-website",
+      "identity": "studio",
+      "title": "Al Ghurair Contracting & Engineering Works (AGCEW)",
+      "description": "Corporate site for a UAE construction & engineering contractor — company profile, project portfolio, news, careers and contact.",
+      "category": "client",
+      "technologies": [],
+      "image": "/uploads/1788851731361-logo.webp",
+      "githubUrl": null,
+      "liveUrl": "https://agcew.com/",
+      "demoUrl": null,
+      "featured": true,
+      "sortOrder": 5,
+      "_decision": "AGCEW is the employer: confirm whether this is client work or employer work before labelling it a client website."
+    },
+    {
+      "id": "ai-assistant",
+      "identity": "studio",
+      "title": "AI-Powered Assistant Build",
+      "description": "LLM-powered tooling and AI workflows from the Be10X AI & ChatGPT track — prototyping assistants and automation for real tasks.",
+      "category": "experiment",
+      "technologies": [],
+      "image": null,
+      "githubUrl": null,
+      "liveUrl": null,
+      "demoUrl": null,
+      "featured": false,
+      "sortOrder": 6,
+      "_decision": "No link or repository known; confirm or remove."
+    },
+    {
+      "id": "motion-experiment",
+      "identity": "studio",
+      "title": "Interactive Motion Experiment",
+      "description": "Scroll-driven animation, animated SVG and micro-interaction experiments.",
+      "category": "experiment",
+      "technologies": [
+        "GSAP",
+        "SVG"
+      ],
+      "image": null,
+      "githubUrl": null,
+      "liveUrl": null,
+      "demoUrl": null,
+      "featured": false,
+      "sortOrder": 7,
+      "_decision": "No link or repository known; confirm or remove."
+    }
+  ]
+}

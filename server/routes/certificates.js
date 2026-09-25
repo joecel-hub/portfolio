@@ -9,6 +9,14 @@ import { firstUnsafe } from '../safeUrl.js'
 
 const router = Router()
 
+// certification = professional certification, training = course/workshop,
+// event = attendance at an event or talk.
+const KINDS = new Set(['certification', 'training', 'event'])
+
+function cleanKind(v, fallback = 'training') {
+  return KINDS.has(v) ? v : fallback
+}
+
 const FIELDS = upload.fields([
   { name: 'image', maxCount: 1 },
   { name: 'pdf', maxCount: 1 },
@@ -20,6 +28,8 @@ function toPublic(r) {
     name: r.name,
     issuer: r.issuer || '',
     date: r.cert_date || '',
+    kind: cleanKind(r.kind),
+    credential: r.credential || '',
     image: r.image || '',
     pdf: r.pdf || '',
     link: r.link || '',
@@ -53,7 +63,7 @@ router.get('/all', (req, res) => {
 })
 
 router.post('/', FIELDS, (req, res) => {
-  const { name, issuer, cert_date, link, sort } = req.body || {}
+  const { name, issuer, cert_date, link, sort, kind, credential } = req.body || {}
   if (!name) {
     if (req.files?.image?.[0]) removeFile(`/uploads/${req.files.image[0].filename}`)
     if (req.files?.pdf?.[0]) removeFile(`/uploads/${req.files.pdf[0].filename}`)
@@ -67,8 +77,8 @@ router.post('/', FIELDS, (req, res) => {
   const image = req.files?.image?.[0] ? `/uploads/${req.files.image[0].filename}` : ''
   const pdf = req.files?.pdf?.[0] ? `/uploads/${req.files.pdf[0].filename}` : ''
   const info = db.prepare(
-    'INSERT INTO certificates (name, issuer, cert_date, image, pdf, link, sort, enabled) VALUES (?, ?, ?, ?, ?, ?, ?, 1)',
-  ).run(String(name), issuer || '', cert_date || '', image, pdf, link || '', Number(sort) || 0)
+    'INSERT INTO certificates (name, issuer, cert_date, image, pdf, link, sort, enabled, kind, credential) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)',
+  ).run(String(name), issuer || '', cert_date || '', image, pdf, link || '', Number(sort) || 0, cleanKind(kind), String(credential || '').slice(0, 120))
   const row = db.prepare('SELECT * FROM certificates WHERE id = ?').get(info.lastInsertRowid)
   schedulePushback()
   res.status(201).json(toPublic(row))
@@ -81,7 +91,7 @@ router.put('/:id', FIELDS, (req, res) => {
     if (req.files?.pdf?.[0]) removeFile(`/uploads/${req.files.pdf[0].filename}`)
     return res.status(404).json({ error: 'Not found' })
   }
-  const { name, issuer, cert_date, link, sort, enabled } = req.body || {}
+  const { name, issuer, cert_date, link, sort, enabled, kind, credential } = req.body || {}
   if (firstUnsafe({ link })) {
     if (req.files?.image?.[0]) removeFile(`/uploads/${req.files.image[0].filename}`)
     if (req.files?.pdf?.[0]) removeFile(`/uploads/${req.files.pdf[0].filename}`)
@@ -93,7 +103,7 @@ router.put('/:id', FIELDS, (req, res) => {
   const pdf = newPdf || (isClear(req.body?.clearPdf) ? '' : existing.pdf)
   const s = Number(sort)
   db.prepare(
-    `UPDATE certificates SET name = ?, issuer = ?, cert_date = ?, image = ?, pdf = ?, link = ?, sort = ?, enabled = ? WHERE id = ?`,
+    `UPDATE certificates SET name = ?, issuer = ?, cert_date = ?, image = ?, pdf = ?, link = ?, sort = ?, enabled = ?, kind = ?, credential = ? WHERE id = ?`,
   ).run(
     name === undefined ? existing.name : String(name),
     issuer === undefined ? existing.issuer : String(issuer || ''),
@@ -103,6 +113,8 @@ router.put('/:id', FIELDS, (req, res) => {
     link === undefined ? existing.link : String(link || ''),
     sort === undefined || sort === null || Number.isNaN(s) ? existing.sort : s,
     enabled === undefined ? existing.enabled : enabled ? 1 : 0,
+    kind === undefined ? cleanKind(existing.kind) : cleanKind(kind, cleanKind(existing.kind)),
+    credential === undefined ? existing.credential || '' : String(credential || '').slice(0, 120),
     req.params.id,
   )
   if (newImage) removeFile(existing.image)

@@ -125,16 +125,20 @@ The site ships four stand-alone legal pages served by the backend before the SPA
 
 The site boots in **Normal (Gio)** mode; the Stryg.Bytes studio is one click away via the mode switch.
 
-### Normal mode (Gio) — default
-Single profile page (`#profile`, light theme):
-1. **Cover + header** — cover photo, avatar, name, typewriter role, actions, socials
-2. **About** (`#pf-about`) — bio + "What I'm doing" cards
-3. **Experience** (`#pf-resume`) — career timeline + skills with logos
-4. **Portfolio** (`#pf-portfolio`) — featured work with Development / Design / Concept filters
-5. **Hobbies & Certificates** (`#pf-hobbies`) — hobby cards, video showcase (hidden until a clip is enabled) and certificates (managed in admin)
-6. **Contact** (`#pf-contact`) — contact rows + form
+### Normal mode (Gio) — default: professional profile
+Single profile page (`#profile`, light theme). Navigation uses the off-canvas menu at every width.
+1. **Home** (`#profile`) — name, title (IT Support Engineer), "IT Infrastructure | Web Developer", summary, View My Work / Download CV, LinkedIn / GitHub / Email
+2. **About** (`#pf-about`)
+3. **What I Do** (`#pf-whatido`) — IT Support, IT Infrastructure, Web Development, Business Systems
+4. **Experience** (`#pf-resume`) — career timeline
+5. **Skills** (`#pf-skills`) — grouped skills (no progress bars)
+6. **Projects** (`#pf-portfolio`) — real projects with Business Systems / Web Development filters
+7. **Certifications & Training** (`#pf-certs`) — grouped by certificate `kind` (certification / training / event), managed in admin
+8. **Education** (`#pf-education`)
+9. **Beyond Work** (`#pf-hobbies`) — hobbies + video showcase (not in the menu; showcase hidden until a clip is enabled)
+10. **Contact** (`#pf-contact`)
 
-### Dev mode (Stryg.Bytes)
+### Dev mode (Stryg.Bytes) — technical lab
 1. **Hero** (`#hero`) — "Welcome to the Studio" split layout with the 3D hero-bot card
 2. **About** (`#about`) — "Why Stryg.Bytes" value cards + circuit illustration
 3. **Services** (`#skills-dev`) — bento cards

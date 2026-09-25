@@ -8,6 +8,8 @@
 
 /* ── Tablet 768px+ ── */
 @media (min-width: 768px) {
+  /* Inline top-nav links: Stryg.Bytes only. The Gio profile has nine
+     sections, so it keeps the off-canvas menu at every width. */
   section {
     padding: 6rem 6vw;
   }
@@ -42,11 +44,11 @@
     padding: 2.5rem 2.5rem;
   }
 
-  .ham-btn {
+  body:not(.normal-mode) .ham-btn {
     display: none;
   }
 
-  .nav-links {
+  body:not(.normal-mode) .nav-links {
     display: flex;
     position: static;
     flex-direction: row;
@@ -67,32 +69,28 @@
     transition: none;
   }
 
-  .nav-links::before {
+  body:not(.normal-mode) .nav-links::before {
     display: none;
   }
 
-  .nav-links .nav-panel-head,
-  .nav-links .nav-panel-foot,
-  .nav-links .nav-close {
+  body:not(.normal-mode) .nav-links .nav-panel-head,
+  body:not(.normal-mode) .nav-links .nav-panel-foot,
+  body:not(.normal-mode) .nav-links .nav-close {
     display: none;
   }
 
-  .nav-backdrop {
+  body:not(.normal-mode) .nav-backdrop {
     display: none;
   }
 
-  .nav-links a {
+  body:not(.normal-mode) .nav-links a {
     font-size: 0.75rem;
     opacity: 1;
     transform: none;
   }
 
-  .nav-links li {
+  body:not(.normal-mode) .nav-links li {
     margin: 0;
-  }
-
-  body.normal-mode .nav-links {
-    background: none;
   }
 
   #topnav {

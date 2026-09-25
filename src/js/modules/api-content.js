@@ -253,22 +253,34 @@ async function loadTestimonials() {
   }
 }
 
+// Certificates are grouped honestly: attendance is never shown as a
+// professional certification. Empty groups are not rendered.
+const CERT_GROUPS = [
+  ['certification', 'Professional Certifications'],
+  ['training', 'Training &amp; Workshops'],
+  ['event', 'Events &amp; Attendance'],
+]
+
 async function loadCertificates() {
-  const grid = document.getElementById('pf-certs-track')
-  if (!grid) return
+  const host = document.getElementById('pf-cert-groups')
+  if (!host) return
   try {
     const res = await fetch(`${API_BASE}/certificates`)
     if (!res.ok) return
     const certs = await res.json()
     if (!Array.isArray(certs) || certs.length === 0) return
-    grid.innerHTML = certs.map(renderCertCard).join('')
+    host.innerHTML = CERT_GROUPS.map(([kind, label]) => {
+      const list = certs.filter(c => (c.kind || 'training') === kind)
+      if (!list.length) return ''
+      return `<h3 class="pf-sub">${label}</h3><div class="pf-certs">${list.map(renderCertCard).join('')}</div>`
+    }).join('')
   } catch {
     // keep static cards
   }
 }
 
 function renderCertCard(c) {
-  const meta = [c.issuer, c.date].filter(Boolean).join(' \u00b7 ')
+  const meta = [c.issuer, c.date, c.credential].filter(Boolean).join(' \u00b7 ')
   const href = safeHref(c.link) || safeHref(c.pdf)
   const inner = `
     <span class="pf-cert-img-wrap">

@@ -99,7 +99,8 @@ export function initNavigation() {
       })
     })
     window.addEventListener('resize', () => {
-      if (window.innerWidth >= 768 && links.classList.contains('open')) {
+      const inlineNav = !document.body.classList.contains('normal-mode')
+      if (inlineNav && window.innerWidth >= 768 && links.classList.contains('open')) {
         closeMenu()
       }
     })
@@ -107,25 +108,8 @@ export function initNavigation() {
     noteError('menu wiring skipped: ham/links missing', { ham: !!ham, links: !!links })
   }
 
-  // ── NAV-LINK MAPPING ──
-  const aboutEl = document.getElementById('nav-about')
-  const skEl = document.getElementById('nav-skills')
-  const wkEl = document.getElementById('nav-work')
-  const contactEl = document.getElementById('nav-contact')
-  function updateNavLinks() {
-    try {
-      const nm = document.body.classList.contains('normal-mode')
-      if (aboutEl) aboutEl.href = nm ? '#pf-about' : '#about'
-      if (skEl) skEl.href = nm ? '#pf-about' : '#skills-dev'
-      if (wkEl) { wkEl.href = nm ? '#pf-resume' : '#projects'; wkEl.textContent = nm ? 'Experience' : 'Work' }
-      if (contactEl) contactEl.href = nm ? '#pf-contact' : '#contact'
-    } catch (e) { noteError('updateNavLinks', e) }
-  }
-  try {
-    updateNavLinks()
-    const mo = new MutationObserver(updateNavLinks)
-    mo.observe(document.body, { attributes: true, attributeFilter: ['class'] })
-  } catch (e) { noteError('mutation observer', e) }
+  // Nav items are declared per identity in index.html (.normal-only /
+  // .dev-only), so no runtime href remapping is needed.
 
   // ── RIGHT-RAIL (Dev scrollspy + clicks) — optional, must not break menu ──
   function isNormal() {
