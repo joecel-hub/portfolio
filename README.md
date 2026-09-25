@@ -5,7 +5,7 @@ Dual-mode portfolio for **Stryg.Bytes** (full-stack development studio) and **Gi
 ## Tech Stack
 
 ### Frontend
-- **Vite** 5 + vanilla JS
+- **Vite** 8 + vanilla JS
 - **GSAP** + ScrollTrigger — loader, hero entrance, scroll animations, pinned Process timeline, text reveals
 - **Lenis** — smooth scrolling
 - **Canvas 2D** — Dev-mode background (layered gradient blobs, SVG film grain, particle field with mouse repulsion)
@@ -15,7 +15,8 @@ Dual-mode portfolio for **Stryg.Bytes** (full-stack development studio) and **Gi
 ### Backend (CMS)
 - **Express 5** — REST API + static serving of built dist
 - **better-sqlite3** — SQLite database (`portfolio.db`)
-- **multer** — file uploads (project screenshots, client logos, certificate images + PDFs)
+- **multer** — file uploads (project screenshots, client logos, certificate images + PDFs, hobby clips)
+- **nodemailer** — contact form email over SMTP
 - **jsonwebtoken + bcryptjs** — JWT admin authentication
 - Admin SPA at `/admin` for managing projects, testimonials, client logos, certificates, and the review inbox
 
@@ -26,8 +27,9 @@ Dual-mode portfolio for **Stryg.Bytes** (full-stack development studio) and **Gi
 - **Hero bot** — robot card in the Dev hero
 - **Premium split hero** — asymmetric two-column layout with glass robot card (Dev mode)
 - **"Why Stryg.Bytes" value cards / Services bento / Animated wave dividers / Process timeline** (Dev)
-- **Personal gate** — "Meet Gio →" transition at the bottom of the Dev portfolio
-- **Normal profile** — Facebook-style cover + profile header, light theme
+- **Mode switch** — floating G / S·B button (and "View Creative Work →") swaps between the Gio profile and the Stryg.Bytes studio
+- **Normal profile (default)** — cover + profile header, light theme; this is the page visitors land on
+- **Contact form** — posts to `/api/contact`, emailed via SMTP; shows an "email me directly" fallback when SMTP isn't configured
 - **API-driven content** — projects, testimonials, client logos, and certificates load from the CMS (with graceful static fallback)
 - **Project categories** — Client Projects / SaaS Templates / Systems & Apps / Templates, with a filter bar and per-project screenshots
 - **Client logos marquee** — logo images or text-only fallback
@@ -55,7 +57,7 @@ During development, Vite proxies `/api` and `/uploads` to the backend at `localh
 
 - **Admin panel**: `http://localhost:5175/admin` (dev), or `/admin` behind the backend in production.
 - **Default credentials** (development only): `admin` / `admin123`.
-  - ⚠️ Create `server/.env` with a real `ADMIN_PASS` and a long random `JWT_SECRET` before any production/full-stack deploy.
+  - ⚠️ Create `server/.env` with a real `ADMIN_PASS` and a long random `JWT_SECRET`. With `NODE_ENV=production` the server **refuses to start** if either is missing or still a default.
 - **Login route**: `POST /api/auth/login` → returns a JWT (7-day expiry).
 - **Managed content**:
   - Projects — name, description, tags, category, live URL, demo URL, screenshot, thumb style, sort
@@ -63,7 +65,7 @@ During development, Vite proxies `/api` and `/uploads` to the backend at `localh
   - Client logos — name + image, sort, show/hide
   - Certificates — name, issuer, date, thumbnail image, PDF, verification link, sort, show/hide
   - Reviews — public submission page (`/review?c=<name>`) + approve/delete in admin. Submitting requires ticking a **consent checkbox** (stored as `consent` + `consent_at`); submissions without consent are rejected.
-- **Uploads** live in `server/public/uploads/` (gitignored user content), served at `/uploads`.
+- **Uploads** live in `server/public/uploads/`, served at `/uploads`. The folder is gitignored, but git pushback force-adds the files the CMS uses so they survive redeploys.
 
 ## Env Variables (`server/.env`)
 
@@ -77,6 +79,11 @@ During development, Vite proxies `/api` and `/uploads` to the backend at `localh
 | `JWT_SECRET` | `dev-secret-change-me` | JWT signing secret (set a long random one) |
 | `LOGIN_RATE_LIMIT` | `5` | Max `POST /api/auth/login` attempts per IP before a 429 (in-memory, resets on success) |
 | `LOGIN_RATE_WINDOW_MS` | `900000` | Rate-limit window (15 min) |
+| `FORM_RATE_LIMIT` / `FORM_RATE_WINDOW_MS` | `5` / `900000` | Per-IP limit for public review + contact submissions |
+| `TRUST_PROXY` | `1` in production | Proxy hops to trust for the client IP (Render = 1) so rate limits are per visitor |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` | *(unset → contact form disabled)* | SMTP server for the contact form (Gmail: `smtp.gmail.com`, `465`) |
+| `SMTP_USER` / `SMTP_PASS` | *(unset)* | SMTP login (Gmail: address + App Password) |
+| `CONTACT_TO` / `CONTACT_FROM` | `joecelpergis@gmail.com` / `SMTP_USER` | Where contact messages go / sender address |
 | `GIT_PAT` | *(unset → disabled)* | GitHub fine-grained PAT ("Contents: Read and write") enabling git pushback persistence |
 | `GIT_CMS_REMOTE` | `github.com/joecel-hub/portfolio` | Repo the CMS snapshots are pushed to |
 | `GIT_CMS_BRANCH` | `main` | Branch CMS snapshots are pushed to |
@@ -116,22 +123,25 @@ The site ships four stand-alone legal pages served by the backend before the SPA
 
 ## Sections
 
-### Dev mode (Stryg.Bytes)
-1. **Hero** (`#hero`) — "Welcome to the Studio" split layout with hero-bot card
-2. **About** (`#about`) — "Why Stryg.Bytes" value proposition, stats bar
-3. **Services** (`#skills-dev`) — premium bento cards
-4. **Projects** (`#projects`) — featured work grid
-5. **Process** (`#process`) — 5-step centered alternating timeline (pinned)
-6. **Contact** (`#contact`) — form + social links (hidden in Normal mode)
+The site boots in **Normal (Gio)** mode; the Stryg.Bytes studio is one click away via the mode switch.
 
-### Normal mode (Gio)
+### Normal mode (Gio) — default
 Single profile page (`#profile`, light theme):
-1. **Cover + header** — wide cover photo, avatar, name, typewriter role, actions, socials
-2. **About** (`#pf-about`) — bio + services grid
-3. **Resume** (`#pf-resume`) — experience timeline + skills with logos
-4. **Portfolio** (`#pf-portfolio`) — filterable project grid (Client Projects / SaaS / Apps / Templates)
-5. **Hobbies & Certificates** (`#pf-hobbies`) — hobby cards + certificate cards (managed in admin)
+1. **Cover + header** — cover photo, avatar, name, typewriter role, actions, socials
+2. **About** (`#pf-about`) — bio + "What I'm doing" cards
+3. **Experience** (`#pf-resume`) — career timeline + skills with logos
+4. **Portfolio** (`#pf-portfolio`) — featured work with Development / Design / Concept filters
+5. **Hobbies & Certificates** (`#pf-hobbies`) — hobby cards, video showcase and certificates (managed in admin)
 6. **Contact** (`#pf-contact`) — contact rows + form
+
+### Dev mode (Stryg.Bytes)
+1. **Hero** (`#hero`) — "Welcome to the Studio" split layout with the 3D hero-bot card
+2. **About** (`#about`) — "Why Stryg.Bytes" value cards + circuit illustration
+3. **Services** (`#skills-dev`) — bento cards
+4. **Projects** (`#projects`) — CMS project grid with category filters (empty categories are hidden)
+5. **Process** (`#process`) — 5-step pinned timeline
+6. **Testimonials** (`#testimonials`) — client-logo marquee + approved testimonials (cards hidden until one is approved)
+7. **Contact** (`#contact`) — form + social links
 
 ## Project Structure
 
@@ -150,7 +160,8 @@ src/
 ├── js/
 │   └── modules/
 │       ├── loader.js         # Grid loading screen
-│       ├── api-content.js    # Loads projects/logos/testimonials/certificates from the API
+│       ├── api-content.js    # Loads projects/logos/testimonials/certificates/hobby clips from the API
+│       ├── contact-form.js   # Contact form submit -> /api/contact
 │       ├── animations.js     # GSAP scroll animations + Process pin
 │       ├── navigation.js / mode-toggle.js / profile.js / text-reveal.js / text-morph.js / text-type.js
 │       ├── PixelBlast.jsx    # Three.js shader background (Normal)
@@ -162,13 +173,15 @@ server/
 ├── auth.js                   # JWT login + requireAuth middleware
 ├── middleware/
 │   ├── upload.js             # multer config (images + PDFs)
-│   └── rateLimit.js          # in-memory login rate limiter (per IP)
+│   └── rateLimit.js          # in-memory per-IP rate limiters (login, reviews, contact)
 ├── routes/
 │   ├── projects.js           # Project CRUD + screenshot upload
 │   ├── testimonials.js       # Testimonial CRUD
 │   ├── logos.js              # Client logo CRUD + image upload
 │   ├── certificates.js       # Certificate CRUD + image/PDF upload
-│   └── reviews.js            # Public submit + admin approve/delete
+│   ├── reviews.js            # Public submit + admin approve/delete
+│   ├── hobbyClips.js         # Hobby video showcase CRUD + video/thumbnail upload
+│   └── contact.js            # Public contact form -> SMTP email
 └── public/
     ├── admin/index.html      # Admin SPA (login + dashboard)
     ├── review/index.html     # Public review submission page (with required consent checkbox)
