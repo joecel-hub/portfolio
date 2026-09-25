@@ -284,7 +284,7 @@ export default function PixelBlast({
     if (!container) return
 
     const canvas = document.createElement('canvas')
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias, alpha: true, powerPreference: 'high-performance' })
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias, alpha: true, powerPreference: 'low-power' }) // decorative background: favour battery
     renderer.domElement.style.width = '100%'
     renderer.domElement.style.height = '100%'
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
@@ -333,9 +333,23 @@ export default function PixelBlast({
       uniforms.uResolution.value.set(renderer.domElement.width, renderer.domElement.height)
       uniforms.uPixelSize.value = pixelSize * renderer.getPixelRatio()
     }
+    // Redraw flag for the static (speed 0 / reduced-motion) case: only render
+    // when something actually changed instead of every frame.
+    let needsRender = true
+    const onResize = () => { setSize(); needsRender = true }
     setSize()
-    const ro = new ResizeObserver(setSize)
+    const ro = new ResizeObserver(onResize)
     ro.observe(container)
+
+    // autoPauseOffscreen: stop rendering while the background is off-screen.
+    let io = null
+    if (autoPauseOffscreen && typeof IntersectionObserver !== 'undefined') {
+      io = new IntersectionObserver(([entry]) => {
+        visibilityRef.current.visible = entry.isIntersecting
+        if (entry.isIntersecting) needsRender = true
+      })
+      io.observe(container)
+    }
 
     const timeOffset = Math.random() * 1000
 
@@ -371,6 +385,7 @@ export default function PixelBlast({
       uniforms.uClickPos.value[clickIx].set(fx, fy)
       uniforms.uClickTimes.value[clickIx] = uniforms.uTime.value
       clickIx = (clickIx + 1) % MAX_CLICKS
+      needsRender = true
     }
 
     const onPointerMove = (e) => {
@@ -384,10 +399,11 @@ export default function PixelBlast({
 
     let raf
     function animate() {
-      if (autoPauseOffscreen && !visibilityRef.current.visible) {
+      if ((autoPauseOffscreen && !visibilityRef.current.visible) || (speedRef.current === 0 && !needsRender)) {
         raf = requestAnimationFrame(animate)
         return
       }
+      needsRender = false
       uniforms.uTime.value = timeOffset + clock.getElapsedTime() * speedRef.current
       if (liquidEffect) {
         const liq = liquidEffect
@@ -407,6 +423,7 @@ export default function PixelBlast({
     return () => {
       cancelAnimationFrame(raf)
       ro.disconnect()
+      io?.disconnect()
       renderer.dispose()
       renderer.forceContextLoss()
       if (renderer.domElement.parentElement === container) container.removeChild(renderer.domElement)

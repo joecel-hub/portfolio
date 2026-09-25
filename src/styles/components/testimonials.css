@@ -152,10 +152,9 @@
   vertical-align: -0.35em;
 }
 
-.t-card.t-card--placeholder .t-quote {
-  color: var(--muted);
-  font-style: italic;
-  opacity: 0.85;
+/* No approved testimonials yet: render nothing rather than a placeholder. */
+.testimonials-grid:empty {
+  display: none;
 }
 
 .t-who {

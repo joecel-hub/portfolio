@@ -4,6 +4,14 @@ import { playLoader } from './loader.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
+// Browser UI tint (mobile address bar) follows the active identity.
+const THEME_COLOR = { normal: '#f6f7fb', dev: '#0a0a0f' }
+
+export function syncThemeColor(isNormal) {
+  const meta = document.querySelector('meta[name="theme-color"]')
+  if (meta) meta.setAttribute('content', isNormal ? THEME_COLOR.normal : THEME_COLOR.dev)
+}
+
 export function initModeToggle(devBg, callbacks = {}) {
   let isNormal = true // Normal (Gio) is the default mode
 
@@ -14,6 +22,7 @@ export function initModeToggle(devBg, callbacks = {}) {
     if (links && links.classList.contains('open')) {
       links.classList.remove('open')
       ham.classList.remove('open')
+      ham.setAttribute('aria-expanded', 'false')
       if (backdrop) backdrop.classList.remove('open')
       document.body.style.overflow = ''
     }
@@ -22,9 +31,10 @@ export function initModeToggle(devBg, callbacks = {}) {
   function toggleMode() {
     isNormal = !isNormal
     closeMenu()
-    gsap.to('#app', {
+    gsap.to(['#app', '#site-footer'], {
       opacity: 0, duration: 0.25, onComplete: () => {
         document.body.classList.toggle('normal-mode', isNormal)
+        syncThemeColor(isNormal)
 
         if (devBg) {
           devBg.setPaused(isNormal)
@@ -35,14 +45,14 @@ export function initModeToggle(devBg, callbacks = {}) {
 
         if (isNormal) {
           // Back to the profile — a quick fade is enough.
-          gsap.to('#app', { opacity: 1, duration: 0.4, ease: 'power2.out' })
+          gsap.to(['#app', '#site-footer'], { opacity: 1, duration: 0.4, ease: 'power2.out' })
           finalize()
         } else {
           // Entering the studio — replay the Stryg.Bytes grid loader.
           playLoader({
             brand: 'Stryg.Bytes',
             onComplete: () => {
-              gsap.to('#app', { opacity: 1, duration: 0.4, ease: 'power2.out' })
+              gsap.to(['#app', '#site-footer'], { opacity: 1, duration: 0.4, ease: 'power2.out' })
               finalize()
             }
           })
@@ -55,13 +65,6 @@ export function initModeToggle(devBg, callbacks = {}) {
     // The Dev Process section is pinned by ScrollTrigger. Recalculate its
     // spacer after either mode changes visibility so it remains reachable.
     requestAnimationFrame(() => ScrollTrigger.refresh())
-    setTimeout(() => {
-      document.querySelectorAll('.skill-bar').forEach(bar => {
-        const w = bar.getAttribute('data-width') || 80
-        bar.style.width = '0%'
-        setTimeout(() => { bar.style.width = w + '%'; bar.style.transition = 'width 1.2s ease' }, 50)
-      })
-    }, 350)
   }
 
   return { toggleMode }

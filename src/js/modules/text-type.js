@@ -1,4 +1,5 @@
 import gsap from 'gsap'
+import { prefersReducedMotion } from '../utils/motion.js'
 
 export function initTextType(container, options = {}) {
   const {
@@ -14,6 +15,12 @@ export function initTextType(container, options = {}) {
 
   const textNode = document.createTextNode('')
   container.appendChild(textNode)
+
+  // Reduced motion: show the first role as plain text — no typing, no blink.
+  if (prefersReducedMotion) {
+    textNode.nodeValue = words[0]
+    return { destroy() { if (textNode.parentNode) textNode.remove() } }
+  }
 
   const cursor = document.createElement('span')
   cursor.className = 'type-cursor'
@@ -74,7 +81,11 @@ export function initTextType(container, options = {}) {
 
   function destroy() {
     if (timeout) clearTimeout(timeout)
-    if (cursor && cursor.parentElement) cursor.remove()
+    gsap.killTweensOf(cursor)
+    // Remove the typed text too — otherwise a remount appends a second text
+    // node next to the stale partial word.
+    if (textNode.parentNode) textNode.remove()
+    if (cursor.parentElement) cursor.remove()
   }
 
   return { destroy }

@@ -392,24 +392,6 @@ body.normal-mode .nav-foot-email:hover {
   50% { opacity: 0.55; transform: scale(0.8); }
 }
 
-.nav-cta {
-  font-family: var(--mono);
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.5rem 1.2rem;
-  border: 1px solid var(--a1);
-  border-radius: 6px;
-  color: var(--a1);
-  cursor: pointer;
-  background: transparent;
-  transition: background 0.2s, color 0.2s;
-}
-
-.nav-cta:hover {
-  background: var(--a1);
-  color: #fff;
-}
-
 .ham-btn {
   display: flex;
   flex-direction: column;
@@ -518,6 +500,11 @@ body.normal-mode .nav-close:hover {
 
 .nav-logo {
   cursor: pointer;
+}
+
+/* Gio is a light theme: the Dev logo's #fff was near-invisible on #f6f7fb. */
+body.normal-mode .nav-logo {
+  color: var(--nm-text);
 }
 
 .back-to-studio {

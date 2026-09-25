@@ -93,49 +93,6 @@
   }
 }
 
-/* Normal mode: text left, swipe-card stack right in a matching glass
-   frame — same premium-split language as the Dev hero's bot card, just
-   re-tinted for the light theme so the two modes read as one family. */
-.hero-card-frame {
-  flex: 0.95;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 420px;
-  border-radius: 28px;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.25));
-  border: 1px solid var(--nm-border);
-  backdrop-filter: blur(20px);
-  box-shadow:
-    0 24px 60px rgba(20, 20, 40, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  /* deliberately NOT overflow:hidden — the fanned card stack is meant to
-     float slightly past the glass panel's edge, not get clipped by it */
-}
-
-.hero-card-frame::before {
-  content: '';
-  position: absolute;
-  inset: -40%;
-  background: radial-gradient(circle at 50% 35%, rgba(91, 79, 207, 0.14), transparent 65%);
-  pointer-events: none;
-}
-
-.hero-card {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 1;
-}
-
-.hero-card canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-
 .hero-info {
   flex: 1.05;
   min-width: 0;
@@ -157,9 +114,7 @@
     margin-left: auto;
     margin-right: auto;
   }
-  .hero-card-frame {
-    min-height: 380px;
-  }
+
   body.normal-mode .hero-scroll-cue,
   body.normal-mode .hero-badge {
     display: none;
@@ -264,6 +219,12 @@ body.normal-mode .hero-sub strong {
   background: var(--a1);
   color: #fff;
   box-shadow: 0 0 28px var(--glow1);
+}
+
+/* Dev accent #7c6eff gives white text only 3.8:1; this 10% darker shade of the
+   same hue reaches 4.5:1 (WCAG AA). Gio's accent already passes. */
+body:not(.normal-mode) .btn-primary {
+  background: #7063e5;
 }
 
 .btn-primary:hover {

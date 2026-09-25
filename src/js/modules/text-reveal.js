@@ -3,7 +3,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
+import { prefersReducedMotion } from '../utils/motion.js'
+
 export function initTextReveal() {
+  // Reduced motion: leave titles as plain text (nothing to reveal).
+  if (prefersReducedMotion) return
   document.querySelectorAll('.section-title').forEach((title) => {
     if (title.closest('#profile')) return
     const spans = title.querySelectorAll(':scope > span, :scope > span[style]')

@@ -1,5 +1,6 @@
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import gsap from 'gsap'
+import { prefersReducedMotion } from '../utils/motion.js'
 
 let lenisInstance = null
 
@@ -20,18 +21,53 @@ export function initNavigation() {
   // ── MENU WIRING FIRST ──
   // The hamburger/off-canvas menu must be wired as the very first action so it
   // can NEVER be skipped by a failure in the scrollspy / rn-btn logic below.
-  function closeMenu() {
-    links.classList.remove('open')
-    ham.classList.remove('open')
-    backdrop.classList.remove('open')
-    document.body.style.overflow = ''
+  const isOpen = () => links.classList.contains('open')
+
+  // Visible, focusable controls inside the off-canvas panel (for the Tab trap).
+  function focusables() {
+    return [...links.querySelectorAll('a[href], button:not([disabled])')]
+      .filter(el => el.offsetParent !== null)
+  }
+
+  function setOpen(open) {
+    links.classList.toggle('open', open)
+    ham.classList.toggle('open', open)
+    if (backdrop) backdrop.classList.toggle('open', open)
+    ham.setAttribute('aria-expanded', String(open))
+    document.body.style.overflow = open ? 'hidden' : ''
+  }
+
+  function openMenu() {
+    setOpen(true)
+    // Move focus into the panel once it is visible.
+    setTimeout(() => focusables()[0]?.focus(), 60)
+  }
+
+  function closeMenu({ restoreFocus = false } = {}) {
+    const wasOpen = isOpen()
+    setOpen(false)
+    if (wasOpen && restoreFocus) ham.focus()
   }
 
   function toggleMenu() {
-    const open = links.classList.toggle('open')
-    ham.classList.toggle('open')
-    backdrop.classList.toggle('open')
-    document.body.style.overflow = open ? 'hidden' : ''
+    if (isOpen()) closeMenu({ restoreFocus: true })
+    else openMenu()
+  }
+
+  function onMenuKeydown(e) {
+    if (!isOpen()) return
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      closeMenu({ restoreFocus: true })
+    } else if (e.key === 'Tab') {
+      const items = focusables()
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+      else if (!links.contains(document.activeElement)) { e.preventDefault(); first.focus() }
+    }
   }
 
   const ham = document.getElementById('ham-btn')
@@ -39,9 +75,11 @@ export function initNavigation() {
   const closeBtn = document.getElementById('nav-close')
   const backdrop = document.getElementById('nav-backdrop')
   if (ham && links) {
+    ham.setAttribute('aria-expanded', 'false')
     ham.addEventListener('click', toggleMenu)
-    if (closeBtn) closeBtn.addEventListener('click', closeMenu)
-    if (backdrop) backdrop.addEventListener('click', closeMenu)
+    document.addEventListener('keydown', onMenuKeydown)
+    if (closeBtn) closeBtn.addEventListener('click', () => closeMenu({ restoreFocus: true }))
+    if (backdrop) backdrop.addEventListener('click', () => closeMenu({ restoreFocus: true }))
     links.querySelectorAll('a').forEach(a => {
       a.addEventListener('click', (e) => {
         const href = a.getAttribute('href')
@@ -53,7 +91,7 @@ export function initNavigation() {
             if (lenisInstance) {
               lenisInstance.scrollTo(el, { offset: 0, duration: 1.2 })
             } else {
-              el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              el.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' })
             }
           }
         }
@@ -112,7 +150,7 @@ export function initNavigation() {
           if (lenisInstance) {
             lenisInstance.scrollTo(el, { offset: 0, duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) })
           } else {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            el.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' })
           }
         }
         document.querySelectorAll('.rn-btn').forEach(b => b.classList.remove('active'))

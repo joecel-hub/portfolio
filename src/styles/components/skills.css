@@ -1,11 +1,4 @@
 /* Skills grid (card layout) — Normal mode */
-.skills-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.2rem;
-  max-width: 1100px;
-  margin: 3rem auto 0;
-}
 
 .skill-card {
   background: var(--surface);
@@ -22,37 +15,10 @@
   box-shadow: 0 20px 60px var(--glow1);
 }
 
-.skill-icon {
-  width: 44px;
-  height: 44px;
-  margin-bottom: 1rem;
-}
-
 .skill-name {
   font-weight: 700;
   font-size: 1rem;
   margin-bottom: 0.5rem;
-}
-
-.skill-desc {
-  font-size: 0.83rem;
-  color: var(--muted);
-  line-height: 1.7;
-  margin-bottom: 1.2rem;
-}
-
-.skill-bar-bg {
-  height: 2px;
-  background: var(--border);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.skill-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--a1), var(--a2));
-  border-radius: 2px;
-  width: 0%;
 }
 
 /* ── Premium Services (Dev mode) ── */

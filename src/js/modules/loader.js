@@ -1,4 +1,5 @@
 import gsap from 'gsap'
+import { prefersReducedMotion } from '../utils/motion.js'
 
 function buildLogoHTML(brand) {
   const dot = brand.indexOf('.')
@@ -41,6 +42,17 @@ export function playLoader({ brand = 'Gio', onComplete } = {}) {
   // Remove any leftover grid overlay from a previous play
   const oldOverlay = document.querySelector('.ld-grid-overlay')
   if (oldOverlay) oldOverlay.remove()
+
+  // Reduced motion: skip the scramble + grid wipe and reveal the page at once.
+  if (prefersReducedMotion) {
+    if (onComplete) onComplete()
+    logo.remove()
+    loadingEl.remove()
+    document.body.classList.add('loader-done')
+    loader.style.zIndex = '-1'
+    loader.style.pointerEvents = 'none'
+    return
+  }
 
   const chars = '!@#$%^&*()_+-=[]{}|;:,.<>?/`~0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   let step = 0

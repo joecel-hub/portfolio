@@ -1,10 +1,27 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { animateTextReveal } from './text-reveal.js'
+import { prefersReducedMotion } from '../utils/motion.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
+// Reduced motion: put everything in its final, visible state — no reveals,
+// parallax, pinning, looping tweens or cursor glow.
+function showStatic() {
+  gsap.set(['.hero-eyebrow', '.hero-sub', '.hero-bot-card', '.hero-cta', '.hero-scroll-cue', '.hero-badge', '.pt-icon', '.pt-card'], { opacity: 1, y: 0, scale: 1 })
+  gsap.set(['#active-h1', '#active-v1', '#active-h2'], { strokeDashoffset: 0 })
+  document.querySelectorAll('#process .pt-step, #process .pt-dot').forEach(el => el.classList.add('is-active'))
+  const line = document.querySelector('#process .pt-line')
+  if (line) gsap.set(line, { scaleY: 1 })
+  document.getElementById('svg-circuit')?.pauseAnimations?.()
+  ScrollTrigger.refresh()
+}
+
 export function initAnimations() {
+  if (prefersReducedMotion) {
+    try { showStatic() } catch (e) { console.error('showStatic error:', e) }
+    return
+  }
   try {
     animateTextReveal()
   const heroTl = gsap.timeline({ delay: 0.1 })
@@ -47,14 +64,6 @@ export function initAnimations() {
     scrollTrigger: { trigger: '.value-cards', start: 'top 80%' },
     opacity: 0, y: 36, duration: 0.7, stagger: 0.1, ease: 'power3.out'
   })
-  gsap.from('.about-stats-bar', {
-    scrollTrigger: { trigger: '.about-stats-bar', start: 'top 85%' },
-    opacity: 0, y: 24, duration: 0.7, ease: 'power2.out'
-  })
-  gsap.from('.bar-stat', {
-    scrollTrigger: { trigger: '.about-stats-bar', start: 'top 85%' },
-    opacity: 0, y: 12, duration: 0.5, stagger: 0.08, ease: 'power2.out'
-  })
   gsap.from('#svg-circuit', {
     scrollTrigger: { trigger: '#about', start: 'top 70%' },
     opacity: 0, x: 60, duration: 1.1, ease: 'power3.out'
@@ -70,40 +79,6 @@ export function initAnimations() {
     scale: 0, transformOrigin: 'center', duration: 0.5, stagger: 0.07, ease: 'back.out(3)'
   })
   gsap.to('.pulse-node', { scale: 1.6, opacity: 0.5, duration: 1.3, repeat: -1, yoyo: true, ease: 'sine.inOut', transformOrigin: 'center' })
-
-  document.querySelectorAll('[data-count]').forEach(el => {
-    const target = parseInt(el.getAttribute('data-count'))
-    ScrollTrigger.create({
-      trigger: el, start: 'top 82%', once: true,
-      onEnter: () => {
-        gsap.to({ val: 0 }, {
-          val: target, duration: 1.5, ease: 'power2.out',
-          onUpdate: function () { el.textContent = Math.round(this.targets()[0].val) + '+' }
-        })
-      }
-    })
-  })
-
-  if (document.getElementById('orb')) {
-    const orbTl = gsap.timeline({ repeat: -1, yoyo: true })
-    orbTl.to('#orb', { scale: 1.06, duration: 2.2, ease: 'sine.inOut', transformOrigin: 'center' })
-    gsap.to(['#bracket-l', '#code-txt'], { y: -10, duration: 2.8, ease: 'sine.inOut', repeat: -1, yoyo: true })
-    gsap.to(['#bracket-r', '#code-txt2'], { y: 9, duration: 3.3, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: 0.8 })
-    gsap.to(['#deco1', '#deco2', '#deco3', '#deco4'], { rotation: 45, duration: 7, ease: 'none', repeat: -1, transformOrigin: 'center', stagger: 1.6 })
-
-    orbitDot('dot1-nm', 170, 60, 200, 200, 6, 0)
-    orbitDot('dot2-nm', 130, 45, 200, 200, 9, 0.33)
-    orbitDot('dot3-nm', 90, 30, 200, 200, 5, 0.66)
-    orbitDot('dot4-nm', 170, 60, 200, 200, 11, 0.5)
-  }
-
-  document.querySelectorAll('.skill-bar').forEach(bar => {
-    const w = bar.getAttribute('data-width') || 80
-    ScrollTrigger.create({
-      trigger: bar, start: 'top 88%', once: true,
-      onEnter: () => gsap.to(bar, { width: w + '%', duration: 1.3, ease: 'power2.out', delay: 0.15 })
-    })
-  })
 
   gsap.from('.svc-card', {
     scrollTrigger: { trigger: '#skills-dev', start: 'top 72%' },
@@ -123,28 +98,25 @@ export function initAnimations() {
     opacity: 0, y: 60, duration: 0.8, stagger: 0.13, ease: 'power3.out'
   })
   document.querySelectorAll('.project-thumb').forEach((thumb) => {
-    gsap.to(thumb.querySelector('svg'), {
+    const art = thumb.querySelector('svg') // screenshot cards have an <img> instead
+    if (!art) return
+    gsap.to(art, {
       y: -18,
       ease: 'none',
       scrollTrigger: { trigger: thumb, start: 'top bottom', end: 'bottom top', scrub: 0.6 }
     })
   })
 
-  gsap.from('.t-card', {
-    scrollTrigger: { trigger: '#testimonials', start: 'top 72%' },
-    opacity: 0, y: 50, duration: 0.8, stagger: 0.12, ease: 'power3.out'
-  })
+  // Testimonial cards only exist once one is approved in admin.
+  if (document.querySelector('.t-card')) {
+    gsap.from('.t-card', {
+      scrollTrigger: { trigger: '#testimonials', start: 'top 72%' },
+      opacity: 0, y: 50, duration: 0.8, stagger: 0.12, ease: 'power3.out'
+    })
+  }
   gsap.from('.client-logo', {
     scrollTrigger: { trigger: '#testimonials', start: 'top 80%' },
     opacity: 0, duration: 0.6, stagger: 0.05, ease: 'power2.out'
-  })
-
-  ;[
-    { sel: '#wave1a', d: 'M80 90 Q200 25 300 90 Q400 155 520 90', delay: 0 },
-    { sel: '#wave1b', d: 'M80 110 Q200 45 300 110 Q400 175 520 110', delay: 0.5 }
-  ].forEach(({ sel, d, delay }) => {
-    const el = document.querySelector(sel)
-    if (el) gsap.to(el, { attr: { d }, duration: 3.5, ease: 'sine.inOut', repeat: -1, yoyo: true, delay })
   })
 
   const ptSteps = document.querySelectorAll('#process .pt-step')
@@ -233,15 +205,4 @@ export function initAnimations() {
   window.addEventListener('mousemove', e => { xTo(e.clientX); yTo(e.clientY) })
   ScrollTrigger.refresh()
   } catch (e) { console.error('initAnimations error:', e) }
-}
-
-function orbitDot(id, rx, ry, cx, cy, dur, off) {
-  gsap.to({}, {
-    duration: dur, repeat: -1, ease: 'none',
-    onUpdate: function () {
-      const t = (this.progress() + off) * Math.PI * 2
-      const el = document.getElementById(id)
-      if (el) { el.setAttribute('cx', cx + Math.cos(t) * rx); el.setAttribute('cy', cy + Math.sin(t) * ry) }
-    }
-  })
 }

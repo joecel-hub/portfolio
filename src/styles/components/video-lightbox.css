@@ -89,3 +89,12 @@
   font-size: 0.88rem;
   line-height: 1.6;
 }
+
+/* Invisible focus guards around the dialog (see ensureLightbox). */
+.vlb-guard {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}

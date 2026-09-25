@@ -4,17 +4,16 @@ import { playLoader } from './js/modules/loader.js'
 import { initModeToggle } from './js/modules/mode-toggle.js'
 import { initNavigation } from './js/modules/navigation.js'
 import { initAnimations } from './js/modules/animations.js'
-import { initHelpers } from './js/utils/helpers.js'
 import { initLenis } from './js/modules/lenis.js'
 import { initTextReveal } from './js/modules/text-reveal.js'
 import { initDevParticles } from './js/modules/dev-particles.js'
-import { initHeroBot } from './js/modules/hero-bot.js'
 import { initTextType } from './js/modules/text-type.js'
 import { initTextMorph } from './js/modules/text-morph.js'
 import { setLenis } from './js/modules/navigation.js'
-import { mountPixelBlast } from './js/modules/mountPixelBlast.jsx'
 import { initProfile } from './js/modules/profile.js'
 import { initApiContent } from './js/modules/api-content.js'
+import { initContactForms } from './js/modules/contact-form.js'
+import { prefersReducedMotion } from './js/utils/motion.js'
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -29,8 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Hydrate the Dev-mode Projects, client-logo marquee, and Testimonials from
   // the CMS API when it's reachable. If the API is down, the hardcoded static
-  // sections remain intact (graceful fallback).
-  try { initApiContent() } catch (e) { console.error('api-content init failed:', e) }
+  // sections remain intact (graceful fallback). Started once here so the
+  // fetches overlap the loader; animations wait on this same promise.
+  let contentReady = Promise.resolve()
+  try { contentReady = initApiContent() } catch (e) { console.error('api-content init failed:', e) }
 
   let particles = null
   try {
@@ -47,12 +48,24 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('dev-particles init failed:', e)
   }
 
+  // The 3D hero bot (Three.js) lives in the Dev hero, which is hidden on the
+  // default Gio view — so it is only downloaded and created on first entry
+  // into Dev mode, when its container is visible and can be measured.
   let heroBot = null
-  try {
-    heroBot = initHeroBot(document.getElementById('hero-bot'))
-    if (heroBot) heroBot.setPaused(true)
-  } catch (e) {
-    console.error('hero-bot init failed:', e)
+  let heroBotLoading = null
+  const isNormalMode = () => document.body.classList.contains('normal-mode')
+
+  function ensureHeroBot() {
+    if (heroBot || heroBotLoading) return
+    const container = document.getElementById('hero-bot')
+    if (!container) return
+    heroBotLoading = import('./js/modules/hero-bot.js')
+      .then(({ initHeroBot }) => {
+        heroBot = initHeroBot(container)
+        if (heroBot && isNormalMode()) heroBot.setPaused(true) // switched back meanwhile
+      })
+      .catch((e) => console.error('hero-bot init failed:', e))
+      .finally(() => { heroBotLoading = null })
   }
 
   // Normal (Gio) is the default mode, so the profile stack mounts on boot
@@ -64,22 +77,28 @@ document.addEventListener('DOMContentLoaded', () => {
   let unmountPixel = null
   const pixelContainer = document.getElementById('pixel-blast-container')
 
+  // PixelBlast pulls in React + Three.js, so it is loaded on demand (after
+  // the page has booted) instead of being part of the entry bundle.
+  let pixelLoading = null
   function mountPixel() {
-    if (pixelContainer && !unmountPixel) {
-      try {
+    if (!pixelContainer || unmountPixel || pixelLoading) return
+    pixelLoading = import('./js/modules/mountPixelBlast.jsx')
+      .then(({ mountPixelBlast }) => {
+        // The visitor may have switched to Dev while this was downloading.
+        if (!isNormalMode() || unmountPixel) return
         unmountPixel = mountPixelBlast(pixelContainer, {
           variant: 'square',
           pixelSize: 3.5,
           color: '#8b7eea',
           patternScale: 2,
           patternDensity: 0.55,
-          speed: 0.25,
+          speed: prefersReducedMotion ? 0 : 0.25, // static pattern when motion is reduced
+          enableRipples: !prefersReducedMotion,
           edgeFade: 0.55
         })
-      } catch (e) {
-        console.error('PixelBlast mount failed:', e)
-      }
-    }
+      })
+      .catch((e) => console.error('PixelBlast mount failed:', e))
+      .finally(() => { pixelLoading = null })
   }
 
   function mountType() {
@@ -134,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       onToDev: () => {
         if (heroBot) heroBot.setPaused(false)
+        else ensureHeroBot()
         unmountNormal()
       }
     }))
@@ -149,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.lenisInstance) {
       window.lenisInstance.scrollTo(el, { offset: 0, duration: 1.2 })
     } else {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      el.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' })
     }
   }
 
@@ -178,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modeSwitch = document.getElementById('mode-switch')
   if (modeSwitch) {
     modeSwitch.addEventListener('click', () => {
-      gsap.to(modeSwitch, { rotation: '+=360', duration: 0.6, ease: 'power2.inOut' })
+      if (!prefersReducedMotion) gsap.to(modeSwitch, { rotation: '+=360', duration: 0.6, ease: 'power2.inOut' })
       toggleMode()
       setTimeout(scrollToHero, 450)
     })
@@ -188,40 +208,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const footerYear = document.getElementById('footer-year')
   if (footerYear) footerYear.textContent = new Date().getFullYear()
 
-  // Contact forms (Dev section + vCard Contact tab): no backend, so hand the
-  // message to the visitor's own email client pre-filled, and confirm.
-  document.querySelectorAll('.contact-form').forEach(contactForm => {
-    contactForm.addEventListener('submit', (e) => {
-      e.preventDefault()
-      const name = contactForm.querySelector('[name="name"]')?.value.trim() || ''
-      const email = contactForm.querySelector('[name="email"]')?.value.trim() || ''
-      const subject = contactForm.querySelector('[name="subject"]')?.value.trim() || 'Project inquiry'
-      const message = contactForm.querySelector('[name="message"]')?.value.trim() || ''
-      const note = contactForm.querySelector('.form-note')
+  // Contact forms (Dev section + Gio profile): POST to /api/contact.
+  try { initContactForms() } catch (e) { console.error('contact form init failed:', e) }
 
-      const body = `${message}\n\n— ${name}${email ? ' (' + email + ')' : ''}`
-      const mailto = `mailto:joecelpergis@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-      window.location.href = mailto
-
-      if (note) note.textContent = 'Opening your email app with this message pre-filled…'
-    })
-  })
-
-  try { initHelpers() } catch (e) { console.error('helpers init failed:', e) }
   try { initTextReveal() } catch (e) { console.error('text-reveal init failed:', e) }
-  try { initTextMorph() } catch (e) { console.error('text-morph init failed:', e) }
+  if (!prefersReducedMotion) try { initTextMorph() } catch (e) { console.error('text-morph init failed:', e) }
   try {
     playLoader({
       brand: 'Gio',
       onComplete: () => {
         initProfile()
-        const lenis = initLenis()
+        // Native scrolling when the visitor asks for reduced motion.
+        const lenis = prefersReducedMotion ? null : initLenis()
         window.lenisInstance = lenis
         setLenis(lenis)
-        // Hydrate CMS content before animations so ScrollTrigger picks up the
+        // Wait for CMS content before animations so ScrollTrigger picks up the
         // dynamically-rendered project cards / testimonials. Falls back to the
         // static sections when the API is unreachable.
-        initApiContent().finally(() => {
+        contentReady.finally(() => {
           try { initAnimations() } catch (e) { console.error('animations init failed:', e) }
         })
       }

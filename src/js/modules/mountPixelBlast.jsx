@@ -14,7 +14,7 @@ export function mountPixelBlast(container, options = {}) {
       patternDensity={options.patternDensity || 0.8}
       enableRipples={options.enableRipples !== false}
       rippleIntensityScale={options.rippleIntensityScale || 0.5}
-      speed={options.speed || 0.5}
+      speed={options.speed ?? 0.5}
       edgeFade={options.edgeFade || 0.3}
     />
   )

@@ -230,7 +230,6 @@ body.normal-mode #contact {
 #profile .pf-service-name,
 #profile .pf-tl-role,
 #profile .pf-project-name,
-#profile .pf-skill-head,
 #profile .pf-row-value {
   color: var(--text);
 }
@@ -419,7 +418,7 @@ body.normal-mode #contact {
 
 .pf-stack-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(112px, 100%), 1fr));
   gap: 0.9rem;
 }
 
@@ -504,7 +503,7 @@ body.normal-mode #contact {
 
 .pf-projects {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
   gap: 1rem;
 }
 
@@ -565,7 +564,7 @@ body.normal-mode #contact {
 /* Hobbies & Certificates */
 .pf-hobbies {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
   gap: 1rem;
 }
 
@@ -624,7 +623,7 @@ body.normal-mode #contact {
 
 .pf-showcase-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
   gap: 1.1rem;
   perspective: 1200px;
 }
@@ -755,7 +754,7 @@ body.normal-mode #contact {
 
 .pf-certs {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
   gap: 1rem;
 }
 
@@ -830,7 +829,7 @@ a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
 /* Contact */
 .pf-contact-grid {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
   gap: 1.25rem;
   align-items: start;
 }

@@ -149,3 +149,36 @@ body.normal-mode .wave-crest {
   max-width: 420px;
   filter: drop-shadow(0 0 24px rgba(0, 212, 255, 0.14));
 }
+
+/* Keyboard focus: a visible ring for keyboard users only (mouse clicks don't
+   trigger :focus-visible). Declared late so it beats component outline:none. */
+:focus-visible {
+  outline: 2px solid var(--a1);
+  outline-offset: 3px;
+}
+
+/* Reduced motion: neutralise CSS transitions/animations site-wide. JS-driven
+   motion is handled per module via src/js/utils/motion.js. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Text for screen readers only (visually hidden, still announced). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

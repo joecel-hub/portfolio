@@ -136,3 +136,27 @@ body.normal-mode .form-field textarea {
   color: var(--a2);
   min-height: 1.2em;
 }
+
+.form-note[data-state="error"] {
+  color: var(--a3);
+}
+
+.form-note a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.form-submit:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* Honeypot field: off-screen for people, still present for naive bots. */
+.form-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

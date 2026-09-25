@@ -22,8 +22,10 @@ export function initProfile() {
     const filters = profile.querySelectorAll('[data-vc-filter]')
     const projects = profile.querySelectorAll('[data-vc-cat]')
     filters.forEach(f => f.addEventListener('click', () => {
-      filters.forEach(x => x.classList.remove('active'))
-      f.classList.add('active')
+      filters.forEach(x => {
+        x.classList.toggle('active', x === f)
+        x.setAttribute('aria-pressed', String(x === f))
+      })
       const cat = f.dataset.vcFilter
       projects.forEach(it => {
         it.classList.toggle('hidden', cat !== 'all' && it.dataset.vcCat !== cat)

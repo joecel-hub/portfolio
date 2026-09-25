@@ -189,8 +189,11 @@ export function initHeroBot(container, options = {}) {
   let blinkT = 0
 
   function resize() {
-    width = container.clientWidth || 1
-    height = container.clientHeight || 1
+    // While the Dev hero is display:none the container measures 0×0 — keep
+    // the last real size instead of collapsing the canvas to 1×1.
+    if (!container.clientWidth || !container.clientHeight) return
+    width = container.clientWidth
+    height = container.clientHeight
     camera.aspect = width / height
     camera.updateProjectionMatrix()
     renderer.setSize(width, height)
@@ -264,13 +267,14 @@ export function initHeroBot(container, options = {}) {
   function setPaused(val) {
     paused = !!val
     if (paused) stop()
-    else start()
+    else { resize(); start() }
   }
 
   function destroy() {
     destroyed = true
     stop()
     window.removeEventListener('resize', resize)
+    ro?.disconnect()
     container.removeEventListener('pointermove', onPointerMove)
     container.removeEventListener('pointerleave', onPointerLeave)
     scene.traverse(obj => {
@@ -287,6 +291,10 @@ export function initHeroBot(container, options = {}) {
   }
 
   window.addEventListener('resize', resize, { passive: true })
+  // Re-measure when the container itself changes size (e.g. it was created
+  // hidden and only laid out when switching into Dev mode).
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null
+  ro?.observe(container)
   container.addEventListener('pointermove', onPointerMove, { passive: true })
   container.addEventListener('pointerleave', onPointerLeave, { passive: true })
 

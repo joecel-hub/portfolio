@@ -1,3 +1,5 @@
+import { prefersReducedMotion } from '../utils/motion.js'
+
 export function initDevParticles(canvas, options = {}) {
   if (!canvas) return null
 
@@ -88,7 +90,8 @@ export function initDevParticles(canvas, options = {}) {
       ctx.fill()
     }
 
-    raf = requestAnimationFrame(tick)
+    // Reduced motion: draw a single still frame instead of animating.
+    raf = prefersReducedMotion ? null : requestAnimationFrame(tick)
   }
 
   function start() {
@@ -132,6 +135,7 @@ export function initDevParticles(canvas, options = {}) {
   function onResize() {
     resize()
     createParticles()
+    start() // redraw (also covers the single-frame reduced-motion mode)
   }
 
   resize()

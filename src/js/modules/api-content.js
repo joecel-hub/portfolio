@@ -1,4 +1,15 @@
+import { prefersReducedMotion } from '../utils/motion.js'
+
 const API_BASE = import.meta.env?.VITE_API_BASE || '/api'
+
+// Marks the pressed chip in a filter group (visual .active + aria-pressed).
+function setPressed(chips, isActive) {
+  chips.forEach(c => {
+    const on = isActive(c)
+    c.classList.toggle('active', on)
+    c.setAttribute('aria-pressed', String(on))
+  })
+}
 
 const THUMB_BG = {
   resort: 'linear-gradient(135deg,#0d1a12,#0a2010)',
@@ -96,6 +107,16 @@ function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))
 }
 
+// Only http(s) URLs and same-site paths may become an href; anything else
+// (javascript:, data:, //host) is dropped. The API validates too — this
+// guards rows written before that validation existed.
+function safeHref(u) {
+  const v = String(u == null ? '' : u).trim()
+  if (!v) return ''
+  if (v.startsWith('/')) return v.startsWith('//') || v.startsWith('/\\') ? '' : v
+  return /^https?:\/\//i.test(v) ? v : ''
+}
+
 let svgSeq = 0
 
 function renderProjectCard(p) {
@@ -110,7 +131,9 @@ function renderProjectCard(p) {
     : svg
   const cat = CATEGORY_PILL[p.category] ? `pc-${p.category}` : 'pc-client'
   const tags = `<span class="pcategory ${cat}">${CATEGORY_PILL[p.category] || 'Client Project'}</span>` + (p.tags || []).map(t => `<span class="ptag">${esc(t)}</span>`).join('')
-  const primary = p.demoUrl || p.url
+  const demoUrl = safeHref(p.demoUrl)
+  const siteUrl = safeHref(p.url)
+  const primary = demoUrl || siteUrl
   const arrow = primary ? `<div class="project-arrow">↗</div>` : ''
   const body = `
     <div class="project-thumb" style="background:${bg}">${thumbInner}</div>
@@ -119,12 +142,12 @@ function renderProjectCard(p) {
       <div class="project-name">${esc(p.name)}</div>
       <div class="project-desc">${esc(p.desc)}</div>
     </div>`
-  const linksRow = (p.demoUrl && p.url) ? `<div class="project-links">
-      <a href="${esc(p.demoUrl)}" target="_blank" rel="noopener nofollow" aria-label="Open live demo of ${esc(p.name)}">View live demo</a>
-      <a href="${esc(p.url)}" target="_blank" rel="noopener nofollow" aria-label="Open site of ${esc(p.name)}">Visit site</a>
+  const linksRow = (demoUrl && siteUrl) ? `<div class="project-links">
+      <a href="${esc(demoUrl)}" target="_blank" rel="noopener nofollow" aria-label="Open live demo of ${esc(p.name)}">View live demo</a>
+      <a href="${esc(siteUrl)}" target="_blank" rel="noopener nofollow" aria-label="Open site of ${esc(p.name)}">Visit site</a>
     </div>` : ''
   if (primary) {
-    return `<div class="project-card" data-category="${esc(p.category || 'client')}"><a class="project-link" href="${esc(primary)}" target="_blank" rel="noopener" aria-label="Open ${esc(p.name)}">${arrow}${body}</a>${linksRow}</div>`
+    return `<div class="project-card" data-category="${esc(p.category || 'client')}"><a class="project-link" href="${esc(primary)}" target="_blank" rel="noopener">${arrow}${body}<span class="sr-only">(opens in a new tab)</span></a>${linksRow}</div>`
   }
   return `<div class="project-card" data-category="${esc(p.category || 'client')}">${arrow}${body}</div>`
 }
@@ -141,6 +164,24 @@ function applyProjectFilter() {
   })
 }
 
+// Hide category chips that would match nothing (e.g. no SaaS projects yet);
+// they reappear automatically once a project in that category exists.
+function syncFilterChips() {
+  const bar = document.querySelector('#projects .projects-filters')
+  const grid = document.querySelector('#projects .projects-grid')
+  if (!bar || !grid) return
+  const present = new Set([...grid.querySelectorAll('.project-card')].map(c => c.dataset.category || 'client'))
+  bar.querySelectorAll('.filter-chip').forEach(chip => {
+    const f = chip.dataset.filter || 'all'
+    chip.hidden = f !== 'all' && !present.has(f)
+  })
+  if (activeFilter !== 'all' && !present.has(activeFilter)) {
+    activeFilter = 'all'
+    setPressed(bar.querySelectorAll('.filter-chip'), c => (c.dataset.filter || 'all') === 'all')
+    applyProjectFilter()
+  }
+}
+
 function initProjectFilters() {
   const bar = document.querySelector('#projects .projects-filters')
   if (!bar) return
@@ -148,7 +189,7 @@ function initProjectFilters() {
     const btn = e.target.closest('.filter-chip')
     if (!btn) return
     activeFilter = btn.dataset.filter || 'all'
-    bar.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c === btn))
+    setPressed(bar.querySelectorAll('.filter-chip'), c => c === btn)
     applyProjectFilter()
   })
 }
@@ -165,6 +206,8 @@ async function loadProjects() {
     applyProjectFilter()
   } catch {
     // API down -> keep static cards
+  } finally {
+    syncFilterChips()
   }
 }
 
@@ -192,14 +235,7 @@ async function loadTestimonials() {
     if (!res.ok) return
     const items = await res.json()
     if (!Array.isArray(items) || items.length === 0) {
-      grid.innerHTML = `<div class="t-card t-card--placeholder">
-        <div class="t-stars">★★★★★</div>
-        <p class="t-quote">Be the first to leave a review — testimonials approved from the admin panel appear here.</p>
-        <div class="t-who"><span class="t-ava" aria-hidden="true">?</span><div>
-          <div class="t-who-name">[ Your Name Here ]</div>
-          <div class="t-who-role">Role &middot; Company</div>
-        </div></div>
-      </div>`
+      grid.innerHTML = '' // no approved testimonials yet: the grid collapses (CSS :empty)
       return
     }
     grid.innerHTML = items.map(t => `
@@ -215,7 +251,7 @@ async function loadTestimonials() {
         </div>
       </div>`).join('')
   } catch {
-    // keep placeholder
+    // API down -> leave the grid empty (collapsed)
   }
 }
 
@@ -235,7 +271,7 @@ async function loadCertificates() {
 
 function renderCertCard(c) {
   const meta = [c.issuer, c.date].filter(Boolean).join(' \u00b7 ')
-  const href = c.link || c.pdf
+  const href = safeHref(c.link) || safeHref(c.pdf)
   const inner = `
     <span class="pf-cert-img-wrap">
       <svg class="pf-cert-fallback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
@@ -275,12 +311,16 @@ function playIconSvg() {
 
 /* Lightbox: click-to-watch, full size, with sound */
 let vlbOverlay = null
+let vlbReturnFocus = null
 
 function ensureLightbox() {
   if (vlbOverlay) return vlbOverlay
   vlbOverlay = document.createElement('div')
   vlbOverlay.className = 'vlb-overlay'
+  // The guards catch focus leaving the dialog — including focus that tabs out
+  // of a cross-origin video iframe, which the keydown trap below can't see.
   vlbOverlay.innerHTML = `
+    <span class="vlb-guard" tabindex="0" aria-hidden="true"></span>
     <div class="vlb-box" role="dialog" aria-modal="true" aria-labelledby="vlb-title">
       <div class="vlb-head">
         <div class="vlb-title" id="vlb-title"></div>
@@ -288,12 +328,25 @@ function ensureLightbox() {
       </div>
       <div class="vlb-media" id="vlb-media"></div>
       <div class="vlb-desc" id="vlb-desc"></div>
-    </div>`
+    </div>
+    <span class="vlb-guard" tabindex="0" aria-hidden="true"></span>`
   document.body.appendChild(vlbOverlay)
   vlbOverlay.addEventListener('click', (e) => { if (e.target === vlbOverlay) closeLightbox() })
   vlbOverlay.querySelector('.vlb-close').addEventListener('click', closeLightbox)
+  vlbOverlay.querySelectorAll('.vlb-guard').forEach(g =>
+    g.addEventListener('focus', () => vlbOverlay.querySelector('.vlb-close').focus()))
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && vlbOverlay.classList.contains('vlb-open')) closeLightbox()
+    if (!vlbOverlay.classList.contains('vlb-open')) return
+    if (e.key === 'Escape') closeLightbox()
+    else if (e.key === 'Tab') {
+      // Keep focus inside the dialog while it is open.
+      const items = [...vlbOverlay.querySelectorAll('.vlb-box button, .vlb-box [href], .vlb-box iframe, .vlb-box video[controls]')]
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
+      else if (!vlbOverlay.contains(document.activeElement)) { e.preventDefault(); first.focus() }
+    }
   })
   return vlbOverlay
 }
@@ -303,10 +356,13 @@ function closeLightbox() {
   vlbOverlay.classList.remove('vlb-open')
   const media = vlbOverlay.querySelector('#vlb-media')
   if (media) media.innerHTML = '' // stop playback
+  if (vlbReturnFocus && document.contains(vlbReturnFocus)) vlbReturnFocus.focus()
+  vlbReturnFocus = null
 }
 
 function openLightbox(clip) {
   const overlay = ensureLightbox()
+  vlbReturnFocus = document.activeElement
   overlay.querySelector('#vlb-title').textContent = clip.title || 'Watch'
   overlay.querySelector('#vlb-desc').textContent = clip.description || ''
   const media = overlay.querySelector('#vlb-media')
@@ -319,6 +375,7 @@ function openLightbox(clip) {
     media.innerHTML = `<iframe src="${esc(embed.src)}" title="${esc(clip.title || 'Video')}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`
   }
   overlay.classList.add('vlb-open')
+  overlay.querySelector('.vlb-close').focus()
 }
 
 /* Showcase grid: one card per clip, so multiple clips per hobby display
@@ -386,7 +443,7 @@ function wireShowcaseCard(el, clip) {
     el.addEventListener('mouseleave', stop)
     el.addEventListener('blur', stop)
   }
-  wireShowcaseTilt(el)
+  if (!prefersReducedMotion) wireShowcaseTilt(el)
   el.addEventListener('click', () => openLightbox(clip))
   el.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLightbox(clip) }
@@ -402,13 +459,13 @@ function renderShowcaseFilters(clips) {
   if (present.length < 2) { bar.innerHTML = ''; return } // nothing to filter with one category
   const chips = ['all', ...present]
   bar.innerHTML = chips.map((cat, i) => `
-    <button type="button" class="filter-chip${i === 0 ? ' active' : ''}" data-cat="${esc(cat)}">
+    <button type="button" class="filter-chip${i === 0 ? ' active' : ''}" data-cat="${esc(cat)}" aria-pressed="${i === 0}">
       ${esc(cat === 'all' ? 'All' : (HOBBY_CATEGORY_LABEL[cat] || cat))}
     </button>`).join('')
   bar.addEventListener('click', (e) => {
     const btn = e.target.closest('.filter-chip')
     if (!btn) return
-    bar.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c === btn))
+    setPressed(bar.querySelectorAll('.filter-chip'), c => c === btn)
     const cat = btn.dataset.cat
     document.querySelectorAll('#pf-showcase-grid .pf-showcase-card').forEach(card => {
       card.classList.toggle('is-hidden', cat !== 'all' && card.dataset.category !== cat)
