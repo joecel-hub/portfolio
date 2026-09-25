@@ -5,6 +5,7 @@ import { db } from '../db.js'
 import { requireAuth } from '../auth.js'
 import { upload, UPLOAD_DIR } from '../middleware/upload.js'
 import { schedulePushback } from '../pushback.js'
+import { firstUnsafe } from '../safeUrl.js'
 
 const router = Router()
 
@@ -58,6 +59,11 @@ router.post('/', FIELDS, (req, res) => {
     if (req.files?.pdf?.[0]) removeFile(`/uploads/${req.files.pdf[0].filename}`)
     return res.status(400).json({ error: 'name is required' })
   }
+  if (firstUnsafe({ link })) {
+    if (req.files?.image?.[0]) removeFile(`/uploads/${req.files.image[0].filename}`)
+    if (req.files?.pdf?.[0]) removeFile(`/uploads/${req.files.pdf[0].filename}`)
+    return res.status(400).json({ error: 'link must be an http(s) URL or a /path' })
+  }
   const image = req.files?.image?.[0] ? `/uploads/${req.files.image[0].filename}` : ''
   const pdf = req.files?.pdf?.[0] ? `/uploads/${req.files.pdf[0].filename}` : ''
   const info = db.prepare(
@@ -76,6 +82,11 @@ router.put('/:id', FIELDS, (req, res) => {
     return res.status(404).json({ error: 'Not found' })
   }
   const { name, issuer, cert_date, link, sort, enabled } = req.body || {}
+  if (firstUnsafe({ link })) {
+    if (req.files?.image?.[0]) removeFile(`/uploads/${req.files.image[0].filename}`)
+    if (req.files?.pdf?.[0]) removeFile(`/uploads/${req.files.pdf[0].filename}`)
+    return res.status(400).json({ error: 'link must be an http(s) URL or a /path' })
+  }
   const newImage = req.files?.image?.[0] ? `/uploads/${req.files.image[0].filename}` : null
   const newPdf = req.files?.pdf?.[0] ? `/uploads/${req.files.pdf[0].filename}` : null
   const image = newImage || (isClear(req.body?.clearImage) ? '' : existing.image)

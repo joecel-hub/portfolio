@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { db } from '../db.js'
 import { requireAuth } from '../auth.js'
 import { schedulePushback } from '../pushback.js'
+import { reviewLimiter } from '../middleware/rateLimit.js'
 
 const router = Router()
 
@@ -10,7 +11,7 @@ function serialize(row) {
 }
 
 // Public: client submits a review -> saved as pending (approval gate)
-router.post('/', (req, res) => {
+router.post('/', reviewLimiter, (req, res) => {
   const { project, name, role, quote, stars, consent } = req.body || {}
   if (!name || !quote) return res.status(400).json({ error: 'name and quote are required' })
   if (consent !== true) return res.status(400).json({ error: 'consent to publish is required' })

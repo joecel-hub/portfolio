@@ -5,6 +5,7 @@ import { db } from '../db.js'
 import { requireAuth } from '../auth.js'
 import { upload, UPLOAD_DIR } from '../middleware/upload.js'
 import { schedulePushback } from '../pushback.js'
+import { firstUnsafe } from '../safeUrl.js'
 
 const router = Router()
 
@@ -40,6 +41,8 @@ router.use(requireAuth)
 router.post('/', (req, res) => {
   const { name, desc, tags, url, demoUrl, thumb, category, sort } = req.body || {}
   if (!name) return res.status(400).json({ error: 'name is required' })
+  const bad = firstUnsafe({ url, demoUrl })
+  if (bad) return res.status(400).json({ error: `${bad} must be an http(s) URL or a /path` })
   const info = db.prepare('INSERT INTO projects (name, desc, tags, url, demo_url, thumb, category, sort) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
     .run(name, desc || '', JSON.stringify(tags || []), url || '', demoUrl || '', thumb || 'wave', cleanCategory(category), Number(sort) || 0)
   const row = db.prepare('SELECT * FROM projects WHERE id = ?').get(info.lastInsertRowid)
@@ -51,6 +54,8 @@ router.put('/:id', (req, res) => {
   const { name, desc, tags, url, demoUrl, thumb, category, sort } = req.body || {}
   const existing = db.prepare('SELECT * FROM projects WHERE id = ?').get(req.params.id)
   if (!existing) return res.status(404).json({ error: 'Not found' })
+  const bad = firstUnsafe({ url, demoUrl })
+  if (bad) return res.status(400).json({ error: `${bad} must be an http(s) URL or a /path` })
   let existingTags = []
   try { existingTags = JSON.parse(existing.tags || '[]') } catch {}
   const s = Number(sort)

@@ -13,12 +13,19 @@ import logoRoutes from './routes/logos.js'
 import reviewRoutes from './routes/reviews.js'
 import certificateRoutes from './routes/certificates.js'
 import hobbyClipRoutes from './routes/hobbyClips.js'
+import contactRoutes from './routes/contact.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 seedIfEmpty()
 
 export const app = express()
+app.disable('x-powered-by')
+// Behind Render's proxy, trust the first X-Forwarded-For hop so req.ip is the
+// real visitor — otherwise every visitor shares one rate-limit bucket.
+// Override with TRUST_PROXY (a hop count); off by default outside production.
+const trustProxy = process.env.TRUST_PROXY ?? (process.env.NODE_ENV === 'production' ? '1' : '')
+if (trustProxy !== '' && trustProxy !== '0') app.set('trust proxy', Number(trustProxy) || trustProxy)
 app.use(cors())
 app.use(express.json({ limit: '256kb' }))
 
@@ -31,6 +38,7 @@ app.use('/api/logos', logoRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/certificates', certificateRoutes)
 app.use('/api/hobby-clips', hobbyClipRoutes)
+app.use('/api/contact', contactRoutes)
 
 // Uploaded images (client logos, etc.)
 app.use('/uploads', express.static(UPLOAD_DIR))

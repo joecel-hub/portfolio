@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { spawnSync } from 'node:child_process'
 
 const dir = mkdtempSync(join(tmpdir(), 'gio-cms-test-'))
 process.env.DB_FILE = join(dir, 'test.db')
@@ -13,6 +14,11 @@ process.env.ADMIN_PASS = 'testpass123'
 process.env.GIT_PAT = ''
 process.env.LOGIN_RATE_LIMIT = '3'
 process.env.LOGIN_RATE_WINDOW_MS = '60000'
+process.env.FORM_RATE_LIMIT = '5'
+process.env.FORM_RATE_WINDOW_MS = '60000'
+delete process.env.SMTP_HOST
+delete process.env.SMTP_USER
+delete process.env.SMTP_PASS
 
 const { app } = await import('../server/app.js')
 const { db } = await import('../server/db.js')
@@ -258,4 +264,76 @@ test('reviews: short quotes are rejected', async () => {
 test('persistence: pushback is disabled without GIT_PAT', async () => {
   const { isEnabled } = await import('../server/pushback.js')
   assert.equal(isEnabled(), false)
+})
+test('reviews: public submissions are rate limited per IP', async () => {
+  // Earlier review tests already used part of this IP's allowance of 5.
+  let limited = null
+  for (let i = 0; i < 8 && !limited; i++) {
+    const r = await j('/api/reviews', {
+      method: 'POST',
+      body: { name: 'Spam', quote: 'Spam spam spam', consent: true },
+    })
+    if (r.status === 429) limited = r
+  }
+  assert.ok(limited, 'expected a 429 after the per-IP review limit')
+  assert.ok(Number(limited.headers.get('retry-after')) > 0)
+})
+
+test('security: CMS link fields reject non-http(s) URLs', async () => {
+  const token = await login()
+  const bad = await j('/api/projects', {
+    method: 'POST',
+    token,
+    body: { name: 'XSS', url: 'javascript:alert(1)' },
+  })
+  assert.equal(bad.status, 400)
+  const rel = await j('/api/projects', {
+    method: 'POST',
+    token,
+    body: { name: 'Demo', demoUrl: '/demos/itms/index.html', url: 'https://example.com/' },
+  })
+  assert.equal(rel.status, 201)
+  const proto = await j(`/api/projects/${rel.data.id}`, { method: 'PUT', token, body: { demoUrl: '//evil.example' } })
+  assert.equal(proto.status, 400)
+  await j(`/api/projects/${rel.data.id}`, { method: 'DELETE', token })
+
+  const clip = await j('/api/hobby-clips', {
+    method: 'POST',
+    token,
+    body: { category: 'gaming', videoUrl: 'data:text/html,hi' },
+  })
+  assert.equal(clip.status, 400)
+})
+
+test('security: production refuses to start with default admin credentials', () => {
+  const run = (env) =>
+    spawnSync(process.execPath, ['-e', "import('./server/auth.js').then(() => process.exit(0), () => process.exit(1))"], {
+      env: { PATH: process.env.PATH, NODE_ENV: 'production', ...env },
+      encoding: 'utf8',
+    })
+  assert.equal(run({}).status, 1)
+  assert.equal(run({ ADMIN_PASS: 'admin123', JWT_SECRET: 'x'.repeat(40) }).status, 1)
+  assert.equal(run({ ADMIN_PASS: 'a-real-password', JWT_SECRET: 'x'.repeat(40) }).status, 0)
+})
+
+test('contact: validates input, swallows honeypot, 503 without SMTP, rate limited', async () => {
+  const ok = { name: 'Ada', email: 'ada@example.com', subject: 'Hi', message: 'I would like a website.' }
+
+  const badEmail = await j('/api/contact', { method: 'POST', body: { ...ok, email: 'nope' } })
+  assert.equal(badEmail.status, 400)
+
+  const bot = await j('/api/contact', { method: 'POST', body: { ...ok, website: 'http://spam.example' } })
+  assert.equal(bot.status, 200)
+  assert.equal(bot.data.ok, true)
+
+  const unconfigured = await j('/api/contact', { method: 'POST', body: ok })
+  assert.equal(unconfigured.status, 503)
+  assert.equal(unconfigured.data.error, 'not_configured')
+
+  let limited = null
+  for (let i = 0; i < 6 && !limited; i++) {
+    const r = await j('/api/contact', { method: 'POST', body: ok })
+    if (r.status === 429) limited = r
+  }
+  assert.ok(limited, 'expected a 429 after the per-IP contact limit')
 })

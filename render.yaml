@@ -21,6 +21,16 @@ services:
         sync: false
       - key: GIT_PAT
         sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: CONTACT_TO
+        sync: false
     disk:
       name: data
       mountPath: /data

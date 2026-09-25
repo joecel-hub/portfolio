@@ -5,6 +5,7 @@ import { db } from '../db.js'
 import { requireAuth } from '../auth.js'
 import { upload, uploadVideo, UPLOAD_DIR } from '../middleware/upload.js'
 import { schedulePushback } from '../pushback.js'
+import { firstUnsafe } from '../safeUrl.js'
 
 const router = Router()
 
@@ -54,6 +55,7 @@ router.post('/', (req, res) => {
       .status(400)
       .json({ error: 'category must be one of: ' + [...CATEGORIES].join(', ') })
   }
+  if (firstUnsafe({ videoUrl })) return res.status(400).json({ error: 'videoUrl must be an http(s) URL or a /path' })
   const info = db.prepare(
     'INSERT INTO hobby_clips (category, title, description, video_url, sort, enabled) VALUES (?, ?, ?, ?, ?, 1)',
   ).run(category, title || '', description || '', videoUrl || '', Number(sort) || 0)
@@ -69,6 +71,7 @@ router.put('/:id', (req, res) => {
   if (category !== undefined && !CATEGORIES.has(category)) {
     return res.status(400).json({ error: 'category must be one of: ' + [...CATEGORIES].join(', ') })
   }
+  if (firstUnsafe({ videoUrl })) return res.status(400).json({ error: 'videoUrl must be an http(s) URL or a /path' })
   const s = Number(sort)
   db.prepare(
     `UPDATE hobby_clips SET category = ?, title = ?, description = ?, video_url = ?, sort = ?, enabled = ? WHERE id = ?`,
