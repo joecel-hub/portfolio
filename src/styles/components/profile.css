@@ -208,7 +208,7 @@ body.normal-mode #contact {
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--text);
-  transition: border-color 0.25s, color 0.25s, transform 0.2s, box-shadow 0.25s;
+  transition: border-color var(--dur-fast), color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur-fast);
 }
 
 .pf-soc svg {
@@ -295,7 +295,7 @@ body.normal-mode #contact {
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(25, 29, 54, 0.14);
   border-radius: 14px;
-  transition: border-color 0.25s, transform 0.2s, box-shadow 0.3s;
+  transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur);
 }
 
 .pf-service:hover {
@@ -451,7 +451,7 @@ body.normal-mode #contact {
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(25, 29, 54, 0.14);
   border-radius: 14px;
-  transition: border-color 0.25s, transform 0.2s, box-shadow 0.3s;
+  transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur);
 }
 
 .pf-skill-card:hover {
@@ -506,7 +506,7 @@ body.normal-mode #contact {
   text-transform: uppercase;
   color: var(--text);
   cursor: pointer;
-  transition: color 0.25s, background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  transition: color var(--dur-fast), background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
 }
 
 .pf-filter:hover {
@@ -532,7 +532,7 @@ body.normal-mode #contact {
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(25, 29, 54, 0.14);
   border-radius: 14px;
-  transition: border-color 0.25s, transform 0.2s, box-shadow 0.3s;
+  transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur);
 }
 
 .pf-project:hover {
@@ -566,7 +566,7 @@ body.normal-mode #contact {
   color: var(--a1);
   font-size: var(--fs-md);
   line-height: 1;
-  transition: transform 0.2s;
+  transition: transform var(--dur-fast);
 }
 
 .pf-project:hover .pf-project-arrow {
@@ -593,7 +593,7 @@ body.normal-mode #contact {
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(25, 29, 54, 0.14);
   border-radius: 14px;
-  transition: border-color 0.25s, transform 0.2s, box-shadow 0.3s;
+  transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur);
 }
 
 .pf-hobby:hover {
@@ -663,7 +663,7 @@ body.normal-mode #contact {
   will-change: transform;
   /* Transform itself is driven by JS (cursor-tracked tilt) — this transition
      just smooths each mousemove update and the reset on mouseleave. */
-  transition: transform 0.15s ease-out, box-shadow 0.3s ease, border-color 0.25s ease;
+  transition: transform 0.15s ease-out, box-shadow var(--dur) ease, border-color var(--dur-fast) ease;
   z-index: 1;
 }
 
@@ -692,7 +692,7 @@ body.normal-mode #contact {
 
 .pf-showcase-preview {
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--dur-fast) ease;
   pointer-events: none;
 }
 
@@ -705,7 +705,7 @@ body.normal-mode #contact {
   inset: 0;
   background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.35), transparent 60%);
   opacity: 0;
-  transition: opacity 0.25s ease;
+  transition: opacity var(--dur-fast) ease;
   pointer-events: none;
 }
 
@@ -721,7 +721,7 @@ body.normal-mode #contact {
   justify-content: center;
   color: #fff;
   background: rgba(5, 6, 12, 0.18);
-  transition: background 0.2s ease;
+  transition: background var(--dur-fast) ease;
 }
 
 .pf-showcase-card:hover .pf-showcase-play {
@@ -736,7 +736,7 @@ body.normal-mode #contact {
   width: 34px;
   height: 34px;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
-  transition: transform 0.2s ease;
+  transition: transform var(--dur-fast) ease;
 }
 
 .pf-showcase-card:hover .pf-showcase-play svg {
@@ -774,7 +774,7 @@ body.normal-mode #contact {
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(25, 29, 54, 0.14);
   border-radius: 14px;
-  transition: border-color 0.25s, transform 0.2s, box-shadow 0.3s;
+  transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur);
 }
 
 a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
@@ -813,7 +813,7 @@ a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.35s ease;
+  transition: transform var(--dur) ease;
 }
 
 .pf-cert:hover .pf-cert-img {
@@ -857,7 +857,7 @@ a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(25, 29, 54, 0.14);
   border-radius: 13px;
-  transition: border-color 0.25s, transform 0.2s;
+  transition: border-color var(--dur-fast), transform var(--dur-fast);
 }
 
 .pf-contact-row:hover {

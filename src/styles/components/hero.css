@@ -211,7 +211,7 @@ body.normal-mode .hero-sub strong {
   letter-spacing: 0.06em;
   cursor: pointer;
   border: none;
-  transition: transform 0.2s, box-shadow 0.2s, background 0.3s, color 0.3s;
+  transition: transform var(--dur-fast), box-shadow var(--dur-fast), background var(--dur), color var(--dur);
   text-decoration: none;
 }
 

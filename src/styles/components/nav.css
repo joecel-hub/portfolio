@@ -14,7 +14,7 @@
   border-left: 1px solid var(--border);
   background: rgba(5, 5, 8, 0.5);
   backdrop-filter: blur(16px);
-  transition: background 0.7s, border-color 0.7s;
+  transition: background var(--dur-slow), border-color var(--dur-slow);
 }
 
 body.normal-mode #right-nav {
@@ -36,7 +36,7 @@ body.normal-mode #right-nav {
   cursor: pointer;
   padding: 10px 6px;
   border-radius: 6px;
-  transition: color 0.3s, background 0.3s;
+  transition: color var(--dur), background var(--dur);
   position: relative;
 }
 
@@ -49,7 +49,7 @@ body.normal-mode #right-nav {
   width: 2px;
   height: 0;
   background: var(--a1);
-  transition: height 0.3s;
+  transition: height var(--dur);
   border-radius: 2px;
 }
 
@@ -87,7 +87,7 @@ body.normal-mode .rn-btn:hover {
   padding: var(--space-4) 5vw;
   background: rgba(5, 5, 8, 0);
   border-bottom: 1px solid transparent;
-  transition: background 0.4s, border-color 0.4s;
+  transition: background var(--dur), border-color var(--dur);
 }
 
 #topnav.scrolled {
@@ -159,7 +159,7 @@ body.normal-mode #topnav.scrolled::before {
   transform: translateX(100%);
   visibility: hidden;
   pointer-events: none;
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.45s;
+  transition: transform 0.45s var(--ease-out), visibility 0.45s;
   z-index: 202;
 }
 
@@ -196,7 +196,7 @@ body.normal-mode .nav-links {
   backdrop-filter: blur(4px);
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.3s ease, visibility 0.3s;
+  transition: opacity var(--dur) ease, visibility var(--dur);
   z-index: 150;
 }
 
@@ -229,7 +229,7 @@ body.normal-mode .nav-backdrop {
   padding: var(--space-4) var(--space-1);
   opacity: 1;
   transform: none;
-  transition: color 0.25s;
+  transition: color var(--dur-fast);
 }
 
 .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) a::before {
@@ -241,7 +241,7 @@ body.normal-mode .nav-backdrop {
   background: var(--a1);
   opacity: 0;
   transform: translateX(-6px);
-  transition: opacity 0.25s, transform 0.25s;
+  transition: opacity var(--dur-fast), transform var(--dur-fast);
   vertical-align: middle;
 }
 
@@ -259,7 +259,7 @@ body.normal-mode .nav-backdrop {
   height: 2px;
   background: var(--a1);
   border-radius: 2px;
-  transition: width 0.25s;
+  transition: width var(--dur-fast);
 }
 
 .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) a:hover {
@@ -334,7 +334,7 @@ body.normal-mode .nav-panel-foot {
   text-transform: none;
   opacity: 1;
   transform: none;
-  transition: color 0.25s;
+  transition: color var(--dur-fast);
   align-self: flex-start;
 }
 
@@ -384,7 +384,7 @@ body.normal-mode .nav-panel-foot {
   cursor: pointer;
   position: relative;
   z-index: 1;
-  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
+  transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
 }
 
 body.normal-mode .ham-btn {
@@ -407,7 +407,7 @@ body.normal-mode .ham-btn:hover {
   height: 2px;
   background: var(--text);
   border-radius: 2px;
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s, background 0.25s;
+  transition: transform var(--dur) cubic-bezier(0.34, 1.56, 0.64, 1), opacity var(--dur), background var(--dur-fast);
 }
 
 .ham-btn:hover span {
@@ -438,7 +438,7 @@ body.normal-mode .ham-btn:hover {
   color: var(--muted);
   cursor: pointer;
   line-height: 1;
-  transition: background 0.25s, border-color 0.25s, color 0.25s, transform 0.3s;
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform var(--dur);
 }
 
 .nav-close:hover {
@@ -477,7 +477,7 @@ body.normal-mode .nav-close {
   padding: var(--space-2) var(--space-4);
   margin-left: var(--space-4);
   cursor: pointer;
-  transition: color 0.25s, border-color 0.25s;
+  transition: color var(--dur-fast), border-color var(--dur-fast);
   position: relative;
   z-index: 1;
 }
@@ -507,7 +507,7 @@ body.normal-mode .nav-close {
   align-items: center;
   justify-content: center;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast), background var(--dur-fast);
   outline: none;
 }
 

@@ -17,7 +17,7 @@
   color: var(--muted);
   border: 1px solid var(--border);
   cursor: pointer;
-  transition: background 0.25s, color 0.25s, border-color 0.25s;
+  transition: background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast);
 }
 
 .filter-chip:hover {
@@ -69,7 +69,7 @@
   border: 1px solid var(--border);
   color: var(--a1);
   text-decoration: none;
-  transition: background 0.25s, border-color 0.25s, color 0.25s;
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast);
 }
 
 .project-links a:hover {
@@ -90,7 +90,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r);
   overflow: hidden;
-  transition: border-color 0.4s, transform 0.4s, box-shadow 0.4s;
+  transition: border-color var(--dur), transform var(--dur), box-shadow var(--dur);
   cursor: pointer;
   position: relative;
 }
@@ -116,7 +116,7 @@
   inset: 0;
   background: radial-gradient(circle at 50% 0%, rgba(var(--a1-rgb), 0.07), transparent 65%);
   opacity: 0;
-  transition: opacity 0.4s;
+  transition: opacity var(--dur);
 }
 
 .project-card:hover::before {
@@ -197,7 +197,7 @@
   justify-content: center;
   font-size: var(--fs-sm);
   color: var(--muted);
-  transition: background 0.2s, color 0.2s, transform 0.2s;
+  transition: background var(--dur-fast), color var(--dur-fast), transform var(--dur-fast);
 }
 
 .project-card:hover .project-arrow {

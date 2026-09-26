@@ -42,7 +42,7 @@ body {
   font-family: var(--sans);
   overflow-x: hidden;
   line-height: 1.7;
-  transition: background 0.7s ease, color 0.7s ease;
+  transition: background var(--dur-slow) ease, color var(--dur-slow) ease;
 }
 
 body.normal-mode {

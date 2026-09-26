@@ -48,8 +48,8 @@ body.normal-mode .about-text p strong {
   border-radius: 18px;
   padding: var(--space-5);
   transition:
-    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.4s,
+    transform 0.5s var(--ease-out),
+    border-color var(--dur),
     box-shadow 0.5s;
   cursor: default;
   isolation: isolate;
@@ -69,7 +69,7 @@ body.normal-mode .about-text p strong {
   pointer-events: none;
   z-index: 2;
   opacity: 0.7;
-  transition: opacity 0.4s;
+  transition: opacity var(--dur);
 }
 
 .value-card[data-accent="a1"]:hover::before {
@@ -131,7 +131,7 @@ body.normal-mode .about-text p strong {
   pointer-events: none;
   z-index: 0;
   user-select: none;
-  transition: color 0.4s, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: color var(--dur), transform 0.5s var(--ease-out);
 }
 
 .value-card:hover .val-ghost {
@@ -149,7 +149,7 @@ body.normal-mode .about-text p strong {
     transparent 62%
   );
   transform: translateX(-120%);
-  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform var(--dur-slow) var(--ease-out);
   pointer-events: none;
   z-index: 3;
 }
@@ -168,7 +168,7 @@ body.normal-mode .about-text p strong {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s;
+  transition: transform var(--dur) var(--ease-out), box-shadow var(--dur);
 }
 
 .val-icon svg {
