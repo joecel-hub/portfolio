@@ -5,15 +5,15 @@
   padding-bottom: 0;
   background: var(--bg2);
   background-image:
-    radial-gradient(ellipse at 50% 0%, rgba(124, 110, 255, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 100%, rgba(0, 212, 255, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse at 50% 0%, rgba(var(--a1-rgb), 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(var(--a2-rgb), 0.04) 0%, transparent 50%);
 }
 
 .process-timeline {
   position: relative;
   max-width: 860px;
   margin: 2.5rem auto 0;
-  padding: 0 2rem;
+  padding: 0 var(--space-6);
   will-change: transform;
 }
 
@@ -47,7 +47,7 @@
   justify-content: center;
   padding: 2.5rem 0;
   position: relative;
-  gap: 2rem;
+  gap: var(--space-6);
 }
 
 /* ── Icon circle ── */
@@ -55,14 +55,14 @@
   width: 90px;
   height: 90px;
   border-radius: 50%;
-  background: rgba(124, 110, 255, 0.1);
-  border: 1px solid rgba(124, 110, 255, 0.25);
+  background: rgba(var(--a1-rgb), 0.1);
+  border: 1px solid rgba(var(--a1-rgb), 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--a1);
   flex-shrink: 0;
-  box-shadow: 0 0 20px rgba(124, 110, 255, 0.15);
+  box-shadow: 0 0 20px rgba(var(--a1-rgb), 0.15);
   opacity: 0;
   transform: scale(0.8);
   will-change: transform, opacity;
@@ -76,7 +76,7 @@
 
 .pt-step.is-active .pt-icon {
   border-color: var(--a1);
-  box-shadow: 0 0 50px rgba(124, 110, 255, 0.5);
+  box-shadow: 0 0 50px rgba(var(--a1-rgb), 0.5);
 }
 
 /* ── Center dot ── */
@@ -95,13 +95,13 @@
 .pt-step.is-active .pt-dot {
   background: var(--a1);
   border-color: var(--a1);
-  box-shadow: 0 0 16px rgba(124, 110, 255, 0.6);
+  box-shadow: 0 0 16px rgba(var(--a1-rgb), 0.6);
 }
 
 /* ── Card ── */
 .pt-card {
   width: 280px;
-  padding: 1.2rem 1.5rem;
+  padding: 1.2rem var(--space-5);
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: var(--r);
@@ -112,8 +112,8 @@
 }
 
 .pt-step.is-active .pt-card {
-  border-color: rgba(124, 110, 255, 0.5);
-  box-shadow: 0 0 30px rgba(124, 110, 255, 0.1);
+  border-color: rgba(var(--a1-rgb), 0.5);
+  box-shadow: 0 0 30px rgba(var(--a1-rgb), 0.1);
 }
 
 .pt-card-left {
@@ -122,22 +122,22 @@
 
 .pt-num {
   font-family: var(--mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   color: var(--a2);
   letter-spacing: 0.15em;
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--space-1);
 }
 
 .pt-card h3 {
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   font-weight: 700;
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--space-1);
   color: var(--text);
 }
 
 .pt-sub {
-  font-size: 0.8rem;
+  font-size: var(--fs-sm);
   color: var(--muted);
   font-family: var(--mono);
 }
@@ -154,13 +154,13 @@
 /* ── Mobile ── */
 @media (max-width: 767px) {
   .process-timeline {
-    padding: 0 1rem;
+    padding: 0 var(--space-4);
     max-width: 100%;
   }
 
   .pt-step {
-    gap: 1rem;
-    padding: 2rem 0;
+    gap: var(--space-4);
+    padding: var(--space-6) 0;
   }
 
   .pt-icon {
@@ -177,15 +177,15 @@
     width: auto;
     flex: 1;
     min-width: 0;
-    padding: 1rem 1.2rem;
+    padding: var(--space-4) 1.2rem;
   }
 
   .pt-card h3 {
-    font-size: 0.9rem;
+    font-size: var(--fs-base);
   }
 
   .pt-sub {
-    font-size: 0.75rem;
+    font-size: var(--fs-xs);
   }
 
   .pt-dot {

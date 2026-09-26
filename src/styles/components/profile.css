@@ -1,5 +1,5 @@
 /* ── Normal mode: Gio profile (cover + scrollable sections) ──
-   A dark, Facebook-inspired profile page: wide photo cover with the
+   A light, Facebook-inspired profile page: wide photo cover with the
    avatar/name/actions overlapping it, then all sections scroll normally. */
 
 /* In normal mode the dev hero and dev-only sections are empty, so collapse
@@ -21,8 +21,8 @@ body.normal-mode #contact {
 #profile {
   padding-top: 5rem;
   background:
-    radial-gradient(70% 36rem at 8% 0%, rgba(93, 79, 211, 0.1), transparent 68%),
-    radial-gradient(60% 30rem at 92% 12%, rgba(0, 127, 159, 0.08), transparent 70%),
+    radial-gradient(70% 36rem at 8% 0%, rgba(var(--a1-rgb), 0.1), transparent 68%),
+    radial-gradient(60% 30rem at 92% 12%, rgba(var(--a2-rgb), 0.08), transparent 70%),
     transparent;
   color: var(--text);
 }
@@ -60,7 +60,7 @@ body.normal-mode #contact {
   inset: 0;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(246, 247, 251, 0.1) 52%, rgba(246, 247, 251, 0.62) 100%),
-    linear-gradient(115deg, rgba(93, 79, 211, 0.1), transparent 52%, rgba(0, 127, 159, 0.06));
+    linear-gradient(115deg, rgba(var(--a1-rgb), 0.1), transparent 52%, rgba(var(--a2-rgb), 0.06));
 }
 
 .pf-cover-glow {
@@ -68,8 +68,8 @@ body.normal-mode #contact {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(60% 60% at 15% 0%, rgba(124, 110, 255, 0.22), transparent 60%),
-    radial-gradient(60% 60% at 85% 10%, rgba(0, 212, 255, 0.14), transparent 60%);
+    radial-gradient(60% 60% at 15% 0%, rgba(var(--a1-rgb), 0.22), transparent 60%),
+    radial-gradient(60% 60% at 85% 10%, rgba(var(--a2-rgb), 0.14), transparent 60%);
 }
 
 /* ── Profile head (overlaps the cover) ── */
@@ -85,8 +85,8 @@ body.normal-mode #contact {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1.6rem;
-  padding: 1.4rem 2rem 1.6rem;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-6) var(--space-5);
   background: linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(246, 247, 251, 0.94) 55%);
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -122,7 +122,7 @@ body.normal-mode #contact {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #43e97b;
+  background: var(--success);
   border: 3px solid #fff;
   box-shadow: 0 0 14px rgba(67, 233, 123, 0.7);
   animation: pfPulse 2s ease-in-out infinite;
@@ -147,17 +147,17 @@ body.normal-mode #contact {
 }
 
 .pf-role {
-  margin-top: 0.55rem;
+  margin-top: var(--space-2);
   min-height: 1.6em;
   font-family: var(--mono);
-  font-size: 0.82rem;
+  font-size: var(--fs-sm);
   letter-spacing: 0.05em;
   color: var(--a2);
 }
 
 .pf-loc {
-  margin-top: 0.3rem;
-  font-size: 0.9rem;
+  margin-top: var(--space-1);
+  font-size: var(--fs-base);
   color: var(--text);
   opacity: 0.82;
 }
@@ -165,26 +165,26 @@ body.normal-mode #contact {
 .pf-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
+  gap: var(--space-3);
 }
 
 .pf-socials {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.6rem;
+  gap: var(--space-2);
   width: 100%;
 }
 
 .pf-soc {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
   border-radius: 999px;
   background: var(--surface);
   border: 1px solid var(--border);
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   letter-spacing: 0.03em;
   color: var(--text);
@@ -236,20 +236,20 @@ body.normal-mode #contact {
 
 .pf-sec-text {
   color: var(--text);
-  font-size: 1.02rem;
+  font-size: var(--fs-md);
   line-height: 1.85;
   max-width: 62ch;
-  margin-bottom: 0.9rem;
+  margin-bottom: var(--space-4);
   opacity: 1;
 }
 
 .pf-sub {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin: 2rem 0 1.1rem;
+  gap: var(--space-3);
+  margin: var(--space-6) 0 var(--space-4);
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -267,11 +267,11 @@ body.normal-mode #contact {
 .pf-services {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .pf-service {
-  padding: 1.4rem;
+  padding: var(--space-5);
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(25, 29, 54, 0.14);
   border-radius: 14px;
@@ -291,10 +291,10 @@ body.normal-mode #contact {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.9rem;
+  margin-bottom: var(--space-4);
   color: var(--a1);
-  background: rgba(124, 110, 255, 0.12);
-  border: 1px solid rgba(124, 110, 255, 0.25);
+  background: rgba(var(--a1-rgb), 0.12);
+  border: 1px solid rgba(var(--a1-rgb), 0.25);
 }
 
 .pf-service-icon svg {
@@ -303,13 +303,13 @@ body.normal-mode #contact {
 }
 
 .pf-service-name {
-  font-size: 1rem;
+  font-size: var(--fs-md);
   font-weight: 700;
-  margin-bottom: 0.4rem;
+  margin-bottom: var(--space-2);
 }
 
 .pf-service-text {
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   color: var(--text);
   line-height: 1.65;
   opacity: 0.92;
@@ -322,7 +322,7 @@ body.normal-mode #contact {
 
 .pf-tl-item {
   position: relative;
-  padding: 0 0 1.75rem 1.9rem;
+  padding: 0 0 1.75rem var(--space-6);
 }
 
 .pf-tl-item::before {
@@ -334,7 +334,7 @@ body.normal-mode #contact {
   height: 13px;
   border-radius: 50%;
   background: var(--a1);
-  box-shadow: 0 0 0 4px rgba(124, 110, 255, 0.15), 0 0 16px rgba(124, 110, 255, 0.45);
+  box-shadow: 0 0 0 4px rgba(var(--a1-rgb), 0.15), 0 0 16px rgba(var(--a1-rgb), 0.45);
 }
 
 .pf-tl-item::after {
@@ -356,22 +356,22 @@ body.normal-mode #contact {
 }
 
 .pf-tl-role {
-  font-size: 1.02rem;
+  font-size: var(--fs-md);
   font-weight: 700;
 }
 
 .pf-tl-meta {
   display: block;
-  margin-top: 0.2rem;
+  margin-top: var(--space-1);
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.04em;
   color: var(--a2);
 }
 
 .pf-tl-text {
-  margin-top: 0.55rem;
-  font-size: 0.92rem;
+  margin-top: var(--space-2);
+  font-size: var(--fs-base);
   color: var(--text);
   line-height: 1.7;
   opacity: 0.94;
@@ -380,17 +380,17 @@ body.normal-mode #contact {
 .pf-tl-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.7rem;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
 }
 
 .pf-tag {
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding: 0.3rem 0.62rem;
+  padding: var(--space-1) 0.62rem;
   border-radius: 999px;
   background: #e6e6ec;
   border: 1px solid rgba(244, 244, 244, 0.273);
@@ -399,7 +399,7 @@ body.normal-mode #contact {
 
 /* Skills stack */
 .pf-skill-group {
-  margin-top: 1.6rem;
+  margin-top: var(--space-5);
 }
 
 .pf-skill-group:first-of-type {
@@ -408,26 +408,26 @@ body.normal-mode #contact {
 
 .pf-skill-group-label {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--a1);
-  margin-bottom: 0.85rem;
+  margin-bottom: var(--space-3);
 }
 
 .pf-stack-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(112px, 100%), 1fr));
-  gap: 0.9rem;
+  gap: var(--space-4);
 }
 
 .pf-skill-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
-  padding: 1.2rem 0.8rem;
+  gap: var(--space-3);
+  padding: 1.2rem var(--space-3);
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(25, 29, 54, 0.14);
   border-radius: 14px;
@@ -460,7 +460,7 @@ body.normal-mode #contact {
 }
 
 .pf-skill-name {
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   text-align: center;
   line-height: 1.3;
@@ -470,17 +470,17 @@ body.normal-mode #contact {
 .pf-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-2);
   margin-bottom: 1.3rem;
 }
 
 .pf-filter {
-  padding: 0.5rem 1.05rem;
+  padding: var(--space-2) var(--space-4);
   border-radius: 999px;
   background: var(--surface);
   border: 1px solid var(--border);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -504,7 +504,7 @@ body.normal-mode #contact {
 .pf-projects {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .pf-project {
@@ -528,23 +528,23 @@ body.normal-mode #contact {
 .pf-project-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-bottom: 0.8rem;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
 }
 
 .pf-project-name {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-  font-size: 1rem;
+  gap: var(--space-2);
+  font-size: var(--fs-md);
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
 .pf-project-arrow {
   color: var(--a1);
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   line-height: 1;
   transition: transform 0.2s;
 }
@@ -554,8 +554,8 @@ body.normal-mode #contact {
 }
 
 .pf-project-desc {
-  margin-top: 0.45rem;
-  font-size: 0.9rem;
+  margin-top: var(--space-2);
+  font-size: var(--fs-base);
   color: var(--text);
   line-height: 1.65;
   opacity: 0.92;
@@ -565,11 +565,11 @@ body.normal-mode #contact {
 .pf-hobbies {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .pf-hobby {
-  padding: 1.4rem;
+  padding: var(--space-5);
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(25, 29, 54, 0.14);
   border-radius: 14px;
@@ -589,10 +589,10 @@ body.normal-mode #contact {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.9rem;
+  margin-bottom: var(--space-4);
   color: var(--a1);
-  background: rgba(124, 110, 255, 0.12);
-  border: 1px solid rgba(124, 110, 255, 0.25);
+  background: rgba(var(--a1-rgb), 0.12);
+  border: 1px solid rgba(var(--a1-rgb), 0.25);
 }
 
 .pf-hobby-icon svg {
@@ -601,13 +601,13 @@ body.normal-mode #contact {
 }
 
 .pf-hobby-name {
-  font-size: 1rem;
+  font-size: var(--fs-md);
   font-weight: 700;
-  margin-bottom: 0.4rem;
+  margin-bottom: var(--space-2);
 }
 
 .pf-hobby-text {
-  font-size: 0.9rem;
+  font-size: var(--fs-base);
   color: var(--text);
   line-height: 1.65;
   opacity: 0.92;
@@ -617,14 +617,14 @@ body.normal-mode #contact {
 .pf-showcase-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 1.1rem;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
 .pf-showcase-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
-  gap: 1.1rem;
+  gap: var(--space-4);
   perspective: 1200px;
 }
 
@@ -657,7 +657,7 @@ body.normal-mode #contact {
 .pf-showcase-thumb {
   position: relative;
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, rgba(124, 110, 255, 0.18), rgba(0, 212, 255, 0.12));
+  background: linear-gradient(135deg, rgba(var(--a1-rgb), 0.18), rgba(var(--a2-rgb), 0.12));
   overflow: hidden;
 }
 
@@ -724,20 +724,20 @@ body.normal-mode #contact {
 }
 
 .pf-showcase-info {
-  padding: 0.85rem 1rem 1rem;
+  padding: var(--space-3) var(--space-4) var(--space-4);
 }
 
 .pf-showcase-tag {
   display: inline-block;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.04em;
   color: var(--a2);
-  margin-bottom: 0.3rem;
+  margin-bottom: var(--space-1);
 }
 
 .pf-showcase-title {
-  font-size: 0.94rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   line-height: 1.35;
 }
@@ -745,12 +745,12 @@ body.normal-mode #contact {
 .pf-certs {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .pf-cert {
   display: block;
-  padding: 0.9rem;
+  padding: var(--space-4);
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(25, 29, 54, 0.14);
   border-radius: 14px;
@@ -773,8 +773,8 @@ a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
   aspect-ratio: 4 / 3;
   border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 0.8rem;
-  background: linear-gradient(135deg, rgba(124, 110, 255, 0.14), rgba(0, 212, 255, 0.1));
+  margin-bottom: var(--space-3);
+  background: linear-gradient(135deg, rgba(var(--a1-rgb), 0.14), rgba(var(--a2-rgb), 0.1));
   border: 1px solid rgba(25, 29, 54, 0.1);
 }
 
@@ -802,16 +802,16 @@ a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
 
 .pf-cert-name {
   display: block;
-  font-size: 0.96rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   line-height: 1.35;
 }
 
 .pf-cert-meta {
   display: block;
-  margin-top: 0.25rem;
+  margin-top: var(--space-1);
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.04em;
   color: var(--a2);
 }
@@ -826,14 +826,14 @@ a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
 
 .pf-contact-links {
   display: grid;
-  gap: 0.85rem;
+  gap: var(--space-3);
 }
 
 .pf-contact-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.2rem;
+  gap: var(--space-4);
+  padding: var(--space-4) 1.2rem;
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(25, 29, 54, 0.14);
   border-radius: 13px;
@@ -854,8 +854,8 @@ a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
   align-items: center;
   justify-content: center;
   color: var(--a1);
-  background: rgba(124, 110, 255, 0.1);
-  border: 1px solid rgba(124, 110, 255, 0.22);
+  background: rgba(var(--a1-rgb), 0.1);
+  border: 1px solid rgba(var(--a1-rgb), 0.22);
 }
 
 .pf-c-icon svg {
@@ -870,21 +870,21 @@ a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
 
 .pf-row-label {
   font-family: var(--mono);
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--a2);
 }
 
 .pf-row-value {
-  margin-top: 0.15rem;
-  font-size: 0.86rem;
+  margin-top: var(--space-1);
+  font-size: var(--fs-sm);
   color: var(--text);
   word-break: break-word;
 }
 
 .pf-row-value--ok {
-  color: #43e97b;
+  color: var(--success);
   font-weight: 600;
 }
 
@@ -897,7 +897,7 @@ a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
 .pf-back {
   width: 100%;
   justify-content: center;
-  margin: 1rem 0 0.5rem;
+  margin: var(--space-4) 0 var(--space-2);
 }
 
 /* ── Responsive ── */
@@ -906,7 +906,7 @@ a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
-    gap: 1rem;
+    gap: var(--space-4);
   }
 
   .pf-avatar-wrap {
@@ -929,11 +929,11 @@ a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
 
   .pf-head {
     margin-top: -52px;
-    padding: 0 0.9rem;
+    padding: 0 var(--space-4);
   }
 
   .pf-head-inner {
-    padding: 1.2rem 1.2rem 1.4rem;
+    padding: 1.2rem 1.2rem var(--space-5);
     align-items: center;
     text-align: center;
   }

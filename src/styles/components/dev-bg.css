@@ -21,7 +21,7 @@
   height: 55vw;
   top: -15%;
   left: -10%;
-  background: radial-gradient(circle, rgba(124, 110, 255, 0.18) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--a1-rgb), 0.18) 0%, transparent 70%);
   animation: blob-a 28s ease-in-out infinite alternate;
 }
 
@@ -30,7 +30,7 @@
   height: 45vw;
   bottom: -10%;
   right: -5%;
-  background: radial-gradient(circle, rgba(0, 212, 255, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--a2-rgb), 0.12) 0%, transparent 70%);
   animation: blob-b 32s ease-in-out infinite alternate;
 }
 
@@ -42,7 +42,7 @@
   left: 35%;
   border-radius: 50%;
   filter: blur(90px);
-  background: radial-gradient(circle, rgba(255, 110, 188, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--a3-rgb), 0.08) 0%, transparent 70%);
   animation: blob-c 36s ease-in-out infinite alternate;
   will-change: transform;
   pointer-events: none;

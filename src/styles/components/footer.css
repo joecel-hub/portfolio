@@ -1,13 +1,13 @@
 footer {
   position: relative;
   z-index: 1;
-  padding: 2rem 8vw;
+  padding: var(--space-6) 8vw;
   border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: var(--space-2);
   margin-right: 0;
   /* margin-right is pushed to 72px at 1024px+ in responsive.css, to clear #right-nav */
 }
@@ -15,7 +15,7 @@ footer {
 footer p,
 footer span {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   color: var(--muted);
 }
 
@@ -35,13 +35,13 @@ footer .brand {
 footer .footer-legal {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: var(--space-2);
   margin-top: 0.1rem;
 }
 
 footer .footer-legal a {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   color: var(--muted);
   text-decoration: none;
 }

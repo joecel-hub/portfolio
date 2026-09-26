@@ -7,7 +7,7 @@
 
 .about-text p {
   color: var(--muted);
-  font-size: 1rem;
+  font-size: var(--fs-md);
   line-height: 1.9;
   margin-bottom: 1.2rem;
 }
@@ -22,7 +22,7 @@ body.normal-mode .about-text p strong {
 }
 
 .about-lead {
-  font-size: 1.1rem;
+  font-size: var(--fs-md);
   line-height: 1.8;
   color: var(--muted);
   max-width: 520px;
@@ -32,7 +32,7 @@ body.normal-mode .about-text p strong {
 .value-cards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.9rem;
+  gap: var(--space-4);
   margin-bottom: 2.5rem;
 }
 
@@ -40,13 +40,13 @@ body.normal-mode .about-text p strong {
   position: relative;
   overflow: hidden;
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
   background: rgba(255, 255, 255, 0.025);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  padding: 1.5rem;
+  padding: var(--space-5);
   transition:
     transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.4s,
@@ -73,17 +73,17 @@ body.normal-mode .about-text p strong {
 }
 
 .value-card[data-accent="a1"]:hover::before {
-  background: linear-gradient(145deg, rgba(124, 110, 255, 0.7), transparent 45%, rgba(0, 212, 255, 0.25));
+  background: linear-gradient(145deg, rgba(var(--a1-rgb), 0.7), transparent 45%, rgba(var(--a2-rgb), 0.25));
   opacity: 1;
 }
 
 .value-card[data-accent="a2"]:hover::before {
-  background: linear-gradient(145deg, rgba(0, 212, 255, 0.65), transparent 45%, rgba(124, 110, 255, 0.25));
+  background: linear-gradient(145deg, rgba(var(--a2-rgb), 0.65), transparent 45%, rgba(var(--a1-rgb), 0.25));
   opacity: 1;
 }
 
 .value-card[data-accent="a3"]:hover::before {
-  background: linear-gradient(145deg, rgba(255, 110, 188, 0.65), transparent 45%, rgba(124, 110, 255, 0.25));
+  background: linear-gradient(145deg, rgba(var(--a3-rgb), 0.65), transparent 45%, rgba(var(--a1-rgb), 0.25));
   opacity: 1;
 }
 
@@ -102,9 +102,9 @@ body.normal-mode .about-text p strong {
   z-index: 0;
 }
 
-.value-card[data-accent="a1"]::after { background: rgba(124, 110, 255, 0.3); }
-.value-card[data-accent="a2"]::after { background: rgba(0, 212, 255, 0.24); }
-.value-card[data-accent="a3"]::after { background: rgba(255, 110, 188, 0.24); }
+.value-card[data-accent="a1"]::after { background: rgba(var(--a1-rgb), 0.3); }
+.value-card[data-accent="a2"]::after { background: rgba(var(--a2-rgb), 0.24); }
+.value-card[data-accent="a3"]::after { background: rgba(var(--a3-rgb), 0.24); }
 
 .value-card:hover {
   transform: translateY(-6px);
@@ -178,23 +178,23 @@ body.normal-mode .about-text p strong {
 
 .value-card[data-accent="a1"] .val-icon {
   color: var(--a1);
-  background: linear-gradient(145deg, rgba(124, 110, 255, 0.18), rgba(124, 110, 255, 0.06));
-  border: 1px solid rgba(124, 110, 255, 0.28);
-  box-shadow: 0 0 0 4px rgba(124, 110, 255, 0.06);
+  background: linear-gradient(145deg, rgba(var(--a1-rgb), 0.18), rgba(var(--a1-rgb), 0.06));
+  border: 1px solid rgba(var(--a1-rgb), 0.28);
+  box-shadow: 0 0 0 4px rgba(var(--a1-rgb), 0.06);
 }
 
 .value-card[data-accent="a2"] .val-icon {
   color: var(--a2);
-  background: linear-gradient(145deg, rgba(0, 212, 255, 0.16), rgba(0, 212, 255, 0.05));
-  border: 1px solid rgba(0, 212, 255, 0.25);
-  box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.05);
+  background: linear-gradient(145deg, rgba(var(--a2-rgb), 0.16), rgba(var(--a2-rgb), 0.05));
+  border: 1px solid rgba(var(--a2-rgb), 0.25);
+  box-shadow: 0 0 0 4px rgba(var(--a2-rgb), 0.05);
 }
 
 .value-card[data-accent="a3"] .val-icon {
   color: var(--a3);
-  background: linear-gradient(145deg, rgba(255, 110, 188, 0.16), rgba(255, 110, 188, 0.05));
-  border: 1px solid rgba(255, 110, 188, 0.25);
-  box-shadow: 0 0 0 4px rgba(255, 110, 188, 0.05);
+  background: linear-gradient(145deg, rgba(var(--a3-rgb), 0.16), rgba(var(--a3-rgb), 0.05));
+  border: 1px solid rgba(var(--a3-rgb), 0.25);
+  box-shadow: 0 0 0 4px rgba(var(--a3-rgb), 0.05);
 }
 
 .value-card:hover .val-icon {
@@ -202,15 +202,15 @@ body.normal-mode .about-text p strong {
 }
 
 .value-card[data-accent="a1"]:hover .val-icon {
-  box-shadow: 0 0 24px rgba(124, 110, 255, 0.35), 0 0 0 4px rgba(124, 110, 255, 0.1);
+  box-shadow: 0 0 24px rgba(var(--a1-rgb), 0.35), 0 0 0 4px rgba(var(--a1-rgb), 0.1);
 }
 
 .value-card[data-accent="a2"]:hover .val-icon {
-  box-shadow: 0 0 24px rgba(0, 212, 255, 0.3), 0 0 0 4px rgba(0, 212, 255, 0.08);
+  box-shadow: 0 0 24px rgba(var(--a2-rgb), 0.3), 0 0 0 4px rgba(var(--a2-rgb), 0.08);
 }
 
 .value-card[data-accent="a3"]:hover .val-icon {
-  box-shadow: 0 0 24px rgba(255, 110, 188, 0.3), 0 0 0 4px rgba(255, 110, 188, 0.08);
+  box-shadow: 0 0 24px rgba(var(--a3-rgb), 0.3), 0 0 0 4px rgba(var(--a3-rgb), 0.08);
 }
 
 .val-body {
@@ -221,18 +221,18 @@ body.normal-mode .about-text p strong {
 }
 
 .val-problem {
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   font-weight: 500;
   color: var(--muted);
   letter-spacing: 0.02em;
-  margin-bottom: 0.35rem;
+  margin-bottom: var(--space-1);
   text-transform: uppercase;
   opacity: 0.7;
 }
 
 .val-title {
   font-family: var(--head);
-  font-size: 0.92rem;
+  font-size: var(--fs-base);
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -252,7 +252,7 @@ body.normal-mode .about-text p strong {
 
 @media (max-width: 480px) {
   .about-lead {
-    font-size: 0.95rem;
+    font-size: var(--fs-base);
   }
 }
 

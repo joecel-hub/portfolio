@@ -17,7 +17,7 @@
   border-bottom: 2px solid var(--a1);
   padding-bottom: 4px;
   display: inline-block;
-  margin: 1.5rem 0 2.5rem;
+  margin: var(--space-5) 0 2.5rem;
   transition: color 0.3s;
 }
 
@@ -27,7 +27,7 @@
 
 .social-row {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-4);
   justify-content: center;
   margin-bottom: 3.5rem;
   flex-wrap: wrap;
@@ -56,7 +56,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 3rem 4rem;
+  padding: var(--space-7) var(--space-8);
   max-width: 580px;
   width: 100%;
   margin: 0 auto;
@@ -66,7 +66,7 @@
 .form-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .form-field {
@@ -76,9 +76,9 @@
 .form-field label {
   display: block;
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   color: var(--muted);
-  margin-bottom: 0.4rem;
+  margin-bottom: var(--space-2);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -89,10 +89,10 @@
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 0.75rem 1rem;
+  padding: var(--space-3) var(--space-4);
   color: var(--text);
   font-family: var(--sans);
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   transition: border-color 0.2s;
   outline: none;
   resize: vertical;
@@ -112,13 +112,13 @@ body.normal-mode .form-field textarea {
 
 .form-submit {
   width: 100%;
-  padding: 0.9rem;
+  padding: var(--space-4);
   background: var(--a1);
   color: #fff;
   border: none;
   border-radius: 8px;
   font-family: var(--mono);
-  font-size: 0.82rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   cursor: pointer;
   transition: box-shadow 0.2s, transform 0.2s;
@@ -130,9 +130,9 @@ body.normal-mode .form-field textarea {
 }
 
 .form-note {
-  margin-top: 0.9rem;
+  margin-top: var(--space-4);
   font-family: var(--mono);
-  font-size: 0.75rem;
+  font-size: var(--fs-xs);
   color: var(--a2);
   min-height: 1.2em;
 }

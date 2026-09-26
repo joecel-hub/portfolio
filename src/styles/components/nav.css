@@ -27,7 +27,7 @@ body.normal-mode #right-nav {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--muted);
@@ -84,7 +84,7 @@ body.normal-mode .rn-btn:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 5vw;
+  padding: var(--space-4) 5vw;
   background: rgba(5, 5, 8, 0);
   border-bottom: 1px solid transparent;
   transition: background 0.4s, border-color 0.4s;
@@ -113,9 +113,9 @@ body.normal-mode #topnav.scrolled::before {
 
 .nav-logo {
   font-family: var(--mono);
-  font-size: 1.15rem;
+  font-size: var(--fs-lg);
   font-weight: 700;
-  color: #fff;
+  color: var(--logo); /* dark text in Gio via token remap */
   letter-spacing: -0.03em;
   position: relative;
   z-index: 1;
@@ -132,7 +132,7 @@ body.normal-mode #topnav.scrolled::before {
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: var(--space-2);
   position: relative;
   z-index: 1;
 }
@@ -154,7 +154,7 @@ body.normal-mode #topnav.scrolled::before {
   overflow-y: auto;
   background: linear-gradient(180deg, rgba(10, 10, 20, 0.72), rgba(18, 13, 38, 0.78));
   backdrop-filter: blur(28px) saturate(140%);
-  border-left: 1px solid rgba(124, 110, 255, 0.18);
+  border-left: 1px solid rgba(var(--a1-rgb), 0.18);
   box-shadow: -20px 0 60px rgba(0, 0, 0, 0.45);
   transform: translateX(100%);
   visibility: hidden;
@@ -170,7 +170,7 @@ body.normal-mode #topnav.scrolled::before {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--a1), var(--a2), #ff6ebc);
+  background: linear-gradient(90deg, var(--a1), var(--a2), var(--a3));
   z-index: 1;
 }
 
@@ -209,32 +209,24 @@ body.normal-mode .nav-backdrop {
   background: rgba(0, 0, 0, 0.2);
 }
 
-body.normal-mode .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) a {
-  color: var(--nm-muted);
-}
-
-body.normal-mode .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) a::after {
-  background: var(--nm-a1);
-}
-
 .nav-links li {
   list-style: none;
 }
 
 .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) {
-  margin: 0 1.6rem;
+  margin: 0 var(--space-5);
 }
 
 .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) a {
   font-family: var(--mono);
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   color: var(--muted);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   position: relative;
   display: inline-block;
-  padding: 0.95rem 0.2rem;
+  padding: var(--space-4) var(--space-1);
   opacity: 1;
   transform: none;
   transition: color 0.25s;
@@ -258,10 +250,6 @@ body.normal-mode .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) a::afte
   transform: translateX(0);
 }
 
-body.normal-mode .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) a::before {
-  background: var(--nm-a1);
-}
-
 .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) a::after {
   content: '';
   position: absolute;
@@ -282,17 +270,13 @@ body.normal-mode .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) a::befo
   width: 100%;
 }
 
-body.normal-mode .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) a:hover {
-  color: var(--nm-text);
-}
-
 /* Panel head */
 .nav-panel-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.4rem 1.6rem;
-  border-bottom: 1px solid rgba(124, 110, 255, 0.16);
+  padding: var(--space-5) var(--space-5);
+  border-bottom: 1px solid rgba(var(--a1-rgb), 0.16);
 }
 
 body.normal-mode .nav-panel-head {
@@ -302,9 +286,9 @@ body.normal-mode .nav-panel-head {
 .nav-panel-brand {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: var(--space-2);
   font-family: var(--mono);
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   font-weight: 700;
   letter-spacing: -0.03em;
   color: var(--text);
@@ -316,30 +300,26 @@ body.normal-mode .nav-panel-head {
   height: 9px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--a1), var(--a2));
-  box-shadow: 0 0 12px rgba(124, 110, 255, 0.7);
+  box-shadow: 0 0 12px rgba(var(--a1-rgb), 0.7);
   flex-shrink: 0;
 }
 
 body.normal-mode .nav-panel-brand::before {
-  box-shadow: 0 0 12px rgba(124, 110, 255, 0.5);
+  box-shadow: 0 0 12px rgba(var(--a1-rgb), 0.5);
 }
 
 .nav-panel-brand .dev-only > span {
   color: var(--a1);
 }
 
-body.normal-mode .nav-panel-brand {
-  color: var(--nm-text);
-}
-
 /* Panel footer */
 .nav-panel-foot {
   margin-top: auto;
-  padding: 1.6rem 1.6rem 2.2rem;
-  border-top: 1px solid rgba(124, 110, 255, 0.16);
+  padding: var(--space-5) var(--space-5) 2.2rem;
+  border-top: 1px solid rgba(var(--a1-rgb), 0.16);
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: var(--space-3);
 }
 
 body.normal-mode .nav-panel-foot {
@@ -348,7 +328,7 @@ body.normal-mode .nav-panel-foot {
 
 .nav-foot-email {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   letter-spacing: 0.04em;
   color: var(--muted);
   text-transform: none;
@@ -362,16 +342,12 @@ body.normal-mode .nav-panel-foot {
   color: var(--a1);
 }
 
-body.normal-mode .nav-foot-email:hover {
-  color: var(--nm-a1);
-}
-
 .nav-foot-status {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: var(--space-2);
   font-family: var(--mono);
-  font-size: 0.64rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
@@ -381,7 +357,7 @@ body.normal-mode .nav-foot-email:hover {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #43e97b;
+  background: var(--success);
   box-shadow: 0 0 12px rgba(67, 233, 123, 0.8);
   animation: navDotPulse 2s ease-in-out infinite;
   flex-shrink: 0;
@@ -418,11 +394,11 @@ body.normal-mode .ham-btn {
 
 .ham-btn:hover {
   border-color: var(--a1);
-  box-shadow: 0 0 0 4px rgba(124, 110, 255, 0.12);
+  box-shadow: 0 0 0 4px rgba(var(--a1-rgb), 0.12);
 }
 
 body.normal-mode .ham-btn:hover {
-  box-shadow: 0 0 0 4px rgba(124, 110, 255, 0.16);
+  box-shadow: 0 0 0 4px rgba(var(--a1-rgb), 0.16);
 }
 
 .ham-btn span {
@@ -434,16 +410,8 @@ body.normal-mode .ham-btn:hover {
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s, background 0.25s;
 }
 
-body.normal-mode .ham-btn span {
-  background: var(--nm-text);
-}
-
 .ham-btn:hover span {
   background: var(--a1);
-}
-
-body.normal-mode .ham-btn:hover span {
-  background: var(--nm-a1);
 }
 
 .ham-btn.open span:nth-child(1) {
@@ -466,7 +434,7 @@ body.normal-mode .ham-btn:hover span {
   height: 38px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(124, 110, 255, 0.25);
+  border: 1px solid rgba(var(--a1-rgb), 0.25);
   color: var(--muted);
   cursor: pointer;
   line-height: 1;
@@ -477,18 +445,13 @@ body.normal-mode .ham-btn:hover span {
   color: var(--a1);
   border-color: var(--a1);
   transform: rotate(90deg);
-  background: rgba(124, 110, 255, 0.1);
+  background: rgba(var(--a1-rgb), 0.1);
 }
 
 body.normal-mode .nav-close {
   background: rgba(25, 29, 54, 0.06);
   border-color: rgba(25, 29, 54, 0.18);
   color: var(--nm-muted);
-}
-
-body.normal-mode .nav-close:hover {
-  color: var(--nm-a1);
-  border-color: var(--nm-a1);
 }
 
 .nav-brand {
@@ -502,22 +465,17 @@ body.normal-mode .nav-close:hover {
   cursor: pointer;
 }
 
-/* Gio is a light theme: the Dev logo's #fff was near-invisible on #f6f7fb. */
-body.normal-mode .nav-logo {
-  color: var(--nm-text);
-}
-
 .back-to-studio {
   font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
   background: none;
   border: 1px solid var(--border);
   border-radius: 100px;
-  padding: 0.4rem 0.9rem;
-  margin-left: 0.9rem;
+  padding: var(--space-2) var(--space-4);
+  margin-left: var(--space-4);
   cursor: pointer;
   transition: color 0.25s, border-color 0.25s;
   position: relative;
@@ -538,12 +496,12 @@ body.normal-mode .nav-logo {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  border: 1px solid rgba(124, 110, 255, 0.35);
+  border: 1px solid rgba(var(--a1-rgb), 0.35);
   background: rgba(13, 13, 26, 0.85);
   color: #fff;
   font-family: var(--head);
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -562,11 +520,11 @@ body.normal-mode .mode-switch {
 
 .mode-switch:hover {
   border-color: var(--a1);
-  box-shadow: 0 14px 40px rgba(124, 110, 255, 0.4);
+  box-shadow: 0 14px 40px rgba(var(--a1-rgb), 0.4);
 }
 
 body.normal-mode .mode-switch:hover {
-  box-shadow: 0 14px 40px rgba(124, 110, 255, 0.35);
+  box-shadow: 0 14px 40px rgba(var(--a1-rgb), 0.35);
 }
 
 .ms-mark {

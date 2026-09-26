@@ -17,7 +17,7 @@
 .hero-split {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: var(--space-6);
 }
 
 /* Dev mode: text left, eyes right in a glass card */
@@ -39,7 +39,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
+  gap: var(--space-5);
   min-height: 260px;
   padding: 2.5rem;
   border-radius: 28px;
@@ -65,7 +65,7 @@
 
 .hero-bot-cap {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   letter-spacing: 0.1em;
   color: var(--muted);
   position: relative;
@@ -89,7 +89,7 @@
   }
   .hero-bot-card {
     min-height: 200px;
-    padding: 2rem;
+    padding: var(--space-6);
   }
 }
 
@@ -103,7 +103,7 @@
     flex-direction: column;
     align-items: stretch;
     text-align: center;
-    gap: 1rem;
+    gap: var(--space-4);
   }
   .hero-info .hero-eyebrow,
   .hero-info .hero-cta {
@@ -123,13 +123,13 @@
 
 .hero-eyebrow {
   font-family: var(--mono);
-  font-size: 0.78rem;
+  font-size: var(--fs-xs);
   color: var(--a2);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-4);
   margin-bottom: 1.8rem;
   opacity: 0;
 }
@@ -147,7 +147,7 @@
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: -0.04em;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-6);
   max-width: 900px;
 }
 
@@ -174,7 +174,7 @@ body.normal-mode .hero-title .stroke {
 }
 
 .hero-sub {
-  font-size: 1.05rem;
+  font-size: var(--fs-md);
   color: var(--muted);
   max-width: 500px;
   margin-bottom: 1.75rem;
@@ -202,11 +202,11 @@ body.normal-mode .hero-sub strong {
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.9rem 2rem;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-6);
   border-radius: 8px;
   font-family: var(--mono);
-  font-size: 0.82rem;
+  font-size: var(--fs-sm);
   font-weight: 600;
   letter-spacing: 0.06em;
   cursor: pointer;
@@ -267,9 +267,9 @@ body.normal-mode .btn-ghost:hover {
   left: 8vw;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-4);
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   color: var(--muted);
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -295,13 +295,13 @@ body.normal-mode .btn-ghost:hover {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 100px;
-  padding: 0.55rem 1.1rem;
+  padding: var(--space-2) var(--space-4);
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   color: var(--a2);
   display: none;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   opacity: 0;
 }
 

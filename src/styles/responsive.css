@@ -11,16 +11,16 @@
   /* Inline top-nav links: Stryg.Bytes only. The Gio profile has nine
      sections, so it keeps the off-canvas menu at every width. */
   section {
-    padding: 6rem 6vw;
+    padding: var(--space-9) 6vw;
   }
 
   .about-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 3rem;
+    gap: var(--space-7);
   }
 
   .value-cards {
-    gap: 1rem;
+    gap: var(--space-4);
   }
 
   .services-bento {
@@ -53,7 +53,7 @@
     position: static;
     flex-direction: row;
     align-items: center;
-    gap: 1.5rem;
+    gap: var(--space-5);
     width: auto;
     margin: 0;
     padding: 0;
@@ -84,7 +84,7 @@
   }
 
   body:not(.normal-mode) .nav-links a {
-    font-size: 0.75rem;
+    font-size: var(--fs-xs);
     opacity: 1;
     transform: none;
   }
@@ -122,7 +122,7 @@
   }
 
   .about-grid {
-    gap: 4rem;
+    gap: var(--space-8);
   }
 
   .value-cards {
@@ -148,7 +148,7 @@
   }
 
   .hero-sub {
-    font-size: 1.05rem;
+    font-size: var(--fs-md);
   }
 
   #app {
@@ -183,7 +183,7 @@
   }
 
   .about-grid {
-    gap: 6rem;
+    gap: var(--space-9);
   }
 
 }
@@ -199,7 +199,7 @@
   }
 
   .hero-eyebrow {
-    font-size: 0.65rem;
+    font-size: var(--fs-2xs);
   }
 
   .hero-cta {
@@ -218,7 +218,7 @@
   
 
   .contact-form {
-    padding: 1.5rem 1.2rem;
+    padding: var(--space-5) 1.2rem;
   }
 
 }

@@ -9,6 +9,28 @@
   background-size: 200px 200px;
 }
 
+/* Accent word inside a section title */
+.accent {
+  color: var(--a1);
+}
+
+/* Centered section intro (label + title + lead) */
+.section-label.is-centered {
+  justify-content: center;
+}
+
+.is-centered {
+  text-align: center;
+}
+
+.section-lead {
+  color: var(--muted);
+  max-width: 42ch;
+  margin: 0 auto var(--space-6);
+  font-size: var(--fs-base);
+  line-height: 1.8;
+}
+
 /* The hidden attribute always wins (e.g. over .dev-only { display: block }). */
 [hidden] {
   display: none !important;
@@ -88,11 +110,11 @@ body:not(.normal-mode) .normal-only {
 }
 
 .wave-layer--back {
-  fill: rgba(124, 110, 255, 0.18);
+  fill: rgba(var(--a1-rgb), 0.18);
 }
 
 .wave-layer--mid {
-  fill: rgba(0, 212, 255, 0.12);
+  fill: rgba(var(--a2-rgb), 0.12);
 }
 
 .wave-layer--front {
@@ -104,7 +126,7 @@ body:not(.normal-mode) .normal-only {
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0.85;
-  filter: drop-shadow(0 0 8px rgba(124, 110, 255, 0.45));
+  filter: drop-shadow(0 0 8px rgba(var(--a1-rgb), 0.45));
 }
 
 .wave-div--down {
@@ -152,7 +174,7 @@ body.normal-mode .wave-crest {
 #svg-circuit {
   width: 100%;
   max-width: 420px;
-  filter: drop-shadow(0 0 24px rgba(0, 212, 255, 0.14));
+  filter: drop-shadow(0 0 24px rgba(var(--a2-rgb), 0.14));
 }
 
 /* Keyboard focus: a visible ring for keyboard users only (mouse clicks don't

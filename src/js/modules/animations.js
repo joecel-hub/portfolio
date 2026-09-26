@@ -198,7 +198,7 @@ export function initAnimations() {
   })
 
   const glow = document.createElement('div')
-  glow.style.cssText = 'position:fixed;width:700px;height:700px;border-radius:50%;pointer-events:none;z-index:0;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(124,110,255,0.06),transparent 70%)'
+  glow.style.cssText = 'position:fixed;width:700px;height:700px;border-radius:50%;pointer-events:none;z-index:0;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(var(--a1-rgb),0.06),transparent 70%)'
   document.body.appendChild(glow)
   const xTo = gsap.quickTo(glow, 'x', { duration: 0.8, ease: 'power3' })
   const yTo = gsap.quickTo(glow, 'y', { duration: 0.8, ease: 'power3' })
