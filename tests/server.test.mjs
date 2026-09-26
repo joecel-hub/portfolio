@@ -372,6 +372,17 @@ test('security: production refuses to start with default admin credentials', () 
   assert.equal(run({ ADMIN_PASS: 'a-real-password', JWT_SECRET: 'x'.repeat(40) }).status, 0)
 })
 
+test('security: no built-in admin credentials outside production either', () => {
+  const run = (env) =>
+    spawnSync(process.execPath, ['-e', "import('./server/auth.js').then(() => process.exit(0), () => process.exit(1))"], {
+      env: { PATH: process.env.PATH, NODE_ENV: 'development', ...env },
+      encoding: 'utf8',
+    })
+  assert.equal(run({}).status, 1)
+  assert.equal(run({ ADMIN_PASS: 'a-real-password' }).status, 1)
+  assert.equal(run({ ADMIN_PASS: 'a-real-password', JWT_SECRET: 'local-secret' }).status, 0)
+})
+
 test('contact: validates input, swallows honeypot, 503 without SMTP, rate limited', async () => {
   const ok = { name: 'Ada', email: 'ada@example.com', subject: 'Hi', message: 'I would like a website.' }
 

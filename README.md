@@ -56,7 +56,7 @@ During development, Vite proxies `/api` and `/uploads` to the backend at `localh
 ## CMS & Admin
 
 - **Admin panel**: `http://localhost:5175/admin` (dev), or `/admin` behind the backend in production.
-- **Default credentials** (development only): `admin` / `admin123`.
+- **Credentials**: there are no built-in defaults. Set `ADMIN_PASS` and `JWT_SECRET` in `server/.env` (copy `server/.env.example`); the server refuses to start without them.
   - ⚠️ Create `server/.env` with a real `ADMIN_PASS` and a long random `JWT_SECRET`. With `NODE_ENV=production` the server **refuses to start** if either is missing or still a default.
 - **Login route**: `POST /api/auth/login` → returns a JWT (7-day expiry).
 - **Managed content**:
@@ -75,8 +75,8 @@ During development, Vite proxies `/api` and `/uploads` to the backend at `localh
 | `DB_FILE` | `server/portfolio.db` | SQLite database path |
 | `UPLOAD_DIR` | `server/public/uploads` | Uploaded files directory (set to `/data/uploads` on Render) |
 | `ADMIN_USER` | `admin` | Admin username |
-| `ADMIN_PASS` | `admin123` | Admin password (set a real one) |
-| `JWT_SECRET` | `dev-secret-change-me` | JWT signing secret (set a long random one) |
+| `ADMIN_PASS` | *(required)* | Admin password (set a real one) |
+| `JWT_SECRET` | *(required)* | JWT signing secret (set a long random one) |
 | `LOGIN_RATE_LIMIT` | `5` | Max `POST /api/auth/login` attempts per IP before a 429 (in-memory, resets on success) |
 | `LOGIN_RATE_WINDOW_MS` | `900000` | Rate-limit window (15 min) |
 | `FORM_RATE_LIMIT` / `FORM_RATE_WINDOW_MS` | `5` / `900000` | Per-IP limit for public review + contact submissions |

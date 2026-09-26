@@ -1,25 +1,28 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 
-export const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-change-me'
+export const JWT_SECRET = process.env.JWT_SECRET || ''
 
 const ADMIN_USER = process.env.ADMIN_USER || 'admin'
-const ADMIN_PASS = process.env.ADMIN_PASS || 'admin123'
+const ADMIN_PASS = process.env.ADMIN_PASS || ''
 
-// The fallbacks above are for local development only. In production, refuse
-// to start rather than expose an admin panel guarded by well-known defaults.
+// No built-in credentials, in any environment: an admin panel must never be
+// reachable with a well-known default. Production additionally rejects the
+// placeholder values from server/.env.example and the old dev defaults.
 const PLACEHOLDERS = new Set([
   'admin123',
   'dev-secret-change-me',
   'replace-with-a-strong-password',
   'replace-with-a-long-random-string',
 ])
-if (process.env.NODE_ENV === 'production') {
+{
+  const isProd = process.env.NODE_ENV === 'production'
+  const bad = (v) => !v || (isProd && PLACEHOLDERS.has(v))
   const missing = []
-  if (!process.env.ADMIN_PASS || PLACEHOLDERS.has(ADMIN_PASS)) missing.push('ADMIN_PASS')
-  if (!process.env.JWT_SECRET || PLACEHOLDERS.has(JWT_SECRET)) missing.push('JWT_SECRET')
+  if (bad(ADMIN_PASS)) missing.push('ADMIN_PASS')
+  if (bad(JWT_SECRET)) missing.push('JWT_SECRET')
   if (missing.length) {
-    throw new Error(`Refusing to start in production: set a real ${missing.join(' and ')} (see server/.env.example).`)
+    throw new Error(`Refusing to start: set a real ${missing.join(' and ')} in server/.env (see server/.env.example).`)
   }
 }
 const ADMIN_PASS_HASH = bcrypt.hashSync(ADMIN_PASS, 10)
