@@ -114,7 +114,7 @@
   const API = ''
   let TOKEN = localStorage.getItem('sb_token') || ''
   const TAB = { projects: 'Projects', testimonials: 'Testimonials', logos: 'Client Logos', certificates: 'Certificates', hobbyClips: 'Hobby Clips', reviews: 'Reviews' }
-  const CATEGORIES = { client: 'Client Project', saas: 'SaaS Template', apps: 'Systems & Apps', template: 'Template' }
+  const CATEGORIES = { client: 'Client Project', employer: 'Employer Project', systems: 'Business System' }
   const HOBBY_CATEGORIES = { gaming: 'Gaming', editing: 'Video Editing', modeling: '3D Modeling', music: 'Music', choreography: 'Choreography' }
   function catLabel(c) { return CATEGORIES[c] || 'Client Project' }
   function hobbyCatLabel(c) { return HOBBY_CATEGORIES[c] || c }

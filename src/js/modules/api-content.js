@@ -101,7 +101,7 @@ const THUMB_SVG = {
   </svg>`,
 }
 
-const CATEGORY_PILL = { client: 'Client Project', saas: 'SaaS Template', apps: 'Systems & Apps', template: 'Template' }
+const CATEGORY_PILL = { client: 'Client Project', employer: 'Employer Project', systems: 'Business System' }
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))

@@ -46,9 +46,8 @@
 }
 
 .pc-client { background: rgba(67, 233, 123, 0.1); color: var(--success); border-color: rgba(67, 233, 123, 0.3); }
-.pc-saas   { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); }
-.pc-apps   { background: rgba(var(--a1-rgb), 0.12); color: var(--a1); border-color: rgba(var(--a1-rgb), 0.3); }
-.pc-template { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border-color: rgba(251, 191, 36, 0.35); }
+.pc-employer { background: rgba(var(--a2-rgb), 0.1); color: var(--a2); border-color: rgba(var(--a2-rgb), 0.3); }
+.pc-systems { background: rgba(251, 191, 36, 0.1); color: #fbbf24; border-color: rgba(251, 191, 36, 0.35); }
 
 .project-links {
   display: flex;

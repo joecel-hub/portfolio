@@ -79,7 +79,8 @@ test('health', async () => {
 test('seeded public lists', async () => {
   const projects = await j('/api/projects')
   assert.equal(projects.status, 200)
-  assert.equal(projects.data.length, 4)
+  assert.equal(projects.data.length, 2)
+  assert.deepEqual(projects.data.map((p) => p.category).sort(), ['client', 'employer'])
   const logos = await j('/api/logos')
   assert.equal(logos.status, 200)
   assert.equal(logos.data.length, 7)
@@ -201,7 +202,41 @@ test('projects: full CRUD lifecycle, auth required for writes', async () => {
   assert.equal(del.status, 200)
   const after = await j('/api/projects')
   assert.ok(!after.data.some((p) => p.id === id))
-  assert.equal(after.data.length, 4)
+  assert.equal(after.data.length, 2)
+})
+
+test('projects: legacy categories are coerced to the current set', async () => {
+  const token = await login()
+  const r = await j('/api/projects', { method: 'POST', token, body: { name: 'Legacy', category: 'template' } })
+  assert.equal(r.status, 201)
+  assert.equal(r.data.category, 'systems')
+  await j(`/api/projects/${r.data.id}`, { method: 'DELETE', token })
+})
+
+test('migrations: legacy data is fixed once and not re-applied', async () => {
+  const { initSchema } = await import('../server/db.js')
+  // Simulate a pre-migration snapshot of the live CMS.
+  db.prepare('DELETE FROM migrations').run()
+  const ins = db.prepare("INSERT INTO projects (name, url, demo_url, category) VALUES (?, ?, ?, ?)")
+  const agcew = ins.run('Legacy AGCEW Site', 'https://agcew.example', '', 'client').lastInsertRowid
+  const itms = ins.run('Legacy Template', '', '/demos/x', 'template').lastInsertRowid
+  ins.run('AI-Powered Assistant Build', '', '', 'apps')
+  ins.run('Interactive Motion Experiment', '', '', 'apps')
+  db.prepare("INSERT INTO reviews (name, quote, status) VALUES ('Sample Client', 'Placeholder — replace me', 'pending')").run()
+
+  initSchema()
+  const cat = (id) => db.prepare('SELECT category FROM projects WHERE id = ?').get(id).category
+  assert.equal(cat(agcew), 'employer')
+  assert.equal(cat(itms), 'systems')
+  assert.equal(db.prepare("SELECT COUNT(*) AS c FROM projects WHERE name IN ('AI-Powered Assistant Build', 'Interactive Motion Experiment')").get().c, 0)
+  assert.equal(db.prepare("SELECT COUNT(*) AS c FROM reviews WHERE name = 'Sample Client'").get().c, 0)
+
+  // Re-adding a hidden project later (via /admin) must survive the next boot.
+  const readded = ins.run('AI-Powered Assistant Build', '', '', 'systems').lastInsertRowid
+  initSchema()
+  assert.ok(db.prepare('SELECT id FROM projects WHERE id = ?').get(readded))
+
+  db.prepare('DELETE FROM projects WHERE id IN (?, ?, ?)').run(agcew, itms, readded)
 })
 
 test('projects: missing name is validated', async () => {

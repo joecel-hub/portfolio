@@ -9,10 +9,13 @@ import { firstUnsafe } from '../safeUrl.js'
 
 const router = Router()
 
-const CATEGORIES = new Set(['client', 'saas', 'apps', 'template'])
+const CATEGORIES = new Set(['client', 'employer', 'systems'])
+// Pre-2026-09 values, still possible from an old admin tab or API client.
+const LEGACY = { template: 'systems', apps: 'systems', saas: 'systems' }
 
 function cleanCategory(v) {
-  return CATEGORIES.has(v) ? v : 'client'
+  if (CATEGORIES.has(v)) return v
+  return LEGACY[v] || 'client'
 }
 
 function removeImageFile(image) {

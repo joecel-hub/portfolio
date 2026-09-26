@@ -127,20 +127,43 @@ function migrateSchema() {
   } catch {
     // column already exists
   }
-  backfillCategories()
+  runMigrations()
 }
 
-function backfillCategories() {
-  const updates = [
-    ["SELECT id FROM projects WHERE thumb = 'ai'", 'apps'],
-    ["SELECT id FROM projects WHERE thumb = 'motion'", 'apps'],
-  ]
-  for (const [sql, category] of updates) {
-    const rows = db.prepare(sql).all()
-    for (const r of rows) {
-      db.prepare("UPDATE projects SET category = ? WHERE id = ? AND category = 'client'")
-        .run(category, r.id)
-    }
+// One-time data migrations. Each runs once per database and is recorded in
+// the migrations table, so later admin edits (e.g. re-adding a project) are
+// never undone on the next boot. The live DB is a git-pushed snapshot, so
+// data fixes ship as code here rather than as edits to the binary file.
+const MIGRATIONS = [
+  ['2026-09-project-categories', () => {
+    // Categories are now client / employer / systems.
+    db.prepare("UPDATE projects SET category = 'systems' WHERE category IN ('template', 'apps', 'saas')").run()
+    // AGCEW is the employer, not a client.
+    db.prepare("UPDATE projects SET category = 'employer' WHERE name LIKE '%AGCEW%'").run()
+  }],
+  ['2026-09-hide-unproven-projects', () => {
+    // No demo, repo or screenshots yet — re-add via /admin once there is evidence.
+    db.prepare(
+      "DELETE FROM projects WHERE name IN ('AI-Powered Assistant Build', 'Interactive Motion Experiment') AND url = '' AND demo_url = ''",
+    ).run()
+  }],
+  ['2026-09-drop-placeholder-review', () => {
+    db.prepare(
+      "DELETE FROM reviews WHERE name = 'Sample Client' AND status = 'pending' AND quote LIKE 'Placeholder%'",
+    ).run()
+  }],
+]
+
+function runMigrations() {
+  db.exec(`CREATE TABLE IF NOT EXISTS migrations (
+    id TEXT PRIMARY KEY,
+    applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+  )`)
+  const done = new Set(db.prepare('SELECT id FROM migrations').all().map((r) => r.id))
+  const record = db.prepare('INSERT INTO migrations (id) VALUES (?)')
+  for (const [id, fn] of MIGRATIONS) {
+    if (done.has(id)) continue
+    db.transaction(() => { fn(); record.run(id) })()
   }
 }
 
@@ -157,7 +180,7 @@ export function seedIfEmpty() {
 
   if (count('projects') === 0) {
     const ins = db.prepare(
-      'INSERT INTO projects (name, desc, tags, url, thumb, sort) VALUES (?, ?, ?, ?, ?, ?)',
+      'INSERT INTO projects (name, desc, tags, url, thumb, category, sort) VALUES (?, ?, ?, ?, ?, ?, ?)',
     )
     const seedProjects = [
       {
@@ -167,6 +190,7 @@ export function seedIfEmpty() {
         tags: ['HTML/CSS', 'JS', 'Booking'],
         url: 'https://tankenresort.com/',
         thumb: 'resort',
+        category: 'client',
         sort: 1,
       },
       {
@@ -176,33 +200,15 @@ export function seedIfEmpty() {
         tags: ['Corporate', 'CMS', 'Portfolio'],
         url: 'https://agcew.com/',
         thumb: 'corporate',
+        category: 'employer',
         sort: 2,
-      },
-      {
-        name: 'AI-Powered Assistant Build',
-        desc:
-          'LLM-powered tooling and AI workflows from the Be10X AI & ChatGPT track — prototyping assistants and automation for real tasks.',
-        tags: ['AI', 'LLM', 'Web App'],
-        url: '',
-        thumb: 'ai',
-        sort: 3,
-      },
-      {
-        name: 'Interactive Motion Experiment',
-        desc:
-          'A craft demo exploring scroll-driven narratives, animated SVG, and micro-interaction details — a sandbox for ideas that feed client builds.',
-        tags: ['GSAP', 'SVG', 'Motion'],
-        url: '',
-        thumb: 'motion',
-        sort: 4,
       },
     ]
     const tx = db.transaction((rows) => {
       for (const p of rows)
-        ins.run(p.name, p.desc, JSON.stringify(p.tags), p.url, p.thumb, p.sort)
+        ins.run(p.name, p.desc, JSON.stringify(p.tags), p.url, p.thumb, p.category, p.sort)
     })
     tx(seedProjects)
-    backfillCategories()
   }
 
   if (count('client_logos') === 0) {
@@ -222,19 +228,6 @@ export function seedIfEmpty() {
       rows.forEach((name, i) => ins.run(name, i))
     })
     tx(logos)
-  }
-
-  if (count('reviews') === 0) {
-    db.prepare(
-      'INSERT INTO reviews (project, name, role, quote, stars, status) VALUES (?, ?, ?, ?, ?, ?)',
-    ).run(
-      'AGCEW',
-      'Sample Client',
-      'Client · Company',
-      'Placeholder — replace with a real client review via the admin panel.',
-      5,
-      'pending',
-    )
   }
 
   if (count('certificates') === 0) {
