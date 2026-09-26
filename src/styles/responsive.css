@@ -83,14 +83,19 @@
     display: none;
   }
 
-  body:not(.normal-mode) .nav-links a {
-    font-size: var(--fs-xs);
-    opacity: 1;
-    transform: none;
+  /* These must out-rank the off-canvas panel rules in nav.css
+     (.nav-links li:not(.nav-panel-head):not(.nav-panel-foot) …), otherwise
+     the panel's 1.6rem side margins leak in and the row overflows ~768–840px. */
+  body:not(.normal-mode) .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) {
+    margin: 0;
   }
 
-  body:not(.normal-mode) .nav-links li {
-    margin: 0;
+  body:not(.normal-mode) .nav-links li:not(.nav-panel-head):not(.nav-panel-foot) a {
+    font-size: var(--fs-xs);
+    letter-spacing: 0.08em;
+    padding: var(--space-2) var(--space-1);
+    opacity: 1;
+    transform: none;
   }
 
   #topnav {
