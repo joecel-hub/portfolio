@@ -8,11 +8,8 @@ gsap.registerPlugin(ScrollTrigger)
 // Reduced motion: put everything in its final, visible state — no reveals,
 // parallax, pinning, looping tweens or cursor glow.
 function showStatic() {
-  gsap.set(['.hero-eyebrow', '.hero-sub', '.hero-bot-card', '.hero-cta', '.hero-scroll-cue', '.hero-badge', '.pt-icon', '.pt-card'], { opacity: 1, y: 0, scale: 1 })
+  gsap.set(['.hero-eyebrow', '.hero-sub', '.hero-bot-card', '.hero-cta', '.hero-scroll-cue', '.hero-badge'], { opacity: 1, y: 0, scale: 1 })
   gsap.set(['#active-h1', '#active-v1', '#active-h2'], { strokeDashoffset: 0 })
-  document.querySelectorAll('#process .pt-step, #process .pt-dot').forEach(el => el.classList.add('is-active'))
-  const line = document.querySelector('#process .pt-line')
-  if (line) gsap.set(line, { scaleY: 1 })
   document.getElementById('svg-circuit')?.pauseAnimations?.()
   ScrollTrigger.refresh()
 }
@@ -116,69 +113,6 @@ export function initAnimations() {
     gsap.from('.client-logo', {
       scrollTrigger: { trigger: '#testimonials', start: 'top 80%' },
       opacity: 0, duration: 0.6, stagger: 0.05, ease: 'power2.out'
-    })
-  }
-
-  const ptSteps = document.querySelectorAll('#process .pt-step')
-  const ptTimeline = document.querySelector('#process .process-timeline')
-  const ptLine = document.querySelector('#process .pt-line')
-
-
-  if (ptSteps.length && ptTimeline) {
-    let totalShift = 0
-
-    function calcShift() {
-      const headerH = document.querySelector('#process > .sec-inner')?.offsetHeight || 0
-      return Math.max(0, ptTimeline.scrollHeight + 50 - (window.innerHeight - headerH - 40))
-    }
-
-    totalShift = calcShift()
-    const revealed = new Set()
-
-    const firstIcon = ptSteps[0]?.querySelector('.pt-icon')
-    const firstCard = ptSteps[0]?.querySelector('.pt-card')
-    if (firstIcon) gsap.set(firstIcon, { opacity: 1, scale: 1 })
-    if (firstCard) gsap.set(firstCard, { opacity: 1, y: 0 })
-    ptSteps[0]?.classList.add('is-active')
-    ptSteps[0]?.querySelector('.pt-dot')?.classList.add('is-active')
-    revealed.add(0)
-
-    ptSteps.forEach((step, i) => {
-      const iconSvg = step.querySelector('.pt-icon svg')
-      if (iconSvg) {
-        gsap.to(iconSvg, { y: -4, duration: 1.2, ease: 'sine.inOut', repeat: -1, yoyo: true, delay: i * 0.15 })
-      }
-    })
-
-    ScrollTrigger.create({
-      trigger: '#process',
-      pin: true,
-      scrub: 1,
-      start: 'top top',
-      end: () => `+=${Math.max(calcShift() + 100, window.innerHeight * 0.4)}`,
-      invalidateOnRefresh: true,
-      onUpdate: (self) => {
-        totalShift = calcShift()
-        const p = self.progress
-        gsap.set(ptTimeline, { y: -p * totalShift })
-
-        ptSteps.forEach((step, i) => {
-          if (revealed.has(i)) return
-          const r = step.getBoundingClientRect()
-          if (r.top >= window.innerHeight || r.bottom <= 0) return
-
-          revealed.add(i)
-          step.classList.add('is-active')
-          const icon = step.querySelector('.pt-icon')
-          const card = step.querySelector('.pt-card')
-          const dot = step.querySelector('.pt-dot')
-          if (icon) gsap.fromTo(icon, { opacity: 0.3, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.7, ease: 'back.out(1.7)', overwrite: 'auto' })
-          if (card) gsap.fromTo(card, { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.6, delay: 0.1, ease: 'power2.out', overwrite: 'auto' })
-          if (dot) dot.classList.add('is-active')
-        })
-
-        if (ptLine) gsap.set(ptLine, { scaleY: p })
-      }
     })
   }
 

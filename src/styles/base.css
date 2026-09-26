@@ -122,8 +122,7 @@ body:not(.normal-mode) .section-title {
 .pf-hobby-name,
 .pf-tl-role,
 .pf-cert-name,
-.project-name,
-.pt-card h3 {
+.project-name {
   line-height: var(--lh-snug);
   letter-spacing: -0.01em;
 }

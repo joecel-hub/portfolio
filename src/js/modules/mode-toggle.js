@@ -62,8 +62,8 @@ export function initModeToggle(devBg, callbacks = {}) {
   }
 
   function finalize() {
-    // The Dev Process section is pinned by ScrollTrigger. Recalculate its
-    // spacer after either mode changes visibility so it remains reachable.
+    // Sections appear/disappear with the mode, so recalculate every
+    // ScrollTrigger's start/end positions against the new layout.
     requestAnimationFrame(() => ScrollTrigger.refresh())
   }
 

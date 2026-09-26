@@ -7,8 +7,7 @@
 body.normal-mode #hero,
 body.normal-mode #about,
 body.normal-mode #skills-dev,
-body.normal-mode #projects,
-body.normal-mode #process {
+body.normal-mode #projects {
   display: none;
 }
 
