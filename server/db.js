@@ -2,9 +2,13 @@ import Database from 'better-sqlite3'
 import { createHash } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { bootstrapData } from './bootstrapData.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const DB_FILE = process.env.DB_FILE || join(__dirname, 'portfolio.db')
+
+// Fresh persistent disk in production: start from the committed snapshot.
+if (process.env.NODE_ENV === 'production') bootstrapData()
 
 export const db = new Database(DB_FILE)
 db.pragma('journal_mode = WAL')

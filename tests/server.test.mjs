@@ -213,6 +213,27 @@ test('projects: legacy categories are coerced to the current set', async () => {
   await j(`/api/projects/${r.data.id}`, { method: 'DELETE', token })
 })
 
+test('bootstrap: fresh disk is seeded from the snapshot once, never overwritten', async () => {
+  const { bootstrapData } = await import('../server/bootstrapData.js')
+  const { writeFileSync, readFileSync, mkdirSync: mk, readdirSync } = await import('node:fs')
+  const snap = join(dir, 'snap')
+  mk(join(snap, 'uploads'), { recursive: true })
+  writeFileSync(join(snap, 'portfolio.db'), 'SNAPSHOT')
+  writeFileSync(join(snap, 'uploads', 'a.webp'), 'img')
+  const disk = join(dir, 'disk')
+  const opts = { dbFile: join(disk, 'portfolio.db'), uploadDir: join(disk, 'uploads'), snapshotDb: join(snap, 'portfolio.db'), snapshotUploads: join(snap, 'uploads') }
+
+  assert.deepEqual(bootstrapData(opts), { db: true, uploads: 1 })
+  assert.equal(readFileSync(opts.dbFile, 'utf8'), 'SNAPSHOT')
+  assert.deepEqual(readdirSync(opts.uploadDir), ['a.webp'])
+
+  // Live edits on the disk must survive every later boot.
+  writeFileSync(opts.dbFile, 'LIVE')
+  writeFileSync(join(snap, 'uploads', 'b.webp'), 'img')
+  assert.deepEqual(bootstrapData(opts), { db: false, uploads: 0 })
+  assert.equal(readFileSync(opts.dbFile, 'utf8'), 'LIVE')
+})
+
 test('migrations: legacy data is fixed once and not re-applied', async () => {
   const { initSchema } = await import('../server/db.js')
   // Simulate a pre-migration snapshot of the live CMS.

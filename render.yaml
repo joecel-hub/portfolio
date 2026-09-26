@@ -19,8 +19,6 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
-      - key: GIT_PAT
-        sync: false
       - key: SMTP_HOST
         sync: false
       - key: SMTP_PORT

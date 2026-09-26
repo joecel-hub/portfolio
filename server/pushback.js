@@ -1,6 +1,6 @@
 import { spawn, spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { dirname, join } from 'node:path'
+import { dirname, join, relative, resolve, isAbsolute } from 'node:path'
 import { db } from './db.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -26,8 +26,18 @@ let busy = false
 let pending = false
 let lastRun = 0
 
+// Pushback only makes sense while the live DB is the file inside the repo
+// checkout (free tier). On a persistent disk (DB_FILE=/data/...) the repo copy
+// is a stale snapshot, so pushing it would overwrite newer data on main.
+const DB_IN_REPO = !process.env.DB_FILE || isInside(REPO_ROOT, process.env.DB_FILE)
+
+function isInside(root, file) {
+  const rel = relative(root, resolve(file))
+  return !rel.startsWith('..') && !isAbsolute(rel)
+}
+
 export function isEnabled() {
-  return Boolean(GIT_PAT)
+  return Boolean(GIT_PAT) && DB_IN_REPO
 }
 
 function log(msg) {
