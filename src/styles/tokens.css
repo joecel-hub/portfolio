@@ -1,4 +1,5 @@
 :root {
+  /* ── Color (Stryg.Bytes / dark is the base; Gio remaps in base.css) ── */
   --bg: #050508;
   --bg2: #09090f;
   --surface: rgba(255, 255, 255, 0.03);
@@ -7,14 +8,23 @@
   --a1: #7c6eff;
   --a2: #00d4ff;
   --a3: #ff6ebc;
+  /* Channel triplets so glows/tints follow the active mode:
+     rgba(var(--a1-rgb), 0.3) */
+  --a1-rgb: 124, 110, 255;
+  --a2-rgb: 0, 212, 255;
+  --a3-rgb: 255, 110, 188;
+  /* Light tints of the accents, for text/icons on dark surfaces */
+  --a1-soft: #c4bdff;
+  --a2-soft: #8aebff;
+  --a3-soft: #ffb0d8;
+  --success: #43e97b;
+  --logo: #fff;
   --text: #e4e4f0;
   --muted: #8b8ba6; /* ≥4.5:1 on --bg/--bg2 (was #5a5a72, ~3:1) */
-  --mono: 'JetBrains Mono', monospace;
-  --sans: 'Inter', sans-serif;
-  --head: 'Syne', sans-serif;
-  --r: 14px;
   --glow1: rgba(124, 110, 255, 0.3);
   --glow2: rgba(0, 212, 255, 0.2);
+
+  /* Gio (light) palette — applied via body.normal-mode in base.css */
   --nm-bg: #f6f7fb;
   --nm-bg2: #ffffff;
   --nm-surface: rgba(255, 255, 255, 0.78);
@@ -24,4 +34,55 @@
   --nm-a1: #5d4fd3;
   --nm-a2: #007f9f;
   --nm-a3: #b93879;
+  --nm-success: #157a3f;
+
+  /* ── Typography ── */
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Inter', sans-serif;
+  --head: 'Syne', sans-serif;
+
+  --fs-2xs: 0.68rem;  /* mono micro-labels, tags */
+  --fs-xs: 0.75rem;   /* eyebrows, meta */
+  --fs-sm: 0.85rem;   /* secondary copy, buttons */
+  --fs-base: 0.95rem; /* card body copy */
+  --fs-md: 1.05rem;   /* lead copy, card titles */
+  --fs-lg: 1.25rem;   /* sub-headings */
+  --fs-xl: clamp(1.35rem, 1.1rem + 1vw, 1.7rem);
+  --fs-h1: clamp(1.9rem, 1.4rem + 2vw, 2.6rem);
+  --fs-h2: clamp(2rem, 1.3rem + 3vw, 3.5rem);
+  --fs-display: clamp(2.6rem, 1.6rem + 5vw, 5.5rem);
+
+  --lh-tight: 1.1;
+  --lh-snug: 1.35;
+  --lh-body: 1.7;
+
+  --tracking-tight: -0.03em;
+  --tracking-label: 0.16em;
+
+  --measure: 68ch;
+
+  /* ── Spacing (4/8 ladder) ── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-section: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  --gutter: 5vw;
+
+  /* ── Radii ── */
+  --r-sm: 8px;
+  --r: 14px;
+  --r-lg: 20px;
+  --r-pill: 999px;
+
+  /* ── Motion ── */
+  --dur-fast: 0.2s;
+  --dur: 0.35s;
+  --dur-slow: 0.7s;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
