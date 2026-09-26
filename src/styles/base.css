@@ -83,9 +83,9 @@ section {
 
 .section-label {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: var(--fs-xs);
   color: var(--a1);
-  letter-spacing: 0.2em;
+  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   display: flex;
   align-items: center;
@@ -101,11 +101,31 @@ section {
 }
 
 .section-title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--lh-tight);
   margin-bottom: var(--space-5);
+}
+
+/* Stryg.Bytes headlines use the display face; Gio stays on Inter. */
+body:not(.normal-mode) .section-title {
+  font-family: var(--head);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Card-level titles (h3) share one rhythm across both modes.
+   Size/weight live with each component. */
+.pf-service-name,
+.pf-project-name,
+.pf-hobby-name,
+.pf-tl-role,
+.pf-cert-name,
+.project-name,
+.pt-card h3 {
+  line-height: var(--lh-snug);
+  letter-spacing: -0.01em;
 }
 
 .sec-inner {
