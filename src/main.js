@@ -77,11 +77,19 @@ document.addEventListener('DOMContentLoaded', () => {
   let unmountPixel = null
   const pixelContainer = document.getElementById('pixel-blast-container')
 
-  // PixelBlast pulls in React + Three.js, so it is loaded on demand (after
-  // the page has booted) instead of being part of the entry bundle.
+  // PixelBlast pulls in React + Three.js (~1 MB), so it is loaded on demand
+  // (after the page has booted) instead of being part of the entry bundle.
+  // Visitors who asked for less motion or data, or are on a low-end CPU,
+  // get a static CSS dot field instead and never download it.
+  const connection = navigator.connection || {}
+  const skipPixel = prefersReducedMotion ||
+    connection.saveData === true ||
+    (navigator.hardwareConcurrency || 4) <= 2
+  if (skipPixel && pixelContainer) pixelContainer.classList.add('is-static')
+
   let pixelLoading = null
   function mountPixel() {
-    if (!pixelContainer || unmountPixel || pixelLoading) return
+    if (skipPixel || !pixelContainer || unmountPixel || pixelLoading) return
     pixelLoading = import('./js/modules/mountPixelBlast.jsx')
       .then(({ mountPixelBlast }) => {
         // The visitor may have switched to Dev while this was downloading.
@@ -92,8 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
           color: '#8b7eea',
           patternScale: 2,
           patternDensity: 0.55,
-          speed: prefersReducedMotion ? 0 : 0.25, // static pattern when motion is reduced
-          enableRipples: !prefersReducedMotion,
+          speed: 0.25, // reduced motion never gets here (static CSS field instead)
+          enableRipples: true,
           edgeFade: 0.55
         })
       })
@@ -137,9 +145,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Boot: run the pixel background + typewriter behind the Gio loader; the
-  // profile entrance plays as the grid wipes away (in the loader onComplete).
-  mountPixel()
+  // Boot: the typewriter runs behind the Gio loader; the profile entrance
+  // plays as the grid wipes away (in the loader onComplete). The WebGL
+  // background waits until the page has loaded and the main thread is idle,
+  // so it stays off the critical path.
+  const whenIdle = (fn) => {
+    const run = () => ('requestIdleCallback' in window
+      ? requestIdleCallback(fn, { timeout: 2000 })
+      : setTimeout(fn, 200))
+    if (document.readyState === 'complete') run()
+    else window.addEventListener('load', run, { once: true })
+  }
+  whenIdle(() => { if (isNormalMode()) mountPixel() })
   mountType()
 
   let toggleMode = () => {}
