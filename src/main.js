@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   try {
     particles = initDevParticles(document.getElementById('dev-particles-canvas'), {
       count: 50,
-      color: '124, 110, 255',
+      color: '21, 151, 212',
       maxOpacity: 0.35,
       speed: 0.15,
       mouseRadius: 100,
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (heroBot || heroBotLoading) return
     const container = document.getElementById('hero-bot')
     if (!container) return
-    heroBotLoading = import('./js/modules/hero-bot.js')
+    heroBotLoading = import('./js/modules/robot-cube.js')
       .then(({ initHeroBot }) => {
         heroBot = initHeroBot(container)
         if (heroBot && isNormalMode()) heroBot.setPaused(true) // switched back meanwhile

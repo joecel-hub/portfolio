@@ -17,5 +17,8 @@ export function toLabHtml(html) {
   out = labUrl(out, /(<meta property="og:url" content=")([^"]*)(")/)
   for (const sel of ['property="og:title"', 'name="twitter:title"']) out = attr(out, sel, LAB_TITLE)
   for (const sel of ['name="description"', 'property="og:description"', 'name="twitter:description"']) out = attr(out, sel, LAB_DESCRIPTION)
+  // index.html boots Gio via <body class="normal-mode">; the lab must paint as
+  // the lab from the first frame, or slow phones see Gio and then a big shift.
+  out = out.replace('<body class="normal-mode">', '<body>')
   return out
 }

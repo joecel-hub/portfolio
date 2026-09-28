@@ -13,18 +13,18 @@ function setPressed(chips, isActive) {
 
 const THUMB_BG = {
   resort: 'linear-gradient(135deg,#0d1a12,#0a2010)',
-  corporate: 'linear-gradient(135deg,#0d0d1a,#1a1040)',
+  corporate: 'linear-gradient(135deg,#0d0d1a,#102652)',
   ai: 'linear-gradient(135deg,#0d1a12,#0a2010)',
-  motion: 'linear-gradient(135deg,#080d1a,#0a1040)',
-  wave: 'linear-gradient(135deg,#0d0d1a,#1a1040)',
+  motion: 'linear-gradient(135deg,#080d1a,#0c1f45)',
+  wave: 'linear-gradient(135deg,#0d0d1a,#102652)',
 }
 
 const THUMB_COLOR = {
   resort: '67,233,123',
-  corporate: '124,110,255',
+  corporate: '21,151,212',
   ai: '67,233,123',
-  motion: '124,110,255',
-  wave: '124,110,255',
+  motion: '21,151,212',
+  wave: '21,151,212',
 }
 
 const THUMB_SVG = {
@@ -95,7 +95,7 @@ const THUMB_SVG = {
     <defs><radialGradient id="tb-w" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(${c},0.55)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
     <circle cx="300" cy="100" r="160" fill="url(#tb-w)" opacity="0.4"/>
     <path d="M80 100 Q200 35 300 100 Q400 165 520 100" stroke="rgba(${c},0.85)" stroke-width="2" fill="none"/>
-    <path d="M80 120 Q200 55 300 120 Q400 185 520 120" stroke="rgba(255,110,188,0.5)" stroke-width="1.5" fill="none"/>
+    <path d="M80 120 Q200 55 300 120 Q400 185 520 120" stroke="rgba(92,195,242,0.5)" stroke-width="1.5" fill="none"/>
     <circle cx="300" cy="100" r="28" fill="rgba(${c},0.18)" stroke="rgba(${c},0.5)" stroke-width="1"/>
     <text x="284" y="108" font-family="JetBrains Mono" font-size="16" fill="rgba(${c},0.9)">2D</text>
   </svg>`,

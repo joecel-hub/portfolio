@@ -30,9 +30,17 @@ test('lab-html: title, canonical and share tags describe the lab', () => {
   }
 })
 
+// index.html ships <body class="normal-mode"> so / paints Gio with no flash.
+// /lab must not: on a slow phone the Gio layout would paint first and then
+// jump to the lab once JS runs (a large layout shift).
+test('lab-html: body boots without the Gio class', () => {
+  const out = toLabHtml(HEAD)
+  assert.ok(out.includes('<body>'))
+  assert.ok(!out.includes('normal-mode'))
+})
+
 test('lab-html: nothing else changes', () => {
   const out = toLabHtml(HEAD)
   assert.ok(out.includes('content="https://example.com/images/normal.jpeg"'))
-  assert.ok(out.includes('<body class="normal-mode">'))
   assert.equal(out.match(/Gio/g), null)
 })

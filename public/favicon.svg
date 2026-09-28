@@ -1,10 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Stryg.Bytes robot-cube logo, redrawn as clean vector for favicon/icon use -->
   <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#7c6eff"/>
-      <stop offset="100%" stop-color="#00d4ff"/>
+    <linearGradient id="rc-top" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0.35" stop-color="#10231e"/>
+      <stop offset="0.75" stop-color="#102652"/>
     </linearGradient>
   </defs>
-  <rect width="32" height="32" rx="8" fill="#0f0f1a"/>
-  <text x="16" y="23" text-anchor="middle" fill="url(#g)" font-family="system-ui,sans-serif" font-size="20" font-weight="800">g</text>
+  <!-- blue "book" silhouette: shows as the rim, seams and curved base -->
+  <path fill="#1597d4" d="M32 3 L60 15 V47 Q44 48 32 61 Q20 48 4 47 V15 Z"/>
+  <!-- faces -->
+  <path fill="url(#rc-top)" d="M32 6 L57 16 L32 26 L7 16 Z"/>
+  <path fill="#10231e" d="M7 18 L31 28 V55 Q20 46 7 44 Z"/>
+  <path fill="#102652" d="M57 18 L33 28 V55 Q44 46 57 44 Z"/>
+  <!-- orange corners -->
+  <path fill="#ff8a3d" d="M7.5 34 V43.5 L18 45 Z"/>
+  <path fill="#ff8a3d" d="M56.5 34 V43.5 L46 45 Z"/>
+  <!-- whiskers -->
+  <g fill="#fff">
+    <rect x="11" y="23" width="1" height="12" rx=".5"/>
+    <rect x="12.8" y="24.5" width=".7" height="9" rx=".35"/>
+    <rect x="52" y="23" width="1" height="12" rx=".5"/>
+    <rect x="50.5" y="24.5" width=".7" height="9" rx=".35"/>
+  </g>
+  <!-- eyes and listening slot -->
+  <ellipse cx="21" cy="37.5" rx="3.2" ry="4.4" fill="#fff"/>
+  <ellipse cx="43" cy="37.5" rx="3.2" ry="4.4" fill="#fff"/>
+  <ellipse cx="32" cy="13" rx="4.4" ry="1.4" fill="none" stroke="#fff" stroke-width="1"/>
 </svg>

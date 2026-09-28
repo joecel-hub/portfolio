@@ -262,6 +262,9 @@ body.normal-mode .about-text p strong {
   display: flex;
   justify-content: center;
   align-items: center;
+  /* The circuit slides in from x:60 (animations.js); until it plays, clip it
+     so it can't widen the page on phones. clip, not hidden: no scroll box. */
+  overflow-x: clip;
 }
 
 .about-visual-circuit {

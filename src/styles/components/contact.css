@@ -113,7 +113,7 @@ body.normal-mode .form-field textarea {
 .form-submit {
   width: 100%;
   padding: var(--space-4);
-  background: var(--a1);
+  background: var(--a1-solid);
   color: #fff;
   border: none;
   border-radius: 8px;

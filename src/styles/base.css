@@ -55,6 +55,7 @@ body.normal-mode {
   --text: var(--nm-text);
   --muted: var(--nm-muted);
   --a1: var(--nm-a1);
+  --a1-solid: var(--nm-a1);
   --a2: var(--nm-a2);
   --a3: var(--nm-a3);
   --a1-rgb: 93, 79, 211;

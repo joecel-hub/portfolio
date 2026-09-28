@@ -20,7 +20,7 @@
   gap: var(--space-6);
 }
 
-/* Dev mode: text left, eyes right in a glass card */
+/* Dev mode: text left, the 3D robot-cube logo right */
 .hero-split-dev {
   display: flex;
   align-items: center;
@@ -32,24 +32,14 @@
   min-width: 0;
 }
 
+/* Free-floating cube over a soft blue/orange glow (no card chrome). */
 .hero-bot-card {
-  flex: 0.85;
+  flex: 0.95;
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-5);
-  min-height: 260px;
-  padding: 2.5rem;
-  border-radius: 28px;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
-  border: 1px solid var(--border);
-  backdrop-filter: blur(20px);
-  box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  overflow: hidden;
+  min-width: 0;
   opacity: 0;
   transform: translateY(16px);
 }
@@ -57,19 +47,20 @@
 .hero-bot-card::before {
   content: '';
   position: absolute;
-  inset: -40%;
-  background: radial-gradient(circle at 50% 40%, var(--glow1), transparent 65%);
-  opacity: 0.6;
+  inset: 4% 8%;
+  background:
+    radial-gradient(closest-side at 45% 42%, rgba(var(--a1-rgb), 0.26), transparent),
+    radial-gradient(closest-side at 62% 70%, rgba(var(--a2-rgb), 0.14), transparent);
+  filter: blur(8px);
   pointer-events: none;
 }
 
-.hero-bot-cap {
+.hero-kicker {
   font-family: var(--mono);
-  font-size: var(--fs-2xs);
-  letter-spacing: 0.1em;
+  font-size: var(--fs-sm);
   color: var(--muted);
-  position: relative;
-  z-index: 1;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-3);
 }
 
 @media (max-width: 900px) {
@@ -88,8 +79,7 @@
     margin-right: auto;
   }
   .hero-bot-card {
-    min-height: 200px;
-    padding: var(--space-6);
+    order: -1;
   }
 }
 
@@ -117,6 +107,13 @@
 
   body.normal-mode .hero-scroll-cue,
   body.normal-mode .hero-badge {
+    display: none;
+  }
+
+  /* The stacked lab hero is taller than a phone screen, so the absolutely
+     positioned cue would sit on top of the buttons. (#hero: outranks the
+     base .hero-scroll-cue rule later in this file.) */
+  #hero .hero-scroll-cue {
     display: none;
   }
 }
@@ -149,6 +146,14 @@
   letter-spacing: -0.04em;
   margin-bottom: var(--space-6);
   max-width: 900px;
+}
+
+/* The lab headline is a sentence, not two words: a smaller display size.
+   Scoped under #hero so it beats the .hero-title sizes in responsive.css. */
+#hero .hero-title--lab {
+  font-size: clamp(2.1rem, 5.2vw, 4.4rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
 }
 
 .hero-title .line {
@@ -221,10 +226,9 @@ body.normal-mode .hero-sub strong {
   box-shadow: 0 0 28px var(--glow1);
 }
 
-/* Dev accent #7c6eff gives white text only 3.8:1; this 10% darker shade of the
-   same hue reaches 4.5:1 (WCAG AA). Gio's accent already passes. */
+/* White label on the accent: use the AA-safe fill (see --a1-solid). */
 body:not(.normal-mode) .btn-primary {
-  background: #7063e5;
+  background: var(--a1-solid);
 }
 
 .btn-primary:hover {

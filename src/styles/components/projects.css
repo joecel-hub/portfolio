@@ -136,8 +136,8 @@
   background: linear-gradient(135deg, #0d1a12, #0a2010);
 }
 
-.project-thumb--violet {
-  background: linear-gradient(135deg, #0d0d1a, #1a1040);
+.project-thumb--navy {
+  background: linear-gradient(135deg, #0d0d1a, #102652);
 }
 
 .project-thumb svg {
@@ -209,7 +209,7 @@
 }
 
 .project-card:hover .project-arrow {
-  background: var(--a1);
+  background: var(--a1-solid);
   color: #fff;
   transform: translate(2px, -2px);
   border-color: transparent;

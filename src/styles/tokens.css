@@ -4,25 +4,28 @@
   --bg2: #09090f;
   --surface: rgba(255, 255, 255, 0.03);
   --border: rgba(255, 255, 255, 0.07);
-  --border-hi: rgba(108, 99, 255, 0.4);
-  --a1: #7c6eff;
-  --a2: #00d4ff;
-  --a3: #ff6ebc;
+  --border-hi: rgba(21, 151, 212, 0.4);
+  --a1: #1597d4; /* robot-cube logo blue */
+  --a2: #ff8a3d; /* robot-cube logo orange */
+  --a3: #5cc3f2;
   /* Channel triplets so glows/tints follow the active mode:
      rgba(var(--a1-rgb), 0.3) */
-  --a1-rgb: 124, 110, 255;
-  --a2-rgb: 0, 212, 255;
-  --a3-rgb: 255, 110, 188;
+  --a1-rgb: 21, 151, 212;
+  --a2-rgb: 255, 138, 61;
+  --a3-rgb: 92, 195, 242;
+  /* --a1 as a fill under white text: #1597d4 only gives 3.3:1, this darker
+     shade of the same hue gives 4.76:1 (WCAG AA). */
+  --a1-solid: #0f7aad;
   /* Light tints of the accents, for text/icons on dark surfaces */
-  --a1-soft: #c4bdff;
-  --a2-soft: #8aebff;
-  --a3-soft: #ffb0d8;
+  --a1-soft: #9fd8f3;
+  --a2-soft: #ffc49c;
+  --a3-soft: #bfe6f9;
   --success: #43e97b;
   --logo: #fff;
   --text: #e4e4f0;
   --muted: #8b8ba6; /* ≥4.5:1 on --bg/--bg2 (was #5a5a72, ~3:1) */
-  --glow1: rgba(124, 110, 255, 0.3);
-  --glow2: rgba(0, 212, 255, 0.2);
+  --glow1: rgba(21, 151, 212, 0.3);
+  --glow2: rgba(255, 138, 61, 0.2);
 
   /* Gio (light) palette — applied via body.normal-mode in base.css */
   --nm-bg: #f6f7fb;

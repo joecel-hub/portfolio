@@ -5,7 +5,7 @@ export function initDevParticles(canvas, options = {}) {
 
   const {
     count = 50,
-    color = '124, 110, 255',
+    color = '21, 151, 212',
     maxOpacity = 0.35,
     minSize = 1,
     maxSize = 2,
