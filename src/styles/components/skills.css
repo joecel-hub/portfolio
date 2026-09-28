@@ -99,7 +99,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.15rem;
-  max-width: 1120px;
+  max-width: var(--container-narrow);
   margin: 3.25rem auto 0;
 }
 

@@ -128,7 +128,7 @@ body:not(.normal-mode) .section-title {
 }
 
 .sec-inner {
-  max-width: 1200px;
+  max-width: var(--container);
   margin: 0 auto;
 }
 

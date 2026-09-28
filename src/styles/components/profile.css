@@ -58,7 +58,7 @@ body.normal-mode #contact {
 /* ── Cover ── */
 .pf-cover {
   position: relative;
-  max-width: 1180px;
+  max-width: var(--container);
   margin: 0 auto;
   height: clamp(220px, 38vh, 380px);
   border-radius: 24px;
@@ -95,7 +95,7 @@ body.normal-mode #contact {
 .pf-head {
   position: relative;
   z-index: 2;
-  max-width: 1180px;
+  max-width: var(--container);
   margin: -76px auto 0;
   padding: 0 1.25rem;
 }
@@ -224,7 +224,7 @@ body.normal-mode #contact {
 
 /* ── Scrollable body ── */
 .pf-body {
-  max-width: 1180px;
+  max-width: var(--container);
   margin: 2.5rem auto 0;
   padding: clamp(1.25rem, 3vw, 2.5rem);
   background: rgba(255, 255, 255, 0.84);

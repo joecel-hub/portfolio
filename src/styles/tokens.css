@@ -60,6 +60,8 @@
   --tracking-label: 0.16em;
 
   --measure: 68ch;
+  --container: 1200px;
+  --container-narrow: 1100px;
 
   /* ── Spacing (4/8 ladder) ── */
   --space-1: 0.25rem;

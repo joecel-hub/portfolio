@@ -107,7 +107,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-5);
-  max-width: 1100px;
+  max-width: var(--container-narrow);
   margin: 0 auto;
 }
 
