@@ -81,17 +81,18 @@ During development, Vite proxies `/api` and `/uploads` to the backend at `localh
 | `LOGIN_RATE_WINDOW_MS` | `900000` | Rate-limit window (15 min) |
 | `FORM_RATE_LIMIT` / `FORM_RATE_WINDOW_MS` | `5` / `900000` | Per-IP limit for public review + contact submissions |
 | `TRUST_PROXY` | `1` in production | Proxy hops to trust for the client IP (Render = 1) so rate limits are per visitor |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` | *(unset → contact form disabled)* | SMTP server for the contact form (Gmail: `smtp.gmail.com`, `465`) |
+| `RESEND_API_KEY` / `RESEND_FROM` | *(unset → falls back to SMTP)* | Resend HTTPS email API for the contact form (production: Render free blocks SMTP ports) |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` | *(unset, and no Resend key → contact form disabled)* | SMTP server for the contact form (Gmail: `smtp.gmail.com`, `465`) |
 | `SMTP_USER` / `SMTP_PASS` | *(unset)* | SMTP login (Gmail: address + App Password) |
 | `CONTACT_TO` / `CONTACT_FROM` | `joecelpergis@gmail.com` / `SMTP_USER` | Where contact messages go / sender address |
-| `GIT_PAT` | *(unset → disabled)* | Legacy free-tier git pushback. Ignored whenever `DB_FILE` is outside the repo (the disk setup) |
+| `GIT_PAT` | *(unset → disabled)* | Commits admin edits back to `main` (production on the free tier). Ignored whenever `DB_FILE` is outside the repo (the disk setup) |
 | `GIT_CMS_REMOTE` | `github.com/joecel-hub/portfolio` | Repo the CMS snapshots are pushed to |
 | `GIT_CMS_BRANCH` | `main` | Branch CMS snapshots are pushed to |
 | `PERSIST_DEBOUNCE_MS` | `8000` | Coalescing window for git pushback — quick edits collapse into one snapshot push (and one auto-deploy) |
 
 ## CMS data persistence
 
-Production runs on **Render Starter with a 1 GB persistent disk** at `/data` (`DB_FILE=/data/portfolio.db`, `UPLOAD_DIR=/data/uploads`). Admin edits are written straight to the disk and survive redeploys; nothing is committed back to the repo.
+Production runs on the **Render free tier**: no persistent disk, so the DB stays in the repo checkout (`server/portfolio.db`) and every admin edit is **committed back to `main`** by `server/pushback.js` (set `GIT_PAT`), which triggers a redeploy with the new data. Outbound SMTP is blocked on free, so the contact form uses **Resend** (`RESEND_API_KEY`). The disk setup below still works if the service moves to a paid plan.
 
 - **First boot on an empty disk**: `server/bootstrapData.js` copies the committed snapshot (`server/portfolio.db` + `server/public/uploads/`) onto the disk once, so the site starts with the real CMS content rather than the default seed. After that the disk is the source of truth and the bootstrap is a no-op.
 - **Data fixes** ship as one-time migrations in `server/db.js` (`MIGRATIONS`, recorded in the `migrations` table), never as edits to the binary DB.
@@ -220,9 +221,9 @@ tests/
 The app is designed to run as **one full-stack service** — the Express server builds and serves the `dist/` frontend, the admin panel, and the API on a single origin.
 
 - Source lives in a **private** GitHub repo (`joecel-hub/portfolio`, `main` branch).
-- **Render (paid)**: `render.yaml` provisions a Web Service (Starter plan, Singapore region) with a 1 GB persistent disk mounted at `/data`. Build = `npm ci --include=dev && npm run build`, start = `npm run server`, health check = `/api/health`. Auto-deploys on push to `main`.
-  - Set `ADMIN_PASS` and `JWT_SECRET` as **secrets** in the Render dashboard (plus the optional `SMTP_*` keys). `DB_FILE=/data/portfolio.db` and `UPLOAD_DIR=/data/uploads` are set by `render.yaml` so the DB and uploads survive redeploys.
-  - Remove any old `GIT_PAT` secret from the service. It is ignored on the disk setup, but there is no reason to keep a write token around.
+- **Render (free)**: `render.yaml` describes the Web Service (free plan, Singapore region). Build = `npm ci --include=dev && npm run build`, start = `npm run server`, health check = `/api/health`. Auto-deploys on push to `main`. Before pushing from a local clone, `git fetch` and rebase onto any "Gio Portfolio Bot" commits (admin edits).
+  - Set `ADMIN_PASS` and `JWT_SECRET` as **secrets** in the Render dashboard. On the disk setup (paid plan) also set `DB_FILE=/data/portfolio.db` and `UPLOAD_DIR=/data/uploads`.
+  - Set `GIT_PAT` (GitHub fine-grained token, *Contents: read & write* on this repo only) and `RESEND_API_KEY` as secrets. Do **not** set `DB_FILE`/`UPLOAD_DIR` on the free tier (they point at a disk that does not exist and switch pushback off).
 - **Local / dev**: `npm run dev:full` (or `npm run server`) — Vite proxies `/api` and `/uploads` to `localhost:5175`.
 - `dist/`, `.vercel/`, `server/.env`, `server/*.db-wal` / `*.db-shm`, and the contents of `server/public/uploads/` are git-ignored. `server/portfolio.db` **is** committed (it is the snapshot a fresh disk is bootstrapped from); do not commit `server/.env`. The legal pages under `server/public/` and their mirrors under `public/` are committed so they exist in both the backend and the static build.
 

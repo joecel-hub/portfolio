@@ -1,9 +1,15 @@
+# Render free tier. There is no persistent disk and outbound SMTP ports are blocked, so:
+#  - the SQLite DB lives in the repo checkout (server/portfolio.db) and admin
+#    edits are committed back to main by server/pushback.js (needs GIT_PAT);
+#  - the contact form sends through Resend's HTTPS API (RESEND_API_KEY).
+# On a paid plan with a disk instead: add a disk at /data, set DB_FILE=/data/portfolio.db
+# and UPLOAD_DIR=/data/uploads (pushback then switches itself off), and SMTP_* works too.
 services:
   - type: web
     name: gio-portfolio
     runtime: node
     repo: https://github.com/joecel-hub/portfolio
-    plan: starter
+    plan: free
     region: singapore
     buildCommand: npm ci --include=dev && npm run build
     startCommand: npm run server
@@ -11,25 +17,13 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DB_FILE
-        value: /data/portfolio.db
-      - key: UPLOAD_DIR
-        value: /data/uploads
       - key: ADMIN_PASS
         sync: false
       - key: JWT_SECRET
         sync: false
-      - key: SMTP_HOST
+      - key: GIT_PAT
         sync: false
-      - key: SMTP_PORT
-        sync: false
-      - key: SMTP_USER
-        sync: false
-      - key: SMTP_PASS
+      - key: RESEND_API_KEY
         sync: false
       - key: CONTACT_TO
         sync: false
-    disk:
-      name: data
-      mountPath: /data
-      sizeGB: 1

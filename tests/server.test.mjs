@@ -413,6 +413,49 @@ test('security: no built-in admin credentials outside production either', () => 
   assert.equal(run({ ADMIN_PASS: 'a-real-password', JWT_SECRET: 'local-secret' }).status, 0)
 })
 
+// Render's free tier blocks SMTP ports, so the contact form sends through
+// Resend's HTTPS API when RESEND_API_KEY is set. The API is stubbed here.
+async function withResend(respond, fn) {
+  const realFetch = globalThis.fetch
+  const calls = []
+  process.env.RESEND_API_KEY = 're_test_key'
+  globalThis.fetch = async (url, init) => {
+    if (String(url).startsWith('https://api.resend.com/')) {
+      calls.push({ url: String(url), init })
+      return respond()
+    }
+    return realFetch(url, init)
+  }
+  try { await fn(calls) } finally {
+    globalThis.fetch = realFetch
+    delete process.env.RESEND_API_KEY
+  }
+}
+
+test('contact: sends through Resend when RESEND_API_KEY is set', async () => {
+  await withResend(() => new Response(JSON.stringify({ id: 'em_1' }), { status: 200 }), async (calls) => {
+    const r = await j('/api/contact', { method: 'POST', body: { name: 'Ada', email: 'ada@example.com', subject: 'Hi', message: 'I would like a website.' } })
+    assert.equal(r.status, 200)
+    assert.equal(r.data.ok, true)
+    assert.equal(calls.length, 1)
+    assert.equal(calls[0].url, 'https://api.resend.com/emails')
+    assert.equal(calls[0].init.headers.Authorization, 'Bearer re_test_key')
+    const sent = JSON.parse(calls[0].init.body)
+    assert.deepEqual(sent.to, ['joecelpergis@gmail.com'])
+    assert.equal(sent.reply_to, 'ada@example.com')
+    assert.equal(sent.subject, '[Portfolio] Hi')
+    assert.match(sent.text, /I would like a website\.[\s\S]*Ada <ada@example\.com>/)
+  })
+})
+
+test('contact: a Resend error is reported as 502, not a hang', async () => {
+  await withResend(() => new Response('{"message":"boom"}', { status: 500 }), async () => {
+    const r = await j('/api/contact', { method: 'POST', body: { name: 'Ada', email: 'ada@example.com', message: 'Hello there, website please.' } })
+    assert.equal(r.status, 502)
+    assert.equal(r.data.error, 'send_failed')
+  })
+})
+
 test('contact: validates input, swallows honeypot, 503 without SMTP, rate limited', async () => {
   const ok = { name: 'Ada', email: 'ada@example.com', subject: 'Hi', message: 'I would like a website.' }
 
