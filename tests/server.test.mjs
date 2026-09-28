@@ -92,6 +92,20 @@ test('spa: /lab serves the portfolio page', { skip: !existsSync(new URL('../dist
   assert.match(root, /<link rel="canonical" href="[^"]*\/"/)
 })
 
+// Vite fingerprints everything under /assets/, so those files can be cached
+// for a year; the HTML must always be revalidated so deploys show at once.
+test('caching: hashed assets are immutable, HTML is no-cache', { skip: !existsSync(new URL('../dist/index.html', import.meta.url)) }, async () => {
+  const html = await fetch(base + '/')
+  assert.match(html.headers.get('cache-control'), /no-cache/)
+  const lab = await fetch(base + '/lab')
+  assert.match(lab.headers.get('cache-control'), /no-cache/)
+  const asset = (await html.text()).match(/\/assets\/[^"]+\.js/)[0]
+  const res = await fetch(base + asset)
+  assert.equal(res.status, 200)
+  assert.match(res.headers.get('cache-control'), /max-age=31536000/)
+  assert.match(res.headers.get('cache-control'), /immutable/)
+})
+
 test('seeded public lists', async () => {
   const projects = await j('/api/projects')
   assert.equal(projects.status, 200)

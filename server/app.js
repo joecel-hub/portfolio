@@ -66,13 +66,25 @@ app.use('/admin', express.static(join(__dirname, 'public', 'admin')))
 // Built portfolio (dist) if present
 const dist = join(__dirname, '..', 'dist')
 if (existsSync(dist)) {
-  app.use(express.static(dist))
+  // Vite content-hashes everything under /assets/, so a file there never
+  // changes under the same name: cache it for a year. HTML is revalidated on
+  // every visit so a deploy shows immediately.
+  const NO_CACHE = 'no-cache'
+  const assetsDir = join(dist, 'assets')
+  app.use(express.static(dist, {
+    setHeaders(res, filePath) {
+      res.setHeader('Cache-Control', filePath.startsWith(assetsDir)
+        ? 'public, max-age=31536000, immutable'
+        : NO_CACHE)
+    }
+  }))
   // /lab gets the same page with the lab's title/description/canonical in
   // the head, so shared links preview as Stryg.Bytes (built once at boot).
   const labHtml = toLabHtml(readFileSync(join(dist, 'index.html'), 'utf8'))
-  app.get(['/lab', '/lab/'], (_req, res) => res.type('html').send(labHtml))
+  app.get(['/lab', '/lab/'], (_req, res) => res.set('Cache-Control', NO_CACHE).type('html').send(labHtml))
   app.get('{*path}', (_req, res, next) => {
     if (_req.path.startsWith('/api')) return next()
+    res.set('Cache-Control', NO_CACHE)
     res.sendFile(join(dist, 'index.html'))
   })
 }
