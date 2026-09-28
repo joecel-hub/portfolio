@@ -1,11 +1,13 @@
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { EffectComposer, RenderPass, EffectPass, BloomEffect, ToneMappingEffect, ToneMappingMode } from 'postprocessing'
 
 // The Stryg.Bytes robot-cube logo as a live 3D mascot for the lab hero.
-// Built from primitives to match the flat logo (dark cube seen corner-on,
-// glowing eyes, blue "book" flaps, orange corners, white whisker marks,
-// a listening slot on top) — no model file, no licensing, tiny weight.
+// The model and its "Intro"/"Idle" clips are made in Blender
+// (public/models/robot-cube.glb). A built-in copy made from primitives (dark
+// cube seen corner-on, glowing eyes, blue "book" flaps, orange corners, white
+// whisker marks, a listening slot on top) is the fallback if the file fails.
 // Same API as the previous hero bot: initHeroBot(container) → { setPaused, destroy }.
 export function initHeroBot(container, options = {}) {
   if (!container) return null
@@ -14,7 +16,8 @@ export function initHeroBot(container, options = {}) {
     leftColor = '#10231e',
     rightColor = '#102652',
     blue = '#1597d4',
-    orange = '#ff8a3d'
+    orange = '#ff8a3d',
+    modelUrl = '/models/robot-cube.glb'
   } = options
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -212,6 +215,7 @@ export function initHeroBot(container, options = {}) {
     color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 2.2, roughness: 0.4, side: THREE.DoubleSide
   })
   const whiskers = []
+  const whiskerBaseY = []
   const whiskerSpec = [[0, 0.62, 0.022], [0.035, 0.5, 0.014], [0.065, 0.56, 0.018], [0.095, 0.42, 0.012]]
   for (const [du, h, w] of whiskerSpec) {
     const u = S * 2 - 0.42 + du
@@ -223,6 +227,7 @@ export function initHeroBot(container, options = {}) {
     r.rotation.y = Math.PI / 2
     bot.add(l, r)
     whiskers.push(l, r)
+    whiskerBaseY.push(0.18, 0.18)
   }
 
   // ── Listening slot on the top face (toward the back corner). Stretched
@@ -259,6 +264,87 @@ export function initHeroBot(container, options = {}) {
   shadow.rotation.x = -Math.PI / 2
   shadow.position.set(0, -S - 0.32, 0)
   scene.add(shadow)
+
+  // ── Blender model ── The built-in cube above stays hidden unless the GLB
+  // can't load. Visitor-driven motion (cursor look, hover, whisker glitch,
+  // glow) is applied in code on top of the model's own clips.
+  bot.visible = false
+  let glb = null
+  new GLTFLoader().load(modelUrl, (gltf) => {
+    if (destroyed) return
+    const model = gltf.scene
+    const clips = Object.fromEntries(gltf.animations.map(c => [c.name, c]))
+    // Pose on the Intro's last keyframes before any mixer exists: those are
+    // the values the mixer restores when Intro stops, and what reduced
+    // motion shows. (The exporter samples the rest pose at Intro's start.)
+    if (clips.Intro) settleOnClipEnd(model, clips.Intro)
+    const eyesG = ['EyeL', 'EyeR'].map(n => model.getObjectByName(n)).filter(Boolean)
+    eyesG.forEach(e => {
+      e.material = eyeMat
+      const h = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.72), haloMat)
+      h.position.z = 0.002
+      h.renderOrder = -1
+      e.add(h)
+    })
+    const whiskersG = []
+    model.traverse(o => { if (o.name.startsWith('Whisker')) whiskersG.push(o) })
+    const slotMatG = model.getObjectByName('Slot')?.material || null
+    let mixer = null
+    let intro = null
+    if (!reduceMotion && (clips.Intro || clips.Idle)) {
+      mixer = new THREE.AnimationMixer(model)
+      const idle = clips.Idle ? mixer.clipAction(clips.Idle) : null
+      if (clips.Intro) {
+        intro = mixer.clipAction(clips.Intro)
+        intro.setLoop(THREE.LoopOnce, 1)
+        mixer.addEventListener('finished', (ev) => {
+          if (ev.action !== intro) return
+          intro.stop()
+          idle?.play()
+        })
+        // Played from updateGlb once the page loader has cleared.
+        model.visible = false
+      } else {
+        idle.play()
+      }
+    }
+    scene.add(model)
+    glb = {
+      model,
+      root: model.getObjectByName('RobotCube') || model,
+      mixer,
+      intro,
+      introPending: !!intro,
+      eyes: eyesG,
+      eyeRest: eyesG.map(e => e.scale.clone()),
+      whiskers: whiskersG,
+      whiskerY: whiskersG.map(w => w.position.y),
+      slotMat: slotMatG,
+      slotBase: slotMatG ? slotMatG.emissiveIntensity : 1
+    }
+    wake()
+  }, undefined, (err) => {
+    if (destroyed) return
+    console.warn('robot-cube: model failed to load, using the built-in cube', err)
+    bot.visible = true
+    introT = reduceMotion ? INTRO : 0
+    wake()
+  })
+
+  // Apply each track's final keyframe (e.g. "RobotCube.position") to its node.
+  function settleOnClipEnd(model, clip) {
+    for (const track of clip.tracks) {
+      const dot = track.name.lastIndexOf('.')
+      const node = model.getObjectByName(track.name.slice(0, dot))
+      const prop = node && node[track.name.slice(dot + 1)]
+      if (!prop || typeof prop.fromArray !== 'function') continue
+      const n = track.getValueSize()
+      prop.fromArray(track.values, track.values.length - n)
+    }
+  }
+
+  // The grid loader removes body.loader-done while it covers the page.
+  const stageReady = () => document.body.classList.contains('loader-done')
 
   // ── Timers ──
   const INTRO = 1.3
@@ -313,12 +399,50 @@ export function initHeroBot(container, options = {}) {
     wake()
   }
 
-  function tick() {
-    if (paused || destroyed) { raf = null; return }
-    const dt = Math.min(clock.getDelta(), 0.05)
-    const t = clock.elapsedTime
+  // Whisker glitch: a short flicker every few seconds (either model).
+  function glitch(dt, list, baseY) {
+    if (reduceMotion) return
+    glitchTimer -= dt
+    if (glitchTimer <= 0 && glitchT < 0) glitchT = 0
+    if (glitchT < 0) return
+    glitchT += dt
+    const on = glitchT < 0.2
+    list.forEach((w, i) => {
+      w.visible = !on || Math.random() > 0.35
+      w.position.y = baseY[i] + (on ? (Math.random() - 0.5) * 0.03 * (i % 2 ? 1 : -1) : 0)
+    })
+    if (!on) { glitchT = -1; glitchTimer = 4 + Math.random() * 3 }
+  }
 
-    // Intro: drop in and settle, flaps unfold, then the eyes open.
+  function updateGlb(dt, t) {
+    const g = glb
+    // Hold the Intro (model hidden) until the page loader has cleared, so the
+    // drop-in is actually seen.
+    if (g.introPending) {
+      if (!stageReady()) return
+      g.introPending = false
+      g.model.visible = true
+      g.intro.play()
+    }
+    // The clips drive eye scale (blink/open); reset first so hover widening
+    // below never compounds on frames where no clip writes it.
+    g.eyes.forEach((e, i) => e.scale.copy(g.eyeRest[i]))
+    if (g.mixer) g.mixer.update(dt)
+    g.root.rotation.y = currentLook.x
+    g.root.rotation.x = currentLook.y
+    g.eyes.forEach(e => { e.scale.x *= eyeWiden; e.scale.y *= eyeWiden })
+    if (g.slotMat) {
+      const breathe = reduceMotion ? 0 : Math.sin(t * 2.2)
+      g.slotMat.emissiveIntensity = g.slotBase * (1 + breathe * 0.3) * (hovering ? 1.4 : 1)
+    }
+    glitch(dt, g.whiskers, g.whiskerY)
+  }
+
+  function updateProcedural(dt, t) {
+    // Intro: drop in and settle, flaps unfold, then the eyes open. It waits
+    // (hidden) until the page loader has cleared.
+    if (introT === 0 && !stageReady()) { bot.scale.setScalar(0.0001); return }
+    bot.scale.setScalar(1)
     if (introT < INTRO) introT = Math.min(INTRO, introT + dt)
     const p = introT / INTRO
     const drop = easeOutBack(clamp01(p / 0.7))
@@ -329,9 +453,6 @@ export function initHeroBot(container, options = {}) {
     bot.position.y = (1 - drop) * 1.6 + float
     bot.rotation.z = reduceMotion ? 0 : Math.sin(t * 0.7) * 0.015
 
-    // Look toward the cursor, smoothed.
-    currentLook.x += (targetLook.x - currentLook.x) * 0.07
-    currentLook.y += (targetLook.y - currentLook.y) * 0.07
     bot.rotation.y = BASE_YAW + currentLook.x
     bot.rotation.x = currentLook.y
 
@@ -352,31 +473,31 @@ export function initHeroBot(container, options = {}) {
         else { blinking = false; blinkTimer = 2.6 + Math.random() * 2.8 }
       }
     }
-    eyeWiden += ((hovering ? 1.12 : 1) - eyeWiden) * 0.12
     const eyeY = EYE_Y * eyeWiden * Math.max(0.05, lid * eyesOpen)
     eyes.forEach(e => e.scale.set(eyeWiden, eyeY, 1))
     const glow = Math.max(0.05, lid * eyesOpen)
     halos.forEach(h => h.scale.set(eyeWiden, glow, 1))
-    haloMat.opacity = 0.75 + (hovering ? 0.25 : 0) + (reduceMotion ? 0 : Math.sin(t * 1.6) * 0.08)
 
     // Listening slot breathes.
     const breathe = reduceMotion ? 0 : Math.sin(t * 2.2)
     slotMat.emissiveIntensity = (1.6 + breathe * 0.6) * (hovering ? 1.4 : 1)
 
-    // Whisker glitch: a short flicker every few seconds.
-    if (!reduceMotion) {
-      glitchTimer -= dt
-      if (glitchTimer <= 0 && glitchT < 0) glitchT = 0
-      if (glitchT >= 0) {
-        glitchT += dt
-        const on = glitchT < 0.2
-        whiskers.forEach((w, i) => {
-          w.visible = !on || Math.random() > 0.35
-          w.position.y = 0.18 + (on ? (Math.random() - 0.5) * 0.03 * (i % 2 ? 1 : -1) : 0)
-        })
-        if (!on) { glitchT = -1; glitchTimer = 4 + Math.random() * 3 }
-      }
-    }
+    glitch(dt, whiskers, whiskerBaseY)
+  }
+
+  function tick() {
+    if (paused || destroyed) { raf = null; return }
+    const dt = Math.min(clock.getDelta(), 0.05)
+    const t = clock.elapsedTime
+
+    // Shared, visitor-driven motion: look toward the cursor, widen on hover.
+    currentLook.x += (targetLook.x - currentLook.x) * 0.07
+    currentLook.y += (targetLook.y - currentLook.y) * 0.07
+    eyeWiden += ((hovering ? 1.12 : 1) - eyeWiden) * 0.12
+    haloMat.opacity = 0.75 + (hovering ? 0.25 : 0) + (reduceMotion ? 0 : Math.sin(t * 1.6) * 0.08)
+
+    if (glb) updateGlb(dt, t)
+    else if (bot.visible) updateProcedural(dt, t)
 
     composer.render()
     if (reduceMotion && settled()) { raf = null; return }
