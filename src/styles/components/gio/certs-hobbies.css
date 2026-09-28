@@ -1,0 +1,51 @@
+/* Hobbies & Certificates */
+.pf-hobbies {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+  gap: var(--space-4);
+}
+
+.pf-hobby {
+  padding: var(--space-5);
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(25, 29, 54, 0.14);
+  border-radius: 14px;
+  transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur);
+}
+
+.pf-hobby:hover {
+  border-color: var(--a1);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px var(--glow1);
+}
+
+.pf-hobby-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+  color: var(--a1);
+  background: rgba(var(--a1-rgb), 0.12);
+  border: 1px solid rgba(var(--a1-rgb), 0.25);
+}
+
+.pf-hobby-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pf-hobby-name {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  margin-bottom: var(--space-2);
+}
+
+.pf-hobby-text {
+  font-size: var(--fs-base);
+  color: var(--text);
+  line-height: 1.65;
+  opacity: 0.92;
+}

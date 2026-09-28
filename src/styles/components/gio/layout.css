@@ -1,0 +1,59 @@
+/* ── Normal mode: Gio profile (cover + scrollable sections) ──
+   A light, Facebook-inspired profile page: wide photo cover with the
+   avatar/name/actions overlapping it, then all sections scroll normally. */
+
+/* Kept as plain (non-!important) ID rules on purpose: GSAP ScrollTrigger
+   measures the Dev sections while Gio is showing, and the !important in
+   .dev-only makes their scroll reveals fire early. */
+/* In normal mode the dev hero and dev-only sections are empty, so collapse
+   them and let the profile page be the first thing visitors see. */
+body.normal-mode #hero,
+body.normal-mode #about,
+body.normal-mode #skills-dev,
+body.normal-mode #projects {
+  display: none;
+}
+
+/* The profile has its own Contact section, so the shared #contact section
+   (used by Dev mode) is hidden in normal mode. */
+body.normal-mode #contact {
+  display: none;
+}
+
+#profile {
+  padding-top: 5rem;
+  background:
+    radial-gradient(70% 36rem at 8% 0%, rgba(var(--a1-rgb), 0.1), transparent 68%),
+    radial-gradient(60% 30rem at 92% 12%, rgba(var(--a2-rgb), 0.08), transparent 70%),
+    transparent;
+  color: var(--text);
+}
+
+/* Gio background layer. PixelBlast (WebGL) mounts into it after idle;
+   when it's skipped (reduced motion, Save-Data, low-end CPU) a static
+   dot field stands in. Lives here, not in pixel-blast.css, because that
+   stylesheet only arrives with the lazy PixelBlast chunk. */
+.pixel-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.pixel-bg.is-static {
+  background-image: radial-gradient(rgba(var(--a1-rgb), 0.22) 1.2px, transparent 1.6px);
+  background-size: 14px 14px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, #000 10%, transparent 75%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, #000 10%, transparent 75%);
+}
+
+/* Failsafe: text-reveal wraps .section-title words in opacity:0 spans.
+   Profile titles must stay readable after switching into normal mode. */
+#profile .section-title,
+#profile .section-title span {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}

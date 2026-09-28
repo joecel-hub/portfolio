@@ -1,0 +1,202 @@
+/* Video Showcase */
+.pf-showcase-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.pf-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  gap: var(--space-4);
+  perspective: 1200px;
+}
+
+.pf-showcase-card.is-hidden {
+  display: none;
+}
+
+.pf-showcase-card {
+  position: relative;
+  border: 1px solid rgba(25, 29, 54, 0.14);
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  will-change: transform;
+  /* Transform itself is driven by JS (cursor-tracked tilt) — this transition
+     just smooths each mousemove update and the reset on mouseleave. */
+  transition: transform 0.15s ease-out, box-shadow var(--dur) ease, border-color var(--dur-fast) ease;
+  z-index: 1;
+}
+
+.pf-showcase-card:hover,
+.pf-showcase-card:focus-visible {
+  box-shadow: 0 22px 50px var(--glow1);
+  border-color: var(--a1);
+  z-index: 2;
+}
+
+.pf-showcase-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, rgba(var(--a1-rgb), 0.18), rgba(var(--a2-rgb), 0.12));
+  overflow: hidden;
+}
+
+.pf-showcase-thumb img,
+.pf-showcase-preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pf-showcase-preview {
+  opacity: 0;
+  transition: opacity var(--dur-fast) ease;
+  pointer-events: none;
+}
+
+.pf-showcase-card.is-previewing .pf-showcase-preview {
+  opacity: 1;
+}
+
+.pf-showcase-glare {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.35), transparent 60%);
+  opacity: 0;
+  transition: opacity var(--dur-fast) ease;
+  pointer-events: none;
+}
+
+.pf-showcase-card:hover .pf-showcase-glare {
+  opacity: 1;
+}
+
+.pf-showcase-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: rgba(5, 6, 12, 0.18);
+  transition: background var(--dur-fast) ease;
+}
+
+.pf-showcase-card:hover .pf-showcase-play {
+  background: rgba(5, 6, 12, 0.28);
+}
+
+.pf-showcase-card.is-previewing .pf-showcase-play {
+  opacity: 0;
+}
+
+.pf-showcase-play svg {
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+  transition: transform var(--dur-fast) ease;
+}
+
+.pf-showcase-card:hover .pf-showcase-play svg {
+  transform: scale(1.15);
+}
+
+.pf-showcase-info {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.pf-showcase-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.04em;
+  color: var(--a2);
+  margin-bottom: var(--space-1);
+}
+
+.pf-showcase-title {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.pf-certs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+  gap: var(--space-4);
+}
+
+.pf-cert {
+  display: block;
+  padding: var(--space-4);
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(25, 29, 54, 0.14);
+  border-radius: 14px;
+  transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur);
+}
+
+a.pf-cert { text-decoration: none; color: inherit; cursor: pointer; }
+
+.pf-cert:hover {
+  border-color: var(--a1);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px var(--glow1);
+}
+
+.pf-cert-img-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: var(--space-3);
+  background: linear-gradient(135deg, rgba(var(--a1-rgb), 0.14), rgba(var(--a2-rgb), 0.1));
+  border: 1px solid rgba(25, 29, 54, 0.1);
+}
+
+.pf-cert-fallback {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  color: var(--a1);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.pf-cert-img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur) ease;
+}
+
+.pf-cert:hover .pf-cert-img {
+  transform: scale(1.04);
+}
+
+.pf-cert-name {
+  display: block;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.pf-cert-meta {
+  display: block;
+  margin-top: var(--space-1);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.04em;
+  color: var(--a2);
+}

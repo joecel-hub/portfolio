@@ -1,0 +1,94 @@
+/* Portfolio */
+.pf-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: 1.3rem;
+}
+
+.pf-filter {
+  padding: var(--space-2) var(--space-4);
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: var(--fs-2xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  cursor: pointer;
+  transition: color var(--dur-fast), background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+
+.pf-filter:hover {
+  color: var(--text);
+  border-color: var(--a1);
+}
+
+.pf-filter.active {
+  color: #fff;
+  background: var(--a1);
+  border-color: transparent;
+  box-shadow: 0 8px 22px var(--glow1);
+}
+
+.pf-projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  gap: var(--space-4);
+}
+
+.pf-project {
+  padding: 1.35rem;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(25, 29, 54, 0.14);
+  border-radius: 14px;
+  transition: border-color var(--dur-fast), transform var(--dur-fast), box-shadow var(--dur);
+}
+
+.pf-project:hover {
+  border-color: var(--a1);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px var(--glow1);
+}
+
+.pf-project.hidden {
+  display: none;
+}
+
+.pf-project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.pf-project-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.pf-project-arrow {
+  color: var(--a1);
+  font-size: var(--fs-md);
+  line-height: 1;
+  transition: transform var(--dur-fast);
+}
+
+.pf-project:hover .pf-project-arrow {
+  transform: translate(3px, -3px);
+}
+
+.pf-project-desc {
+  margin-top: var(--space-2);
+  font-size: var(--fs-base);
+  color: var(--text);
+  line-height: 1.65;
+  opacity: 0.92;
+}

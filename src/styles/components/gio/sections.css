@@ -1,0 +1,59 @@
+/* ── Scrollable body ── */
+.pf-body {
+  max-width: var(--container);
+  margin: 2.5rem auto 0;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(25, 29, 54, 0.14);
+  border-radius: 22px;
+  box-shadow: 0 28px 70px rgba(40, 43, 72, 0.1);
+}
+
+.pf-sec {
+  margin-bottom: 2.5rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid rgba(25, 29, 54, 0.12);
+}
+
+.pf-sec:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+#profile .section-title,
+#profile .pf-service-name,
+#profile .pf-tl-role,
+#profile .pf-project-name,
+#profile .pf-row-value {
+  color: var(--text);
+}
+
+.pf-sec-text {
+  color: var(--text);
+  font-size: var(--fs-md);
+  line-height: 1.85;
+  max-width: 62ch;
+  margin-bottom: var(--space-4);
+  opacity: 1;
+}
+
+.pf-sub {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-6) 0 var(--space-4);
+  font-family: var(--mono);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--a1);
+}
+
+.pf-sub::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
