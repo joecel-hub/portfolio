@@ -82,7 +82,14 @@ test('spa: /lab serves the portfolio page', { skip: !existsSync(new URL('../dist
   const res = await fetch(base + '/lab')
   assert.equal(res.status, 200)
   assert.match(res.headers.get('content-type'), /text\/html/)
-  assert.match(await res.text(), /id="mode-switch"/)
+  const html = await res.text()
+  assert.match(html, /id="mode-switch"/)
+  // Served with lab metadata baked in, for crawlers that don't run JS.
+  assert.match(html, /<link rel="canonical" href="[^"]*\/lab"/)
+  assert.match(html, /<meta property="og:title" content="Stryg\.Bytes/)
+  // ...while / keeps the Gio head.
+  const root = await (await fetch(base + '/')).text()
+  assert.match(root, /<link rel="canonical" href="[^"]*\/"/)
 })
 
 test('seeded public lists', async () => {

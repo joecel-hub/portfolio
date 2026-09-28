@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { seedIfEmpty } from './db.js'
 import { UPLOAD_DIR } from './middleware/upload.js'
 
@@ -14,6 +14,7 @@ import reviewRoutes from './routes/reviews.js'
 import certificateRoutes from './routes/certificates.js'
 import hobbyClipRoutes from './routes/hobbyClips.js'
 import contactRoutes from './routes/contact.js'
+import { toLabHtml } from './labHtml.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -66,6 +67,10 @@ app.use('/admin', express.static(join(__dirname, 'public', 'admin')))
 const dist = join(__dirname, '..', 'dist')
 if (existsSync(dist)) {
   app.use(express.static(dist))
+  // /lab gets the same page with the lab's title/description/canonical in
+  // the head, so shared links preview as Stryg.Bytes (built once at boot).
+  const labHtml = toLabHtml(readFileSync(join(dist, 'index.html'), 'utf8'))
+  app.get(['/lab', '/lab/'], (_req, res) => res.type('html').send(labHtml))
   app.get('{*path}', (_req, res, next) => {
     if (_req.path.startsWith('/api')) return next()
     res.sendFile(join(dist, 'index.html'))
