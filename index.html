@@ -148,6 +148,8 @@
 
     <!-- ══ HERO ══ -->
     <section id="hero">
+      <!-- One 3D scene behind the whole hero: the robot-cube plus floating cubes. -->
+      <div class="hero-scene" id="hero-bot" role="img" aria-label="Stryg.Bytes robot-cube logo, animated, among floating cubes"></div>
       <!-- DEV MODE hero -->
       <div class="dev-only" id="hero-dev-content">
         <div class="hero-split-dev">
@@ -173,9 +175,8 @@
               <a href="#projects" class="btn btn-ghost">See projects</a>
             </div>
           </div>
-          <div class="hero-bot-card">
-            <div class="hero-bot" id="hero-bot" role="img" aria-label="Stryg.Bytes robot-cube logo, animated"></div>
-          </div>
+          <!-- Layout anchor: the 3D robot is placed over this box (robot-cube.js). -->
+          <div class="hero-bot-card" aria-hidden="true"></div>
         </div>
       </div>
       <div class="hero-scroll-cue">

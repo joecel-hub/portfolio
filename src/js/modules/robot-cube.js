@@ -1,14 +1,18 @@
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { EffectComposer, RenderPass, EffectPass, BloomEffect, ToneMappingEffect, ToneMappingMode } from 'postprocessing'
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
+// Fingerprinted by Vite (served from /assets/ with a year-long cache).
+import defaultModelUrl from '../../assets/models/robot-cube.glb?url'
 
 // The Stryg.Bytes robot-cube logo as a live 3D mascot for the lab hero.
 // The model and its "Intro"/"Idle" clips are made in Blender
 // (public/models/robot-cube.glb). A built-in copy made from primitives (dark
 // cube seen corner-on, glowing eyes, blue "book" flaps, orange corners, white
 // whisker marks, a listening slot on top) is the fallback if the file fails.
-// Same API as the previous hero bot: initHeroBot(container) → { setPaused, destroy }.
+// The canvas fills the whole hero: the robot is placed on the layout's
+// .hero-bot-card anchor, with a field of small cubes floating around it.
+// Same API as before: initHeroBot(container) → { setPaused, destroy }.
 export function initHeroBot(container, options = {}) {
   if (!container) return null
 
@@ -17,7 +21,9 @@ export function initHeroBot(container, options = {}) {
     rightColor = '#102652',
     blue = '#1597d4',
     orange = '#ff8a3d',
-    modelUrl = '/models/robot-cube.glb'
+    modelUrl = defaultModelUrl,
+    anchor = document.querySelector('.hero-bot-card'),
+    pointerTarget = document.getElementById('hero') || container
   } = options
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -28,6 +34,7 @@ export function initHeroBot(container, options = {}) {
   let raf = null
   let destroyed = false
   let hovering = false
+  let offscreen = false
 
   const targetLook = { x: 0, y: 0 }
   const currentLook = { x: 0, y: 0 }
@@ -39,25 +46,16 @@ export function initHeroBot(container, options = {}) {
   camera.lookAt(0, -0.1, 0)
 
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' })
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
   renderer.setSize(width, height)
   renderer.setClearColor(0x000000, 0)
   renderer.outputColorSpace = THREE.SRGBColorSpace
-  // Render linear HDR; bloom the HDR signal, tone-map last (one EffectPass).
-  renderer.toneMapping = THREE.NoToneMapping
+  // No post-processing: bloom can't glow on a transparent canvas anyway (the
+  // eye halos carry the glow), so tone-map in the renderer and save a pass.
+  renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1.0
   container.appendChild(renderer.domElement)
 
-  const composer = new EffectComposer(renderer, { multisampling: Math.min(4, renderer.capabilities.maxSamples || 0) })
-  composer.addPass(new RenderPass(scene, camera))
-  const bloom = new BloomEffect({
-    intensity: 2.4,
-    luminanceThreshold: 1.05,
-    luminanceSmoothing: 0.3,
-    mipmapBlur: true,
-    radius: 0.7
-  })
-  const toneMap = new ToneMappingEffect({ mode: ToneMappingMode.ACES_FILMIC, whitePoint: 3.5, middleGrey: 0.8 })
-  composer.addPass(new EffectPass(camera, bloom, toneMap))
 
   // ── Lighting ── glow hierarchy comes from the emissive eyes/slot.
   scene.add(new THREE.HemisphereLight(0xffffff, 0x1a2436, 0.9))
@@ -79,9 +77,12 @@ export function initHeroBot(container, options = {}) {
   // local +X the right face, and (S, y, S) the front edge.
   const S = 0.8 // half size
   const BASE_YAW = -Math.PI / 4
+  // The stage is positioned/scaled onto the layout anchor (see place()).
+  const stage = new THREE.Group()
+  scene.add(stage)
   const bot = new THREE.Group()
   bot.rotation.y = BASE_YAW
-  scene.add(bot)
+  stage.add(bot)
 
   // ── Body: rounded cube, left/right/top shaded like the logo's gradient ──
   const bodyGeo = new RoundedBoxGeometry(S * 2, S * 2, S * 2, 4, 0.07)
@@ -263,11 +264,12 @@ export function initHeroBot(container, options = {}) {
   )
   shadow.rotation.x = -Math.PI / 2
   shadow.position.set(0, -S - 0.32, 0)
-  scene.add(shadow)
+  stage.add(shadow)
 
   // ── Blender model ── The built-in cube above stays hidden unless the GLB
   // can't load. Visitor-driven motion (cursor look, hover, whisker glitch,
   // glow) is applied in code on top of the model's own clips.
+  bot.traverse(o => { if (o.material) o.material.fog = false })
   bot.visible = false
   let glb = null
   new GLTFLoader().load(modelUrl, (gltf) => {
@@ -286,8 +288,11 @@ export function initHeroBot(container, options = {}) {
       h.renderOrder = -1
       e.add(h)
     })
-    const whiskersG = []
-    model.traverse(o => { if (o.name.startsWith('Whisker')) whiskersG.push(o) })
+    mergeMeshes(model, o => /^Trim\d/.test(o.name), 'Trims')
+    const whiskersG = ['L', 'R']
+      .map(side => mergeMeshes(model, o => o.name.startsWith('Whisker' + side), 'Whiskers' + side))
+      .filter(Boolean)
+    model.traverse(o => { if (o.material) o.material.fog = false })
     const slotMatG = model.getObjectByName('Slot')?.material || null
     let mixer = null
     let intro = null
@@ -308,7 +313,7 @@ export function initHeroBot(container, options = {}) {
         idle.play()
       }
     }
-    scene.add(model)
+    stage.add(model)
     glb = {
       model,
       root: model.getObjectByName('RobotCube') || model,
@@ -331,6 +336,22 @@ export function initHeroBot(container, options = {}) {
     wake()
   })
 
+  // Join sibling meshes that share a material into one (one draw call).
+  function mergeMeshes(model, match, name) {
+    const parts = []
+    model.traverse(o => { if (o.isMesh && match(o)) parts.push(o) })
+    if (parts.length < 2) return parts[0] || null
+    const parent = parts[0].parent
+    if (parts.some(p => p.parent !== parent || p.material !== parts[0].material)) return null
+    const geo = mergeGeometries(parts.map(p => { p.updateMatrix(); return p.geometry.clone().applyMatrix4(p.matrix) }))
+    if (!geo) return null
+    const merged = new THREE.Mesh(geo, parts[0].material)
+    merged.name = name
+    parts.forEach(p => { parent.remove(p); p.geometry.dispose() })
+    parent.add(merged)
+    return merged
+  }
+
   // Apply each track's final keyframe (e.g. "RobotCube.position") to its node.
   function settleOnClipEnd(model, clip) {
     for (const track of clip.tracks) {
@@ -341,6 +362,152 @@ export function initHeroBot(container, options = {}) {
       const n = track.getValueSize()
       prop.fromArray(track.values, track.values.length - n)
     }
+  }
+
+  // ── Cube field ── small cubes floating at different depths around the robot:
+  // one InstancedMesh (solid) + one merged LineSegments (outlines) = 2 draws.
+  scene.fog = new THREE.FogExp2(0x050508, 0.075) // far cubes fade into the page
+  const lowEnd = window.matchMedia('(max-width: 760px)').matches || (navigator.hardwareConcurrency || 8) <= 4
+  const field = buildCubeField(lowEnd ? 26 : 55, lowEnd ? 6 : 10)
+  scene.add(field.group)
+  let fieldFade = reduceMotion ? 1 : 0
+  const parallax = { x: 0, y: 0 }
+  const targetParallax = { x: 0, y: 0 }
+
+  function buildCubeField(solidCount, outlineCount) {
+    let seed = 0x1597d4 // seeded: the same arrangement on every visit
+    const rnd = () => {
+      seed = (seed + 0x6d2b79f5) | 0
+      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+    }
+    const navy = [new THREE.Color('#132b3f'), new THREE.Color('#16315e')]
+    const accents = [new THREE.Color(blue), new THREE.Color(orange)]
+    const group = new THREE.Group()
+    const cubes = []
+    const total = solidCount + outlineCount
+    for (let i = 0; i < total; i++) {
+      const outline = i >= solidCount
+      const roll = rnd()
+      cubes.push({
+        outline,
+        // Screen-space spread (NDC, a little past the edges) + depth, so the
+        // field fills any aspect ratio; world positions come from layout().
+        nx: rnd() * 2.3 - 1.15,
+        ny: rnd() * 2.3 - 1.15,
+        z: -7 + rnd() * 8.2,
+        size: 0.06 * Math.pow(0.32 / 0.06, rnd()),
+        rot: new THREE.Euler(rnd() * 6.28, rnd() * 6.28, rnd() * 6.28),
+        spin: new THREE.Vector3(rnd() - 0.5, rnd() - 0.5, rnd() - 0.5).multiplyScalar(0.5),
+        phase: rnd() * 6.28,
+        bob: 0.04 + rnd() * 0.1,
+        color: outline ? accents[roll < 0.5 ? 0 : 1] : roll < 0.7 ? navy[i % 2] : accents[roll < 0.85 ? 0 : 1],
+        base: new THREE.Vector3(),
+        scale: 1
+      })
+    }
+    const solids = cubes.filter(c => !c.outline)
+    const outlines = cubes.filter(c => c.outline)
+
+    const mat = new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0.2, transparent: true, opacity: 0 })
+    const mesh = new THREE.InstancedMesh(new RoundedBoxGeometry(1, 1, 1, 2, 0.12), mat, solids.length)
+    solids.forEach((c, i) => mesh.setColorAt(i, c.color))
+    group.add(mesh)
+
+    // Outline cubes: 12 edges each, transformed on the CPU into one buffer.
+    const edge = new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1)).attributes.position
+    const linePos = new Float32Array(outlines.length * edge.count * 3)
+    const lineCol = new Float32Array(outlines.length * edge.count * 3)
+    outlines.forEach((c, k) => { for (let v = 0; v < edge.count; v++) lineCol.set([c.color.r, c.color.g, c.color.b], (k * edge.count + v) * 3) })
+    const lineGeo = new THREE.BufferGeometry()
+    lineGeo.setAttribute('position', new THREE.BufferAttribute(linePos, 3))
+    lineGeo.setAttribute('color', new THREE.BufferAttribute(lineCol, 3))
+    const lineMat = new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0 })
+    const lines = new THREE.LineSegments(lineGeo, lineMat)
+    lines.frustumCulled = false
+    group.add(lines)
+
+    const dummy = new THREE.Object3D()
+    const v = new THREE.Vector3()
+    function pose(c, t) {
+      dummy.position.copy(c.base)
+      dummy.position.y += reduceMotion ? 0 : Math.sin(t * 0.6 + c.phase) * c.bob
+      dummy.rotation.set(
+        c.rot.x + (reduceMotion ? 0 : c.spin.x * t),
+        c.rot.y + (reduceMotion ? 0 : c.spin.y * t),
+        c.rot.z + (reduceMotion ? 0 : c.spin.z * t))
+      dummy.scale.setScalar(c.size * c.scale)
+      dummy.updateMatrix()
+      return dummy.matrix
+    }
+    function update(t, fade) {
+      solids.forEach((c, i) => mesh.setMatrixAt(i, pose(c, t)))
+      mesh.instanceMatrix.needsUpdate = true
+      outlines.forEach((c, k) => {
+        const m = pose(c, t)
+        for (let e = 0; e < edge.count; e++) {
+          v.fromBufferAttribute(edge, e).applyMatrix4(m)
+          linePos.set([v.x, v.y, v.z], (k * edge.count + e) * 3)
+        }
+      })
+      lineGeo.attributes.position.needsUpdate = true
+      mat.opacity = fade
+      lineMat.opacity = fade * 0.55
+    }
+    function dispose() {
+      mesh.geometry.dispose(); mat.dispose(); mesh.dispose()
+      lineGeo.dispose(); lineMat.dispose()
+    }
+    return { group, cubes, update, dispose }
+  }
+
+  // Screen point (NDC) at world depth z → world position.
+  const _p = new THREE.Vector3(), _d = new THREE.Vector3()
+  function worldAt(nx, ny, z, out) {
+    _p.set(nx, ny, 0.5).unproject(camera)
+    _d.copy(_p).sub(camera.position).normalize()
+    return out.copy(camera.position).addScaledVector(_d, (z - camera.position.z) / _d.z)
+  }
+
+  // Put the robot on its layout anchor, sized to about 80% of the anchor, then
+  // lay the cube field out around it (clear of the robot, quieter behind text).
+  const ROBOT_HEIGHT = 2.3 // world height of the model incl. flaps and tilt
+  const robotNdc = new THREE.Vector2(0.45, 0)
+  const robotNdcR = new THREE.Vector2(0.3, 0.5) // on-screen half-size of the robot, in NDC
+  function place() {
+    const c = container.getBoundingClientRect()
+    const a = anchor && anchor.getBoundingClientRect()
+    if (!c.width || !c.height || !a || !a.width) return
+    camera.updateMatrixWorld()
+    robotNdc.set(((a.left + a.width / 2 - c.left) / c.width) * 2 - 1, -(((a.top + a.height / 2 - c.top) / c.height) * 2 - 1))
+    robotNdcR.set(a.width / c.width, a.height / c.height)
+    worldAt(robotNdc.x, robotNdc.y, 0, stage.position)
+    const dist = camera.position.distanceTo(stage.position)
+    const visibleH = 2 * dist * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2))
+    stage.scale.setScalar((visibleH * (Math.min(a.width, a.height) / c.height) * 0.8) / ROBOT_HEIGHT)
+  }
+  function layout() {
+    place()
+    // Where the text is: left of the robot on desktop, below it when stacked.
+    const stacked = robotNdc.x < 0.2
+    const inText = (c) => stacked
+      ? c.ny < robotNdc.y - robotNdcR.y * 0.9
+      : c.nx < robotNdc.x - 0.35
+    const narrow = camera.aspect < 1
+    for (const c of field.cubes) {
+      let z = narrow ? Math.min(c.z, -1.5) : c.z // phones: nothing right up close
+      c.scale = 1
+      // Behind the text: push back and shrink so it stays readable.
+      if (inText(c) && z > -3.5) { z -= 3.5; c.scale = 0.6 }
+      // Never over the robot on screen (in front of it or level with it):
+      // send those well behind it so its silhouette stays clean.
+      const ex = (c.nx - robotNdc.x) / (robotNdcR.x * 1.15)
+      const ey = (c.ny - robotNdc.y) / (robotNdcR.y * 1.15)
+      if (ex * ex + ey * ey < 1 && z > -2.5) z -= 5
+      worldAt(c.nx, c.ny, z, c.base)
+    }
+    field.update(clock.elapsedTime, fieldFade)
   }
 
   // The grid loader removes body.loader-done while it covers the page.
@@ -368,7 +535,7 @@ export function initHeroBot(container, options = {}) {
     camera.aspect = width / height
     camera.updateProjectionMatrix()
     renderer.setSize(width, height)
-    composer.setSize(width, height)
+    layout()
     wake()
   }
 
@@ -377,24 +544,35 @@ export function initHeroBot(container, options = {}) {
   function settled() {
     return Math.abs(targetLook.x - currentLook.x) < 0.0005 &&
       Math.abs(targetLook.y - currentLook.y) < 0.0005 &&
-      Math.abs((hovering ? 1.12 : 1) - eyeWiden) < 0.0005
+      Math.abs((hovering ? 1.12 : 1) - eyeWiden) < 0.0005 &&
+      Math.abs(targetParallax.x - parallax.x) < 0.0005 &&
+      Math.abs(targetParallax.y - parallax.y) < 0.0005
   }
+  const active = () => !paused && !offscreen && !destroyed
   function wake() {
-    if (reduceMotion && !paused && !destroyed) start()
+    if (reduceMotion && active()) start()
+  }
+  // One place decides whether the loop runs: mode switch (setPaused) and
+  // scrolling the hero out of view (IntersectionObserver) both land here.
+  function sync() {
+    if (active()) { resize(); start() } else stop()
   }
 
   function onPointerMove(e) {
-    const rect = container.getBoundingClientRect()
-    const nx = Math.max(-1, Math.min(1, ((e.clientX - rect.left) / rect.width) * 2 - 1))
-    const ny = Math.max(-1, Math.min(1, ((e.clientY - rect.top) / rect.height) * 2 - 1))
-    targetLook.x = nx * 0.4
-    targetLook.y = ny * 0.16
-    hovering = true
+    const hero = pointerTarget.getBoundingClientRect()
+    const a = (anchor || container).getBoundingClientRect()
+    const clamp1 = (v) => Math.max(-1, Math.min(1, v))
+    // Look is relative to the robot; parallax is relative to the whole hero.
+    targetLook.x = clamp1((e.clientX - (a.left + a.width / 2)) / (hero.width / 2)) * 0.4
+    targetLook.y = clamp1((e.clientY - (a.top + a.height / 2)) / (hero.height / 2)) * 0.16
+    targetParallax.x = clamp1(((e.clientX - hero.left) / hero.width) * 2 - 1)
+    targetParallax.y = clamp1(((e.clientY - hero.top) / hero.height) * 2 - 1)
+    hovering = e.clientX >= a.left && e.clientX <= a.right && e.clientY >= a.top && e.clientY <= a.bottom
     wake()
   }
   function onPointerLeave() {
-    targetLook.x = 0
-    targetLook.y = 0
+    targetLook.x = targetLook.y = 0
+    targetParallax.x = targetParallax.y = 0
     hovering = false
     wake()
   }
@@ -495,25 +673,29 @@ export function initHeroBot(container, options = {}) {
     currentLook.y += (targetLook.y - currentLook.y) * 0.07
     eyeWiden += ((hovering ? 1.12 : 1) - eyeWiden) * 0.12
     haloMat.opacity = 0.75 + (hovering ? 0.25 : 0) + (reduceMotion ? 0 : Math.sin(t * 1.6) * 0.08)
+    parallax.x += (targetParallax.x - parallax.x) * 0.05
+    parallax.y += (targetParallax.y - parallax.y) * 0.05
+    field.group.position.set(-parallax.x * 0.35, parallax.y * 0.25, 0)
+    if (stageReady() && fieldFade < 1) fieldFade = Math.min(1, fieldFade + dt * 0.9)
+    field.update(t, fieldFade)
 
     if (glb) updateGlb(dt, t)
     else if (bot.visible) updateProcedural(dt, t)
 
-    composer.render()
+    renderer.render(scene, camera)
     if (reduceMotion && settled()) { raf = null; return }
     raf = requestAnimationFrame(tick)
   }
 
   function start() {
-    if (!raf && !paused) { clock.start(); raf = requestAnimationFrame(tick) }
+    if (!raf && active()) { clock.start(); raf = requestAnimationFrame(tick) }
   }
   function stop() {
     if (raf) { cancelAnimationFrame(raf); raf = null }
   }
   function setPaused(val) {
     paused = !!val
-    if (paused) stop()
-    else { resize(); start() }
+    sync()
   }
 
   function destroy() {
@@ -521,8 +703,10 @@ export function initHeroBot(container, options = {}) {
     stop()
     window.removeEventListener('resize', resize)
     ro?.disconnect()
-    container.removeEventListener('pointermove', onPointerMove)
-    container.removeEventListener('pointerleave', onPointerLeave)
+    io?.disconnect()
+    pointerTarget.removeEventListener('pointermove', onPointerMove)
+    pointerTarget.removeEventListener('pointerleave', onPointerLeave)
+    field.dispose()
     scene.traverse(obj => {
       if (obj.geometry) obj.geometry.dispose()
       if (obj.material) {
@@ -532,7 +716,6 @@ export function initHeroBot(container, options = {}) {
     })
     shadowTex.dispose()
     haloTex.dispose()
-    composer.dispose()
     renderer.dispose()
     if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement)
   }
@@ -540,10 +723,16 @@ export function initHeroBot(container, options = {}) {
   window.addEventListener('resize', resize, { passive: true })
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null
   ro?.observe(container)
-  container.addEventListener('pointermove', onPointerMove, { passive: true })
-  container.addEventListener('pointerleave', onPointerLeave, { passive: true })
+  if (anchor) ro?.observe(anchor)
+  pointerTarget.addEventListener('pointermove', onPointerMove, { passive: true })
+  pointerTarget.addEventListener('pointerleave', onPointerLeave, { passive: true })
+  const io = typeof IntersectionObserver !== 'undefined'
+    ? new IntersectionObserver(([entry]) => { offscreen = !entry.isIntersecting; sync() })
+    : null
+  io?.observe(pointerTarget)
 
-  composer.render()
+  layout()
+  renderer.render(scene, camera)
   start()
 
   return { setPaused, destroy }

@@ -32,7 +32,7 @@
   min-width: 0;
 }
 
-/* Free-floating cube over a soft blue/orange glow (no card chrome). */
+/* Layout anchor for the 3D robot (see hero-bot.css); the scene lights it. */
 .hero-bot-card {
   flex: 0.95;
   position: relative;
@@ -42,17 +42,6 @@
   min-width: 0;
   opacity: 0;
   transform: translateY(16px);
-}
-
-.hero-bot-card::before {
-  content: '';
-  position: absolute;
-  inset: 4% 8%;
-  background:
-    radial-gradient(closest-side at 45% 42%, rgba(var(--a1-rgb), 0.26), transparent),
-    radial-gradient(closest-side at 62% 70%, rgba(var(--a2-rgb), 0.14), transparent);
-  filter: blur(8px);
-  pointer-events: none;
 }
 
 .hero-kicker {
