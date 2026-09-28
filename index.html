@@ -231,7 +231,7 @@
     </div>
 
     <!-- ══ ABOUT ══ -->
-    <section id="about" style="background:var(--bg2)">
+    <section id="about" class="bg-alt">
       <div class="sec-inner">
         <div class="about-grid">
           <div class="about-text">
@@ -313,9 +313,9 @@
             from currentColor — change stroke="..." to
             use a fixed hex value on any element.
          ✏════════════════════════════════════════════ -->
-          <div style="display:flex;justify-content:center;align-items:center">
+          <div class="about-visual">
             <!-- Dev mode: circuit SVG -->
-            <div class="dev-only" style="width:100%;max-width:420px">
+            <div class="dev-only about-visual-circuit">
               <svg id="svg-circuit" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg"
                 aria-label="Circuit board illustration">
                 <defs>
@@ -1085,7 +1085,7 @@
     </section>
 
     <!-- ══ DEV: PROJECTS ══ -->
-    <section id="projects" class="dev-only" style="background:var(--bg2)">
+    <section id="projects" class="dev-only bg-alt">
       <div class="sec-inner">
         <div class="section-label">Projects</div>
         <h2 class="section-title">Featured <span class="accent">Projects</span></h2>
@@ -1100,7 +1100,7 @@
       <div class="projects-grid">
         <!-- Offline fallback: mirrors the CMS projects (screenshots omitted); replaced by /api/projects on load. -->
         <div class="project-card" data-category="client"><a class="project-link" href="https://tankenresort.com/" target="_blank" rel="noopener"><div class="project-arrow">↗</div>
-        <div class="project-thumb" style="background:linear-gradient(135deg,#0d1a12,#0a2010)"><svg viewBox="0 0 600 200" fill="none">
+        <div class="project-thumb project-thumb--green"><svg viewBox="0 0 600 200" fill="none">
         <defs><radialGradient id="tb-s1-1-r" cx="50%" cy="6%"><stop offset="0%" stop-color="rgba(67,233,123,0.5)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
         <circle cx="300" cy="10" r="150" fill="url(#tb-s1-1-r)"/>
         <circle cx="512" cy="46" r="22" fill="rgba(255,214,102,0.55)"/>
@@ -1119,7 +1119,7 @@
         <div class="project-desc">Resort website for Dinalungan, Aurora — services, events, gallery, cottage pricing and a reservation flow.</div>
         </div><span class="sr-only">(opens in a new tab)</span></a></div>
         <div class="project-card" data-category="employer"><a class="project-link" href="https://agcew.com/" target="_blank" rel="noopener"><div class="project-arrow">↗</div>
-        <div class="project-thumb" style="background:linear-gradient(135deg,#0d0d1a,#1a1040)"><svg viewBox="0 0 600 200" fill="none">
+        <div class="project-thumb project-thumb--violet"><svg viewBox="0 0 600 200" fill="none">
         <defs>
         <radialGradient id="tb-s2-2-c" cx="50%" cy="0%"><stop offset="0%" stop-color="rgba(124,110,255,0.5)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
         <pattern id="tb-s2-2-cw" width="26" height="22" patternUnits="userSpaceOnUse">
@@ -1142,7 +1142,7 @@
         <div class="project-desc">Corporate site for a UAE construction &amp; engineering contractor — company profile, project portfolio, news, careers and contact.</div>
         </div><span class="sr-only">(opens in a new tab)</span></a></div>
         <div class="project-card" data-category="systems"><a class="project-link" href="/demos/itms/index.html" target="_blank" rel="noopener"><div class="project-arrow">↗</div>
-        <div class="project-thumb" style="background:linear-gradient(135deg,#0d0d1a,#1a1040)"><svg viewBox="0 0 600 200" fill="none">
+        <div class="project-thumb project-thumb--violet"><svg viewBox="0 0 600 200" fill="none">
         <defs><radialGradient id="tb-s8-5-w" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(124,110,255,0.55)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
         <circle cx="300" cy="100" r="160" fill="url(#tb-s8-5-w)" opacity="0.4"/>
         <path d="M80 100 Q200 35 300 100 Q400 165 520 100" stroke="rgba(124,110,255,0.85)" stroke-width="2" fill="none"/>
@@ -1156,7 +1156,7 @@
         <div class="project-desc">Self-hosted IT Asset Management System (PHP + MySQL). This is a frontend-only live demo with sample data — nothing you change is saved, and refreshing resets it. Try all 4 roles from the login screen.</div>
         </div><span class="sr-only">(opens in a new tab)</span></a></div>
         <div class="project-card" data-category="systems"><a class="project-link" href="/demos/ticketing/index.html" target="_blank" rel="noopener"><div class="project-arrow">↗</div>
-        <div class="project-thumb" style="background:linear-gradient(135deg,#0d0d1a,#1a1040)"><svg viewBox="0 0 600 200" fill="none">
+        <div class="project-thumb project-thumb--violet"><svg viewBox="0 0 600 200" fill="none">
         <defs><radialGradient id="tb-s9-6-w" cx="50%" cy="50%"><stop offset="0%" stop-color="rgba(124,110,255,0.55)"/><stop offset="100%" stop-color="transparent"/></radialGradient></defs>
         <circle cx="300" cy="100" r="160" fill="url(#tb-s9-6-w)" opacity="0.4"/>
         <path d="M80 100 Q200 35 300 100 Q400 165 520 100" stroke="rgba(124,110,255,0.85)" stroke-width="2" fill="none"/>

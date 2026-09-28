@@ -131,6 +131,15 @@
   justify-content: center;
 }
 
+/* Static fallback-card art backgrounds */
+.project-thumb--green {
+  background: linear-gradient(135deg, #0d1a12, #0a2010);
+}
+
+.project-thumb--violet {
+  background: linear-gradient(135deg, #0d0d1a, #1a1040);
+}
+
 .project-thumb svg {
   width: 100%;
   height: 100%;

@@ -53,6 +53,11 @@ body:not(.normal-mode) .normal-only {
   display: none !important;
 }
 
+/* Alternate section background (was an inline style on #about / #projects) */
+.bg-alt {
+  background: var(--bg2);
+}
+
 /* Wave divider — multi-layer + accent crest (animated) */
 .wave-div {
   width: 100%;

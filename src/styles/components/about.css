@@ -256,3 +256,15 @@ body.normal-mode .about-text p strong {
   }
 }
 
+
+/* Centred visual column (the Dev circuit illustration) */
+.about-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.about-visual-circuit {
+  width: 100%;
+  max-width: 420px;
+}
