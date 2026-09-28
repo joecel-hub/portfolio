@@ -1,7 +1,8 @@
 import gsap from 'gsap'
 import './styles/style.css'
 import { playLoader } from './js/modules/loader.js'
-import { initModeToggle } from './js/modules/mode-toggle.js'
+import { initModeToggle, syncThemeColor } from './js/modules/mode-toggle.js'
+import { modeFromPath, applyModeMeta } from './js/modules/mode-route.js'
 import { initNavigation } from './js/modules/navigation.js'
 import { initAnimations } from './js/modules/animations.js'
 import { initLenis } from './js/modules/lenis.js'
@@ -17,9 +18,14 @@ import { prefersReducedMotion } from './js/utils/motion.js'
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // Normal (Gio) is the default front door. Boot into the light profile;
-  // Dev (Stryg.Bytes) is reached via the loader transition.
-  document.body.classList.add('normal-mode')
+  // `/` boots the Gio profile; `/lab` boots straight into Stryg.Bytes (the
+  // shareable client link). The mode switch keeps the URL in sync after.
+  const bootMode = modeFromPath(location.pathname)
+  const bootLab = bootMode === 'lab'
+  // index.html ships <body class="normal-mode"> (no flash on the default
+  // Gio view), so the class is set both ways here, not just added.
+  document.body.classList.toggle('normal-mode', !bootLab)
+  applyModeMeta(bootMode)
 
   // Wire the navigation (hamburger open/close, scrollspy, nav-link mapping)
   // FIRST — before any optional mounts — so the menu always works even if
@@ -43,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mouseRadius: 100,
       mouseStrength: 0.4
     })
-    if (particles) particles.setPaused(true)
+    if (particles) particles.setPaused(!bootLab)
   } catch (e) {
     console.error('dev-particles init failed:', e)
   }
@@ -157,7 +163,12 @@ document.addEventListener('DOMContentLoaded', () => {
     else window.addEventListener('load', run, { once: true })
   }
   whenIdle(() => { if (isNormalMode()) mountPixel() })
-  mountType()
+  if (bootLab) {
+    syncThemeColor(false)
+    ensureHeroBot()
+  } else {
+    mountType()
+  }
 
   let toggleMode = () => {}
   try {
@@ -171,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else ensureHeroBot()
         unmountNormal()
       }
-    }))
+    }, bootMode))
   } catch (e) {
     console.error('mode-toggle init failed:', e)
   }
@@ -230,9 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!prefersReducedMotion) try { initTextMorph() } catch (e) { console.error('text-morph init failed:', e) }
   try {
     playLoader({
-      brand: 'Gio',
+      brand: bootLab ? 'Stryg.Bytes' : 'Gio',
       onComplete: () => {
-        initProfile()
+        if (!bootLab) initProfile()
         // Native scrolling when the visitor asks for reduced motion.
         const lenis = prefersReducedMotion ? null : initLenis()
         window.lenisInstance = lenis
@@ -247,6 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   } catch (e) {
     console.error('loader init failed:', e)
-    initProfile()
+    if (!bootLab) initProfile()
   }
 })

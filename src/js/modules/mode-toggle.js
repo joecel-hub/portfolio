@@ -1,6 +1,7 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { playLoader } from './loader.js'
+import { modeFromPath, pathForMode, applyModeMeta } from './mode-route.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -12,8 +13,8 @@ export function syncThemeColor(isNormal) {
   if (meta) meta.setAttribute('content', isNormal ? THEME_COLOR.normal : THEME_COLOR.dev)
 }
 
-export function initModeToggle(devBg, callbacks = {}) {
-  let isNormal = true // Normal (Gio) is the default mode
+export function initModeToggle(devBg, callbacks = {}, initialMode = 'gio') {
+  let isNormal = initialMode !== 'lab' // `/` boots Gio, `/lab` boots Stryg.Bytes
 
   function closeMenu() {
     const links = document.getElementById('nav-links')
@@ -28,8 +29,12 @@ export function initModeToggle(devBg, callbacks = {}) {
     }
   }
 
-  function toggleMode() {
+  function toggleMode({ push = true } = {}) {
     isNormal = !isNormal
+    const mode = isNormal ? 'gio' : 'lab'
+    // Keep the address bar shareable: / is Gio, /lab is Stryg.Bytes.
+    if (push) history.pushState(null, '', pathForMode(mode))
+    applyModeMeta(mode)
     closeMenu()
     gsap.to(['#app', '#site-footer'], {
       opacity: 0, duration: 0.25, onComplete: () => {
@@ -60,6 +65,13 @@ export function initModeToggle(devBg, callbacks = {}) {
       }
     })
   }
+
+  // Back/Forward across a mode change. Hash-only entries keep the same
+  // path, so they never flip the mode.
+  window.addEventListener('popstate', () => {
+    const wantNormal = modeFromPath(location.pathname) !== 'lab'
+    if (wantNormal !== isNormal) toggleMode({ push: false })
+  })
 
   function finalize() {
     // Sections appear/disappear with the mode, so recalculate every

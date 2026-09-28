@@ -1,6 +1,6 @@
 import { test, before, after } from 'node:test'
 import assert from 'node:assert/strict'
-import { mkdtempSync, rmSync } from 'node:fs'
+import { mkdtempSync, rmSync, existsSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -74,6 +74,15 @@ test('health', async () => {
   const r = await j('/api/health')
   assert.equal(r.status, 200)
   assert.equal(r.data.ok, true)
+})
+
+// Pins the shareable Stryg.Bytes link: /lab must keep reaching the SPA
+// catch-all, so a future route can't shadow it. Needs a build (dist/).
+test('spa: /lab serves the portfolio page', { skip: !existsSync(new URL('../dist/index.html', import.meta.url)) }, async () => {
+  const res = await fetch(base + '/lab')
+  assert.equal(res.status, 200)
+  assert.match(res.headers.get('content-type'), /text\/html/)
+  assert.match(await res.text(), /id="mode-switch"/)
 })
 
 test('seeded public lists', async () => {
