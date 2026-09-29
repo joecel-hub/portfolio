@@ -82,8 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!assistantLoading) {
       assistantLoading = import('./js/modules/assistant/index.js')
         .then(({ initAssistant }) => {
-          // "Get in touch" until the chat panel ships (openChat → #contact).
-          assistant = initAssistant({ getHeroBot: () => heroBot, openChat, actionLabel: 'Get in touch' })
+          assistant = initAssistant({ getHeroBot: () => heroBot, openChat })
           return assistant
         })
         .catch((e) => { console.error('assistant init failed:', e); return null })
@@ -94,15 +93,36 @@ document.addEventListener('DOMContentLoaded', () => {
     ensureAssistant().then(a => { if (a && !isNormalMode()) a.enterLab() })
   }
 
-  // "Chat with Gio" (hero button, assistant bubbles). Until the chat panel
-  // exists, it takes the visitor to the contact section.
-  function openChat() {
+  function goToContact() {
     const contact = document.getElementById('contact')
     if (!contact) return
     if (window.lenisInstance) window.lenisInstance.scrollTo(contact, { offset: -20, duration: 1.2 })
     else contact.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' })
   }
-  document.querySelectorAll('[data-open-chat]').forEach(btn => btn.addEventListener('click', openChat))
+
+  // "Chat with Gio" (hero button, assistant bubbles): the chat panel, loaded
+  // on first open. If it can't load, the contact section is the fallback.
+  let chat = null
+  let chatLoading = null
+  function openChat(trigger) {
+    if (chat) { chat.open(trigger); return }
+    if (!chatLoading) {
+      chatLoading = import('./js/modules/assistant/chat.js')
+        .then(({ createChat }) => {
+          chat = createChat({
+            getRobot: () => assistant?.activeRobot(),
+            onOpenChange: (open) => assistant?.setChatOpen(open),
+            goToContact
+          })
+          return chat
+        })
+        .catch((e) => { console.error('chat init failed:', e); chatLoading = null; return null })
+    }
+    chatLoading.then(c => { if (c && !isNormalMode()) c.open(trigger); else if (!c) goToContact() })
+  }
+  document.querySelectorAll('[data-open-chat]').forEach(btn => btn.addEventListener('click', () => openChat(btn)))
+  // The chat belongs to the lab: leaving closes it.
+  document.addEventListener('modechange', (e) => { if (e.detail.to === 'gio') chat?.close() })
 
   // Normal (Gio) is the default mode, so the profile stack mounts on boot
   // rather than behind a gate. The guards keep re-entry (switching back from

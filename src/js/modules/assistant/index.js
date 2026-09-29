@@ -24,9 +24,7 @@ const TOUR_SECTIONS = ['about', 'skills-dev', 'projects', 'contact']
 const COOLDOWN_MS = 8000
 const QUIET_AFTER_ENTER_MS = 1500
 
-// `actionLabel` names the bubble button that calls openChat (it reads
-// "Get in touch" while openChat still leads to the contact section).
-export function initAssistant({ getHeroBot, openChat, actionLabel = 'Chat with Gio' }) {
+export function initAssistant({ getHeroBot, openChat }) {
   const reduceMotion = prefersReducedMotion
   const hero = document.getElementById('hero')
   const card = document.querySelector('.hero-bot-card')
@@ -38,7 +36,7 @@ export function initAssistant({ getHeroBot, openChat, actionLabel = 'Chat with G
   live.setAttribute('aria-live', 'polite')
   document.body.appendChild(live)
 
-  const heroBubble = makeBubble('sb-bubble--hero')
+  const heroBubble = makeBubble('sb-bubble--hero', () => hit)
   card?.appendChild(heroBubble.el)
 
   const dock = document.createElement('div')
@@ -46,7 +44,7 @@ export function initAssistant({ getHeroBot, openChat, actionLabel = 'Chat with G
   dock.innerHTML = `<button type="button" class="sb-dock-btn" aria-label="Say hi to Gio's assistant">
       <span class="sb-dock-stage" aria-hidden="true"></span>
     </button>`
-  const dockBubble = makeBubble('sb-bubble--dock')
+  const dockBubble = makeBubble('sb-bubble--dock', () => dockBtn)
   dock.prepend(dockBubble.el)
   document.body.appendChild(dock)
   const dockStage = dock.querySelector('.sb-dock-stage')
@@ -63,14 +61,16 @@ export function initAssistant({ getHeroBot, openChat, actionLabel = 'Chat with G
   let quietUntil = 0
   let introWaiter = null
 
-  function makeBubble(mod) {
+  // `anchor`: the robot button the bubble belongs to; focus returns there
+  // when the chat it opened closes (the bubble itself hides).
+  function makeBubble(mod, anchor) {
     const el = document.createElement('div')
     el.className = 'sb-bubble ' + mod
     el.innerHTML = '<p class="sb-bubble-text" aria-hidden="true"></p><button type="button" class="sb-bubble-action" hidden></button>'
     const text = el.querySelector('.sb-bubble-text')
     const action = el.querySelector('.sb-bubble-action')
-    action.textContent = actionLabel
-    action.addEventListener('click', () => { hideBubbles(); openChat() })
+    action.textContent = 'Chat with Gio'
+    action.addEventListener('click', () => { hideBubbles(); openChat(anchor()) })
     let timer = 0
     return {
       el,

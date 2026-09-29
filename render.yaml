@@ -25,5 +25,8 @@ services:
         sync: false
       - key: RESEND_API_KEY
         sync: false
+      # "Chat with Gio" (Claude Haiku 4.5). Unset: the chat shows contact details instead.
+      - key: ANTHROPIC_API_KEY
+        sync: false
       - key: CONTACT_TO
         sync: false

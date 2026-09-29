@@ -85,6 +85,9 @@ During development, Vite proxies `/api` and `/uploads` to the backend at `localh
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` | *(unset, and no Resend key → contact form disabled)* | SMTP server for the contact form (Gmail: `smtp.gmail.com`, `465`) |
 | `SMTP_USER` / `SMTP_PASS` | *(unset)* | SMTP login (Gmail: address + App Password) |
 | `CONTACT_TO` / `CONTACT_FROM` | `joecelpergis@gmail.com` / `SMTP_USER` | Where contact messages go / sender address |
+| `ANTHROPIC_API_KEY` | *(unset → chat shows contact details)* | "Chat with Gio" on the lab (`POST /api/chat`, Claude Haiku 4.5), grounded on `server/knowledge/gio.md` + the live projects and certificates |
+| `CHAT_RATE_LIMIT` / `CHAT_RATE_WINDOW_MS` | `20` / `900000` | Per-IP chat messages per window |
+| `CHAT_DAILY_LIMIT` | `300` | Chat messages per UTC day across all visitors (a spend ceiling; resets on redeploy) |
 | `GIT_PAT` | *(unset → disabled)* | Commits admin edits back to `main` (production on the free tier). Ignored whenever `DB_FILE` is outside the repo (the disk setup) |
 | `GIT_CMS_REMOTE` | `github.com/joecel-hub/portfolio` | Repo the CMS snapshots are pushed to |
 | `GIT_CMS_BRANCH` | `main` | Branch CMS snapshots are pushed to |
