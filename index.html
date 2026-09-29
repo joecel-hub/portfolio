@@ -91,13 +91,13 @@
         <span class="normal-only">Gio</span>
         <span class="sr-only">, back to top</span>
       </div>
+    </div>
+    <div class="nav-right">
       <!-- Identity switch: Gio (professional) | Stryg.Bytes (technical lab) -->
       <div class="id-switch" role="group" aria-label="Choose a side of the portfolio">
         <button type="button" class="id-opt" data-mode="gio" aria-pressed="true" title="Gio — professional profile"><span aria-hidden="true">G</span><span class="sr-only">Gio, professional profile</span></button>
         <button type="button" class="id-opt" data-mode="lab" aria-pressed="false" title="Stryg.Bytes — technical lab"><span aria-hidden="true">S&middot;B</span><span class="sr-only">Stryg.Bytes, technical lab</span></button>
       </div>
-    </div>
-    <div class="nav-right">
       <button class="ham-btn" id="ham-btn" type="button" aria-label="Menu" aria-controls="nav-links" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -170,7 +170,9 @@
                 Start a project
               </a>
               <a href="#projects" class="btn btn-ghost">See projects</a>
-              <button type="button" class="btn btn-ghost btn-chat" data-open-chat>
+              <!-- Hidden until the chat panel ships (it would only duplicate
+                   "Start a project" for now); main.js already wires it. -->
+              <button type="button" class="btn btn-ghost btn-chat" data-open-chat hidden>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
                 Chat with Gio
               </button>
