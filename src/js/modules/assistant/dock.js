@@ -24,7 +24,7 @@ export async function createDockRobot(container, { reduceMotion = false } = {}) 
 
   const scene = new THREE.Scene()
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50)
-  camera.position.set(0, 1.5, 5.8)
+  camera.position.set(0, 1.6, 6.6) // room for the flaps when it waves
   camera.lookAt(0, -0.1, 0)
   addRobotLights(scene)
 

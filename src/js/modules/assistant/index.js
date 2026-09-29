@@ -24,7 +24,9 @@ const TOUR_SECTIONS = ['about', 'skills-dev', 'projects', 'contact']
 const COOLDOWN_MS = 8000
 const QUIET_AFTER_ENTER_MS = 1500
 
-export function initAssistant({ getHeroBot, openChat }) {
+// `actionLabel` names the bubble button that calls openChat (it reads
+// "Get in touch" while openChat still leads to the contact section).
+export function initAssistant({ getHeroBot, openChat, actionLabel = 'Chat with Gio' }) {
   const reduceMotion = prefersReducedMotion
   const hero = document.getElementById('hero')
   const card = document.querySelector('.hero-bot-card')
@@ -64,9 +66,10 @@ export function initAssistant({ getHeroBot, openChat }) {
   function makeBubble(mod) {
     const el = document.createElement('div')
     el.className = 'sb-bubble ' + mod
-    el.innerHTML = '<p class="sb-bubble-text" aria-hidden="true"></p><button type="button" class="sb-bubble-action" hidden>Chat with Gio</button>'
+    el.innerHTML = '<p class="sb-bubble-text" aria-hidden="true"></p><button type="button" class="sb-bubble-action" hidden></button>'
     const text = el.querySelector('.sb-bubble-text')
     const action = el.querySelector('.sb-bubble-action')
+    action.textContent = actionLabel
     action.addEventListener('click', () => { hideBubbles(); openChat() })
     let timer = 0
     return {

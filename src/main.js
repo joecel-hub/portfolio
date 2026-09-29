@@ -82,7 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!assistantLoading) {
       assistantLoading = import('./js/modules/assistant/index.js')
         .then(({ initAssistant }) => {
-          assistant = initAssistant({ getHeroBot: () => heroBot, openChat })
+          // "Get in touch" until the chat panel ships (openChat → #contact).
+          assistant = initAssistant({ getHeroBot: () => heroBot, openChat, actionLabel: 'Get in touch' })
           return assistant
         })
         .catch((e) => { console.error('assistant init failed:', e); return null })
