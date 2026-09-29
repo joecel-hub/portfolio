@@ -117,6 +117,18 @@
   color: var(--a2);
 }
 
+/* One line where it fits; on phones a clean two-line break (never a
+   stray separator at a line end). */
+.pf-role-lead,
+.pf-role-rest {
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .pf-role-lead { display: block; }
+  .pf-role-sep { display: none; }
+}
+
 .pf-loc {
   margin-top: var(--space-1);
   font-size: var(--fs-base);

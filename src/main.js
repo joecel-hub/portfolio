@@ -8,7 +8,6 @@ import { initAnimations } from './js/modules/animations.js'
 import { initLenis } from './js/modules/lenis.js'
 import { initTextReveal } from './js/modules/text-reveal.js'
 import { initDevParticles } from './js/modules/dev-particles.js'
-import { initTextType } from './js/modules/text-type.js'
 import { initTextMorph } from './js/modules/text-morph.js'
 import { setLenis } from './js/modules/navigation.js'
 import { initProfile } from './js/modules/profile.js'
@@ -77,9 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Normal (Gio) is the default mode, so the profile stack mounts on boot
   // rather than behind a gate. The guards keep re-entry (switching back from
   // Dev) from double-mounting.
-  let textType = null
-  const typeContainer = document.getElementById('pf-role')
-
   let unmountPixel = null
   const pixelContainer = document.getElementById('pixel-blast-container')
 
@@ -115,44 +111,20 @@ document.addEventListener('DOMContentLoaded', () => {
       .finally(() => { pixelLoading = null })
   }
 
-  function mountType() {
-    if (typeContainer && !textType) {
-      try {
-        textType = initTextType(typeContainer, {
-          // The hero title is fixed; the supporting line (IT Infrastructure |
-          // Web Developer) is static text below it.
-          words: ['IT Support Engineer'],
-          loop: false,
-          typingSpeed: 60,
-          deletingSpeed: 30,
-          pauseDuration: 2500,
-          initialDelay: 1000
-        })
-      } catch (e) {
-        console.error('typewriter init failed:', e)
-      }
-    }
-  }
-
   function mountNormal() {
     mountPixel()
-    mountType()
     try { initProfile() } catch (e) { console.error('profile init failed:', e) }
   }
 
   function unmountNormal() {
-    if (textType) {
-      textType.destroy()
-      textType = null
-    }
     if (unmountPixel) {
       unmountPixel()
       unmountPixel = null
     }
   }
 
-  // Boot: the typewriter runs behind the Gio loader; the profile entrance
-  // plays as the grid wipes away (in the loader onComplete). The WebGL
+  // Boot: the profile entrance plays as the grid wipes away (in the loader
+  // onComplete). The WebGL
   // background waits until the page has loaded and the main thread is idle,
   // so it stays off the critical path.
   const whenIdle = (fn) => {
@@ -166,8 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (bootLab) {
     syncThemeColor(false)
     ensureHeroBot()
-  } else {
-    mountType()
   }
 
   let toggleMode = () => {}

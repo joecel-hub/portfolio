@@ -1,13 +1,11 @@
 import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
-import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
-// Fingerprinted by Vite (served from /assets/ with a year-long cache).
-import defaultModelUrl from '../../assets/models/robot-cube.glb?url'
+import { loadRobot, createRobotInstance, addRobotLights, haloTexture } from './robot/model.js'
+import { createExpressions } from './robot/expressions.js'
 
 // The Stryg.Bytes robot-cube logo as a live 3D mascot for the lab hero.
 // The model and its "Intro"/"Idle" clips are made in Blender
-// (public/models/robot-cube.glb). A built-in copy made from primitives (dark
+// (src/assets/models/robot-cube.glb, via robot/model.js). A built-in copy made from primitives (dark
 // cube seen corner-on, glowing eyes, blue "book" flaps, orange corners, white
 // whisker marks, a listening slot on top) is the fallback if the file fails.
 // The canvas fills the whole hero: the robot is placed on the layout's
@@ -21,7 +19,7 @@ export function initHeroBot(container, options = {}) {
     rightColor = '#102652',
     blue = '#1597d4',
     orange = '#ff8a3d',
-    modelUrl = defaultModelUrl,
+    modelUrl, // default: the bundled robot-cube.glb
     anchor = document.querySelector('.hero-bot-card'),
     pointerTarget = document.getElementById('hero') || container
   } = options
@@ -39,6 +37,8 @@ export function initHeroBot(container, options = {}) {
   const targetLook = { x: 0, y: 0 }
   const currentLook = { x: 0, y: 0 }
   const clock = new THREE.Clock()
+  // Scene time, advanced only while the loop runs (pausing doesn't rewind it).
+  let elapsed = 0
 
   const scene = new THREE.Scene()
   const camera = new THREE.PerspectiveCamera(30, width / height, 0.1, 100)
@@ -58,20 +58,7 @@ export function initHeroBot(container, options = {}) {
 
 
   // ── Lighting ── glow hierarchy comes from the emissive eyes/slot.
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x1a2436, 0.9))
-  scene.add(new THREE.AmbientLight(0xffffff, 0.35))
-  const key = new THREE.DirectionalLight(0xffffff, 1.6)
-  key.position.set(2.5, 4, 5)
-  scene.add(key)
-  const fill = new THREE.DirectionalLight(0xffffff, 0.5)
-  fill.position.set(-3, 1.5, 3)
-  scene.add(fill)
-  const rimBlue = new THREE.PointLight(new THREE.Color(blue), 3, 10)
-  rimBlue.position.set(-2.6, 1.4, -1.8)
-  scene.add(rimBlue)
-  const rimOrange = new THREE.PointLight(new THREE.Color(orange), 2.2, 10)
-  rimOrange.position.set(2.6, -1.2, -1.4)
-  scene.add(rimOrange)
+  addRobotLights(scene, { blue, orange })
 
   // The cube is seen corner-on like the logo: local +Z is the left face,
   // local +X the right face, and (S, y, S) the front edge.
@@ -189,19 +176,7 @@ export function initHeroBot(container, options = {}) {
   const eyes = [eyeL, eyeR]
   eyes.forEach(e => { e.scale.set(1, EYE_Y, 1); bot.add(e) })
 
-  const haloTex = (() => {
-    const c = document.createElement('canvas')
-    c.width = c.height = 128
-    const ctx = c.getContext('2d')
-    const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64)
-    g.addColorStop(0, 'rgba(210,240,255,0.9)')
-    g.addColorStop(0.35, 'rgba(120,200,240,0.35)')
-    g.addColorStop(1, 'rgba(120,200,240,0)')
-    ctx.fillStyle = g
-    ctx.fillRect(0, 0, 128, 128)
-    return new THREE.CanvasTexture(c)
-  })()
-  const haloMat = new THREE.MeshBasicMaterial({ map: haloTex, transparent: true, depthWrite: false })
+  const haloMat = new THREE.MeshBasicMaterial({ map: haloTexture(), transparent: true, depthWrite: false })
   const halos = eyes.map(e => {
     const h = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.72), haloMat)
     h.position.copy(e.position)
@@ -271,98 +246,25 @@ export function initHeroBot(container, options = {}) {
   // glow) is applied in code on top of the model's own clips.
   bot.traverse(o => { if (o.material) o.material.fog = false })
   bot.visible = false
+  // glb = { robot, expr, introPending } once the shared model is ready.
   let glb = null
-  new GLTFLoader().load(modelUrl, (gltf) => {
+  loadRobot(modelUrl).then((loaded) => {
     if (destroyed) return
-    const model = gltf.scene
-    const clips = Object.fromEntries(gltf.animations.map(c => [c.name, c]))
-    // Pose on the Intro's last keyframes before any mixer exists: those are
-    // the values the mixer restores when Intro stops, and what reduced
-    // motion shows. (The exporter samples the rest pose at Intro's start.)
-    if (clips.Intro) settleOnClipEnd(model, clips.Intro)
-    const eyesG = ['EyeL', 'EyeR'].map(n => model.getObjectByName(n)).filter(Boolean)
-    eyesG.forEach(e => {
-      e.material = eyeMat
-      const h = new THREE.Mesh(new THREE.PlaneGeometry(0.62, 0.72), haloMat)
-      h.position.z = 0.002
-      h.renderOrder = -1
-      e.add(h)
-    })
-    mergeMeshes(model, o => /^Trim\d/.test(o.name), 'Trims')
-    const whiskersG = ['L', 'R']
-      .map(side => mergeMeshes(model, o => o.name.startsWith('Whisker' + side), 'Whiskers' + side))
-      .filter(Boolean)
-    model.traverse(o => { if (o.material) o.material.fog = false })
-    const slotMatG = model.getObjectByName('Slot')?.material || null
-    let mixer = null
-    let intro = null
-    if (!reduceMotion && (clips.Intro || clips.Idle)) {
-      mixer = new THREE.AnimationMixer(model)
-      const idle = clips.Idle ? mixer.clipAction(clips.Idle) : null
-      if (clips.Intro) {
-        intro = mixer.clipAction(clips.Intro)
-        intro.setLoop(THREE.LoopOnce, 1)
-        mixer.addEventListener('finished', (ev) => {
-          if (ev.action !== intro) return
-          intro.stop()
-          idle?.play()
-        })
-        // Played from updateGlb once the page loader has cleared.
-        model.visible = false
-      } else {
-        idle.play()
-      }
-    }
-    stage.add(model)
-    glb = {
-      model,
-      root: model.getObjectByName('RobotCube') || model,
-      mixer,
-      intro,
-      introPending: !!intro,
-      eyes: eyesG,
-      eyeRest: eyesG.map(e => e.scale.clone()),
-      whiskers: whiskersG,
-      whiskerY: whiskersG.map(w => w.position.y),
-      slotMat: slotMatG,
-      slotBase: slotMatG ? slotMatG.emissiveIntensity : 1
-    }
+    const robot = createRobotInstance(loaded, { reduceMotion })
+    const expr = createExpressions(robot, { reduceMotion })
+    // Intro is played from updateGlb once the page loader has cleared.
+    if (robot.intro) robot.model.visible = false
+    else robot.idle?.play()
+    stage.add(robot.model)
+    glb = { robot, expr, introPending: !!robot.intro }
     wake()
-  }, undefined, (err) => {
+  }, (err) => {
     if (destroyed) return
     console.warn('robot-cube: model failed to load, using the built-in cube', err)
     bot.visible = true
     introT = reduceMotion ? INTRO : 0
     wake()
   })
-
-  // Join sibling meshes that share a material into one (one draw call).
-  function mergeMeshes(model, match, name) {
-    const parts = []
-    model.traverse(o => { if (o.isMesh && match(o)) parts.push(o) })
-    if (parts.length < 2) return parts[0] || null
-    const parent = parts[0].parent
-    if (parts.some(p => p.parent !== parent || p.material !== parts[0].material)) return null
-    const geo = mergeGeometries(parts.map(p => { p.updateMatrix(); return p.geometry.clone().applyMatrix4(p.matrix) }))
-    if (!geo) return null
-    const merged = new THREE.Mesh(geo, parts[0].material)
-    merged.name = name
-    parts.forEach(p => { parent.remove(p); p.geometry.dispose() })
-    parent.add(merged)
-    return merged
-  }
-
-  // Apply each track's final keyframe (e.g. "RobotCube.position") to its node.
-  function settleOnClipEnd(model, clip) {
-    for (const track of clip.tracks) {
-      const dot = track.name.lastIndexOf('.')
-      const node = model.getObjectByName(track.name.slice(0, dot))
-      const prop = node && node[track.name.slice(dot + 1)]
-      if (!prop || typeof prop.fromArray !== 'function') continue
-      const n = track.getValueSize()
-      prop.fromArray(track.values, track.values.length - n)
-    }
-  }
 
   // ── Cube field ── small cubes floating at different depths around the robot:
   // one InstancedMesh (solid) + one merged LineSegments (outlines) = 2 draws.
@@ -507,7 +409,7 @@ export function initHeroBot(container, options = {}) {
       if (ex * ex + ey * ey < 1 && z > -2.5) z -= 5
       worldAt(c.nx, c.ny, z, c.base)
     }
-    field.update(clock.elapsedTime, fieldFade)
+    field.update(elapsed, fieldFade)
   }
 
   // The grid loader removes body.loader-done while it covers the page.
@@ -546,7 +448,8 @@ export function initHeroBot(container, options = {}) {
       Math.abs(targetLook.y - currentLook.y) < 0.0005 &&
       Math.abs((hovering ? 1.12 : 1) - eyeWiden) < 0.0005 &&
       Math.abs(targetParallax.x - parallax.x) < 0.0005 &&
-      Math.abs(targetParallax.y - parallax.y) < 0.0005
+      Math.abs(targetParallax.y - parallax.y) < 0.0005 &&
+      !(glb && glb.expr.busy())
   }
   const active = () => !paused && !offscreen && !destroyed
   function wake() {
@@ -592,28 +495,19 @@ export function initHeroBot(container, options = {}) {
     if (!on) { glitchT = -1; glitchTimer = 4 + Math.random() * 3 }
   }
 
-  function updateGlb(dt, t) {
+  function updateGlb(dt) {
     const g = glb
     // Hold the Intro (model hidden) until the page loader has cleared, so the
     // drop-in is actually seen.
     if (g.introPending) {
       if (!stageReady()) return
       g.introPending = false
-      g.model.visible = true
-      g.intro.play()
+      g.robot.model.visible = true
+      g.robot.playIntro()
     }
-    // The clips drive eye scale (blink/open); reset first so hover widening
-    // below never compounds on frames where no clip writes it.
-    g.eyes.forEach((e, i) => e.scale.copy(g.eyeRest[i]))
-    if (g.mixer) g.mixer.update(dt)
-    g.root.rotation.y = currentLook.x
-    g.root.rotation.x = currentLook.y
-    g.eyes.forEach(e => { e.scale.x *= eyeWiden; e.scale.y *= eyeWiden })
-    if (g.slotMat) {
-      const breathe = reduceMotion ? 0 : Math.sin(t * 2.2)
-      g.slotMat.emissiveIntensity = g.slotBase * (1 + breathe * 0.3) * (hovering ? 1.4 : 1)
-    }
-    glitch(dt, g.whiskers, g.whiskerY)
+    g.expr.setLook(targetLook.x, targetLook.y)
+    g.expr.setHover(hovering)
+    g.expr.update(dt)
   }
 
   function updateProcedural(dt, t) {
@@ -666,7 +560,8 @@ export function initHeroBot(container, options = {}) {
   function tick() {
     if (paused || destroyed) { raf = null; return }
     const dt = Math.min(clock.getDelta(), 0.05)
-    const t = clock.elapsedTime
+    elapsed += dt
+    const t = elapsed
 
     // Shared, visitor-driven motion: look toward the cursor, widen on hover.
     currentLook.x += (targetLook.x - currentLook.x) * 0.07
@@ -679,7 +574,7 @@ export function initHeroBot(container, options = {}) {
     if (stageReady() && fieldFade < 1) fieldFade = Math.min(1, fieldFade + dt * 0.9)
     field.update(t, fieldFade)
 
-    if (glb) updateGlb(dt, t)
+    if (glb) updateGlb(dt)
     else if (bot.visible) updateProcedural(dt, t)
 
     renderer.render(scene, camera)
@@ -688,7 +583,8 @@ export function initHeroBot(container, options = {}) {
   }
 
   function start() {
-    if (!raf && active()) { clock.start(); raf = requestAnimationFrame(tick) }
+    // getDelta() drops the paused gap so the next frame's dt is small.
+    if (!raf && active()) { clock.getDelta(); raf = requestAnimationFrame(tick) }
   }
   function stop() {
     if (raf) { cancelAnimationFrame(raf); raf = null }
@@ -707,6 +603,9 @@ export function initHeroBot(container, options = {}) {
     pointerTarget.removeEventListener('pointermove', onPointerMove)
     pointerTarget.removeEventListener('pointerleave', onPointerLeave)
     field.dispose()
+    // The model's geometry is shared with other scenes: release only what
+    // this instance owns, and take it out of the scene before the sweep.
+    glb?.robot.dispose()
     scene.traverse(obj => {
       if (obj.geometry) obj.geometry.dispose()
       if (obj.material) {
@@ -715,7 +614,6 @@ export function initHeroBot(container, options = {}) {
       }
     })
     shadowTex.dispose()
-    haloTex.dispose()
     renderer.dispose()
     if (renderer.domElement.parentNode) renderer.domElement.parentNode.removeChild(renderer.domElement)
   }
