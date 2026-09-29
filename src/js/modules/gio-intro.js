@@ -143,6 +143,12 @@ export async function prepareGioIntro() {
   const enterBtn = root.querySelector('.gi-enter')
   const mark = root.querySelector('.gi-mark')
   const light = root.querySelector('.gi-light')
+  // The Gio logo's ink (the site's --nm-text): GIO lands on exactly this.
+  const INK = (() => {
+    const hex = getComputedStyle(document.documentElement).getPropertyValue('--nm-text').trim()
+    const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex)
+    return m ? m.slice(1).map(h => parseInt(h, 16)) : [23, 26, 45] // #171a2d
+  })()
 
   // Throws without WebGL; main.js catches that and uses the normal loader.
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'low-power' })
@@ -318,7 +324,7 @@ export async function prepareGioIntro() {
       light.style.webkitMaskImage = mask
       light.style.visibility = 'visible'
       const ink = smooth(span(x, EXIT.light[0] + 0.05, EXIT.light[0] + 0.4))
-      mark.style.color = `rgb(${lerp(244, 22, ink)}, ${lerp(245, 20, ink)}, ${lerp(251, 42, ink)})`
+      mark.style.color = `rgb(${lerp(244, INK[0], ink)}, ${lerp(245, INK[1], ink)}, ${lerp(251, INK[2], ink)})`
     }
   }
   const lerp = (a, b, p) => Math.round(a + (b - a) * p)
