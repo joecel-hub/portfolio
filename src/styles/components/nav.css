@@ -503,55 +503,56 @@ body.normal-mode .nav-close {
   margin: -0.3em 0.5em -0.3em -0.35em;
 }
 
-/* Floating circular mode switch */
-.mode-switch {
-  position: fixed;
-  right: 1.4rem;
-  bottom: 1.4rem;
-  z-index: 998;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 1px solid rgba(var(--a1-rgb), 0.35);
-  background: rgba(13, 13, 26, 0.85);
-  color: #fff;
+/* Identity switch in the header: G (Gio) | S·B (Stryg.Bytes). The active
+   side is filled with the current accent. */
+.id-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  position: relative;
+  z-index: 1;
+}
+
+body.normal-mode .id-switch {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(25, 29, 54, 0.16);
+}
+
+.id-opt {
+  min-width: 44px;
+  height: 34px;
+  padding: 0 var(--space-3);
+  border: 0;
+  border-radius: 999px;
+  background: none;
   font-family: var(--head);
   font-weight: 700;
-  font-size: var(--fs-md);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  transition: border-color var(--dur-fast), box-shadow var(--dur-fast), background var(--dur-fast);
-  outline: none;
-}
-
-body.normal-mode .mode-switch {
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--nm-text);
-  border-color: rgba(25, 29, 54, 0.2);
-  box-shadow: 0 10px 30px rgba(25, 29, 54, 0.14);
-}
-
-.mode-switch:hover {
-  border-color: var(--a1);
-  box-shadow: 0 14px 40px rgba(var(--a1-rgb), 0.4);
-}
-
-body.normal-mode .mode-switch:hover {
-  box-shadow: 0 14px 40px rgba(var(--a1-rgb), 0.35);
-}
-
-.ms-mark {
-  position: absolute;
+  font-size: var(--fs-sm);
   line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background var(--dur), color var(--dur-fast);
 }
 
-body:not(.normal-mode) .ms-mark--gio {
-  display: none;
+.id-opt:hover {
+  color: var(--text);
 }
 
-body.normal-mode .ms-mark--studio {
-  display: none;
+.id-opt[aria-pressed="true"] {
+  background: var(--a1-solid);
+  color: #fff;
+  cursor: default;
+}
+
+.id-opt:focus-visible {
+  outline: 2px solid var(--a1);
+  outline-offset: 2px;
+}
+
+@media (max-width: 380px) {
+  .nav-right { gap: var(--space-1); }
+  .id-opt { min-width: 40px; padding: 0 var(--space-2); }
 }

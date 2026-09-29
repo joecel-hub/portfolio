@@ -247,13 +247,6 @@ body.normal-mode .btn-ghost:hover {
   color: var(--a2);
 }
 
-.type-cursor {
-  display: inline-block;
-  margin-left: 2px;
-  font-weight: 300;
-  color: var(--nm-a1);
-}
-
 .hero-scroll-cue {
   position: absolute;
   bottom: 2.5rem;

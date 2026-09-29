@@ -1,4 +1,3 @@
-import gsap from 'gsap'
 import './styles/style.css'
 import { playLoader } from './js/modules/loader.js'
 import { initModeToggle, syncThemeColor } from './js/modules/mode-toggle.js'
@@ -8,13 +7,13 @@ import { initAnimations } from './js/modules/animations.js'
 import { initLenis } from './js/modules/lenis.js'
 import { initTextReveal } from './js/modules/text-reveal.js'
 import { initDevParticles } from './js/modules/dev-particles.js'
-import { initTextType } from './js/modules/text-type.js'
 import { initTextMorph } from './js/modules/text-morph.js'
 import { setLenis } from './js/modules/navigation.js'
 import { initProfile } from './js/modules/profile.js'
 import { initApiContent } from './js/modules/api-content.js'
 import { initContactForms } from './js/modules/contact-form.js'
 import { prefersReducedMotion } from './js/utils/motion.js'
+import { wantsIntro, markIntroSeen } from './js/modules/intro-gate.js'
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -67,19 +66,67 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return
     heroBotLoading = import('./js/modules/robot-cube.js')
       .then(({ initHeroBot }) => {
-        heroBot = initHeroBot(container)
+        heroBot = initHeroBot(container, { onIntroEnd: () => assistant?.introEnded() })
         if (heroBot && isNormalMode()) heroBot.setPaused(true) // switched back meanwhile
       })
       .catch((e) => console.error('hero-bot init failed:', e))
       .finally(() => { heroBotLoading = null })
   }
 
+  // The lab assistant (speech bubbles, docked robot, section tour). Loaded
+  // with the lab; it never shows on the Gio side.
+  let assistant = null
+  let assistantLoading = null
+  function ensureAssistant() {
+    if (assistant) return Promise.resolve(assistant)
+    if (!assistantLoading) {
+      assistantLoading = import('./js/modules/assistant/index.js')
+        .then(({ initAssistant }) => {
+          assistant = initAssistant({ getHeroBot: () => heroBot, openChat })
+          return assistant
+        })
+        .catch((e) => { console.error('assistant init failed:', e); return null })
+    }
+    return assistantLoading
+  }
+  function enterLabAssistant() {
+    ensureAssistant().then(a => { if (a && !isNormalMode()) a.enterLab() })
+  }
+
+  function goToContact() {
+    const contact = document.getElementById('contact')
+    if (!contact) return
+    if (window.lenisInstance) window.lenisInstance.scrollTo(contact, { offset: -20, duration: 1.2 })
+    else contact.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' })
+  }
+
+  // "Chat with Gio" (hero button, assistant bubbles): the chat panel, loaded
+  // on first open. If it can't load, the contact section is the fallback.
+  let chat = null
+  let chatLoading = null
+  function openChat(trigger) {
+    if (chat) { chat.open(trigger); return }
+    if (!chatLoading) {
+      chatLoading = import('./js/modules/assistant/chat.js')
+        .then(({ createChat }) => {
+          chat = createChat({
+            getRobot: () => assistant?.activeRobot(),
+            onOpenChange: (open) => assistant?.setChatOpen(open),
+            goToContact
+          })
+          return chat
+        })
+        .catch((e) => { console.error('chat init failed:', e); chatLoading = null; return null })
+    }
+    chatLoading.then(c => { if (c && !isNormalMode()) c.open(trigger); else if (!c) goToContact() })
+  }
+  document.querySelectorAll('[data-open-chat]').forEach(btn => btn.addEventListener('click', () => openChat(btn)))
+  // The chat belongs to the lab: leaving closes it.
+  document.addEventListener('modechange', (e) => { if (e.detail.to === 'gio') chat?.close() })
+
   // Normal (Gio) is the default mode, so the profile stack mounts on boot
   // rather than behind a gate. The guards keep re-entry (switching back from
   // Dev) from double-mounting.
-  let textType = null
-  const typeContainer = document.getElementById('pf-role')
-
   let unmountPixel = null
   const pixelContainer = document.getElementById('pixel-blast-container')
 
@@ -115,46 +162,21 @@ document.addEventListener('DOMContentLoaded', () => {
       .finally(() => { pixelLoading = null })
   }
 
-  function mountType() {
-    if (typeContainer && !textType) {
-      try {
-        textType = initTextType(typeContainer, {
-          // The hero title is fixed; the supporting line (IT Infrastructure |
-          // Web Developer) is static text below it.
-          words: ['IT Support Engineer'],
-          loop: false,
-          typingSpeed: 60,
-          deletingSpeed: 30,
-          pauseDuration: 2500,
-          initialDelay: 1000
-        })
-      } catch (e) {
-        console.error('typewriter init failed:', e)
-      }
-    }
-  }
-
   function mountNormal() {
     mountPixel()
-    mountType()
     try { initProfile() } catch (e) { console.error('profile init failed:', e) }
   }
 
   function unmountNormal() {
-    if (textType) {
-      textType.destroy()
-      textType = null
-    }
     if (unmountPixel) {
       unmountPixel()
       unmountPixel = null
     }
   }
 
-  // Boot: the typewriter runs behind the Gio loader; the profile entrance
-  // plays as the grid wipes away (in the loader onComplete). The WebGL
-  // background waits until the page has loaded and the main thread is idle,
-  // so it stays off the critical path.
+  // Boot: the profile entrance plays as the page is revealed (startSite).
+  // The WebGL background waits until the page has loaded and the main
+  // thread is idle, so it stays off the critical path.
   const whenIdle = (fn) => {
     const run = () => ('requestIdleCallback' in window
       ? requestIdleCallback(fn, { timeout: 2000 })
@@ -162,30 +184,52 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.readyState === 'complete') run()
     else window.addEventListener('load', run, { once: true })
   }
-  whenIdle(() => { if (isNormalMode()) mountPixel() })
+  // The page is revealed by the loader or, on a first visit, the Gio intro;
+  // the WebGL background waits for that so it never competes with the intro.
+  let introDone
+  const revealed = new Promise((resolve) => { introDone = resolve })
+  whenIdle(() => revealed.then(() => { if (isNormalMode()) mountPixel() }))
   if (bootLab) {
     syncThemeColor(false)
     ensureHeroBot()
-  } else {
-    mountType()
+    enterLabAssistant()
   }
 
   let toggleMode = () => {}
+  let currentMode = () => bootMode
   try {
-    ({ toggleMode } = initModeToggle(particles, {
+    ({ toggleMode, currentMode } = initModeToggle(particles, {
+      // Leaving the lab: the robot waves goodbye first.
+      beforeToNormal: () => (assistant ? assistant.goodbye() : Promise.resolve()),
       onToNormal: () => {
         if (heroBot) heroBot.setPaused(true)
+        assistant?.leaveLab()
         mountNormal()
       },
       onToDev: () => {
-        if (heroBot) heroBot.setPaused(false)
+        // Returning: the robot drops in again once the loader clears.
+        if (heroBot) { heroBot.setPaused(false); heroBot.replayIntro() }
         else ensureHeroBot()
         unmountNormal()
+        enterLabAssistant()
       }
     }, bootMode))
   } catch (e) {
     console.error('mode-toggle init failed:', e)
   }
+
+  // Header identity switch (G | S·B): pressed state follows the mode.
+  const idOpts = document.querySelectorAll('.id-opt')
+  function syncIdSwitch(mode) {
+    idOpts.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)))
+  }
+  syncIdSwitch(bootMode)
+  document.addEventListener('modechange', (e) => syncIdSwitch(e.detail.to))
+  idOpts.forEach(btn => btn.addEventListener('click', () => {
+    if (btn.dataset.mode === currentMode()) return
+    toggleMode()
+    setTimeout(scrollToHero, 450)
+  }))
 
   function scrollToHero() {
     // In normal mode the dev hero is hidden, so land on the profile cover.
@@ -199,8 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // The nav logo always returns to the top of the current mode; the floating
-  // circular mode-switch below handles switching identities.
+  // The nav logo always returns to the top of the current mode; the header
+  // G | S·B switch handles switching identities.
   const navLogo = document.getElementById('nav-logo')
   if (navLogo) {
     navLogo.addEventListener('click', scrollToHero)
@@ -220,16 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   })
 
-  // Floating circular mode switch — spins and swaps identity on click.
-  const modeSwitch = document.getElementById('mode-switch')
-  if (modeSwitch) {
-    modeSwitch.addEventListener('click', () => {
-      if (!prefersReducedMotion) gsap.to(modeSwitch, { rotation: '+=360', duration: 0.6, ease: 'power2.inOut' })
-      toggleMode()
-      setTimeout(scrollToHero, 450)
-    })
-  }
-
   // Footer year, kept current automatically
   const footerYear = document.getElementById('footer-year')
   if (footerYear) footerYear.textContent = new Date().getFullYear()
@@ -239,25 +273,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
   try { initTextReveal() } catch (e) { console.error('text-reveal init failed:', e) }
   if (!prefersReducedMotion) try { initTextMorph() } catch (e) { console.error('text-morph init failed:', e) }
-  try {
-    playLoader({
-      brand: bootLab ? 'Stryg.Bytes' : 'Gio',
-      onComplete: () => {
-        if (!bootLab) initProfile()
-        // Native scrolling when the visitor asks for reduced motion.
-        const lenis = prefersReducedMotion ? null : initLenis()
-        window.lenisInstance = lenis
-        setLenis(lenis)
-        // Wait for CMS content before animations so ScrollTrigger picks up the
-        // dynamically-rendered project cards / testimonials. Falls back to the
-        // static sections when the API is unreachable.
-        contentReady.finally(() => {
-          try { initAnimations() } catch (e) { console.error('animations init failed:', e) }
-        })
-      }
-    })
-  } catch (e) {
-    console.error('loader init failed:', e)
+  // Runs once, as the page is revealed (after the loader, or the Gio intro).
+  let started = false
+  function startSite() {
+    if (started) return
+    started = true
+    introDone()
     if (!bootLab) initProfile()
+    // Native scrolling when the visitor asks for reduced motion.
+    const lenis = prefersReducedMotion ? null : initLenis()
+    window.lenisInstance = lenis
+    setLenis(lenis)
+    // Wait for CMS content before animations so ScrollTrigger picks up the
+    // dynamically-rendered project cards / testimonials. Falls back to the
+    // static sections when the API is unreachable.
+    contentReady.finally(() => {
+      try { initAnimations() } catch (e) { console.error('animations init failed:', e) }
+    })
+  }
+
+  function bootLoader() {
+    try {
+      playLoader({ brand: bootLab ? 'Stryg.Bytes' : 'Gio', onComplete: startSite })
+    } catch (e) {
+      console.error('loader init failed:', e)
+      if (!bootLab) initProfile()
+    }
+  }
+
+  // First Gio visit of the session: the robot intro replaces the grid loader.
+  // It gets a short window to download and prepare; if it isn't ready in
+  // time (slow network) or fails (no WebGL), the normal loader plays and the
+  // page is never held back. The page loader stays up underneath meanwhile.
+  let storage = null
+  try { storage = window.sessionStorage } catch { /* blocked */ }
+  const playIntro = wantsIntro({
+    mode: bootMode,
+    storage,
+    reduceMotion: prefersReducedMotion,
+    saveData: connection.saveData === true,
+    cores: navigator.hardwareConcurrency,
+    webgl: 'WebGLRenderingContext' in window
+  })
+  if (playIntro) {
+    const INTRO_BUDGET_MS = 1500
+    const prep = import('./js/modules/gio-intro.js').then(m => m.prepareGioIntro())
+    const late = new Promise((_, reject) => setTimeout(() => reject(new Error('intro not ready in time')), INTRO_BUDGET_MS))
+    Promise.race([prep, late])
+      .then((intro) => {
+        markIntroSeen(storage)
+        return intro.play({ onReveal: () => playLoader({ brand: 'Gio', instant: true, onComplete: startSite }) })
+      })
+      .catch((e) => {
+        console.info('Gio intro skipped:', e?.message || e)
+        prep.then(intro => intro.dispose(), () => {})
+        bootLoader()
+      })
+  } else {
+    bootLoader()
   }
 })

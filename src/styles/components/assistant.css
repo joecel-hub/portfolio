@@ -1,0 +1,188 @@
+/* Stryg.Bytes assistant (assistant/index.js): the hero robot's click area,
+   speech bubbles, and the docked robot. Lab only. */
+
+/* Invisible, focusable button over the hero robot. */
+.hero-bot-hit {
+  position: absolute;
+  inset: 14%;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.hero-bot-hit:focus-visible {
+  outline: 2px dashed var(--a1);
+  outline-offset: 6px;
+}
+
+/* ── Speech bubble ── */
+.sb-bubble {
+  max-width: 260px;
+  padding: 0.7rem 0.95rem;
+  border: 1px solid rgba(var(--a1-rgb), 0.4);
+  border-radius: 14px;
+  background: rgba(10, 14, 26, 0.94);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
+  color: #e9eef7;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  text-align: left;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px) scale(0.97);
+  transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out), visibility 0s linear var(--dur);
+}
+
+.sb-bubble.is-shown {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+
+.sb-bubble-text {
+  margin: 0;
+}
+
+.sb-bubble-action {
+  margin-top: var(--space-2);
+  padding: 0.35rem 0.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--a1-solid);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.sb-bubble-action:hover {
+  filter: brightness(1.12);
+}
+
+.sb-bubble-action:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* In the hero: above the robot's top-left corner. */
+.sb-bubble--hero {
+  position: absolute;
+  top: 2%;
+  left: 0;
+  z-index: 3;
+}
+
+.sb-bubble--hero::after,
+.sb-bubble--dock::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  border: inherit;
+  border-top: 0;
+  border-left: 0;
+}
+
+.sb-bubble--hero::after {
+  bottom: -7px;
+  right: 28px;
+  transform: rotate(45deg);
+}
+
+@media (max-width: 900px) {
+  .sb-bubble--hero {
+    top: -0.5rem;
+    left: 50%;
+    translate: -50% -100%;
+    width: max-content;
+    max-width: min(260px, 80vw);
+  }
+  .sb-bubble--hero::after {
+    right: calc(50% - 6px);
+  }
+}
+
+/* ── Dock (bottom-right, once the hero has scrolled away) ── */
+.sb-dock {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 140; /* under the mobile menu (backdrop 150, panel 202) */
+  display: none;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+body:not(.normal-mode) .sb-dock.is-shown {
+  display: flex;
+  animation: sb-dock-in var(--dur-slow) var(--ease-out);
+}
+
+.sb-dock > * {
+  pointer-events: auto;
+}
+
+.sb-bubble--dock {
+  position: relative;
+  margin-right: 8px;
+}
+
+.sb-bubble--dock::after {
+  bottom: -7px;
+  right: 34px;
+  transform: rotate(45deg);
+}
+
+.sb-dock-btn {
+  width: 88px;
+  height: 88px;
+  padding: 0;
+  border: 1px solid rgba(var(--a1-rgb), 0.3);
+  border-radius: 24px;
+  background: radial-gradient(circle at 50% 40%, rgba(21, 151, 212, 0.16), rgba(8, 10, 20, 0.88) 70%);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  transition: border-color var(--dur-fast), transform var(--dur-fast);
+}
+
+.sb-dock-btn:hover {
+  border-color: var(--a1);
+  transform: translateY(-2px);
+}
+
+.sb-dock-btn:focus-visible {
+  outline: 2px solid var(--a1);
+  outline-offset: 3px;
+}
+
+.sb-dock-stage,
+.sb-dock-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* No WebGL / model unavailable: the flat robot-cube mark instead. */
+.sb-dock-stage.is-static {
+  background: url('/favicon.svg') center / 58% no-repeat;
+}
+
+@keyframes sb-dock-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 600px) {
+  .sb-dock-btn {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+  }
+}

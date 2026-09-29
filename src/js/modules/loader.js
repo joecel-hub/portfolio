@@ -9,7 +9,9 @@ function buildLogoHTML(brand) {
   return head + '<span>.</span><span>' + tail + '</span>'
 }
 
-export function playLoader({ brand = 'Gio', onComplete } = {}) {
+// `instant` clears the loader straight away (same as reduced motion), for
+// when something else has already covered the load (the Gio intro).
+export function playLoader({ brand = 'Gio', onComplete, instant = false } = {}) {
   const loader = document.getElementById('loader')
   if (!loader) return
   const ldBg = document.querySelector('.ld-bg')
@@ -44,7 +46,7 @@ export function playLoader({ brand = 'Gio', onComplete } = {}) {
   if (oldOverlay) oldOverlay.remove()
 
   // Reduced motion: skip the scramble + grid wipe and reveal the page at once.
-  if (prefersReducedMotion) {
+  if (prefersReducedMotion || instant) {
     if (onComplete) onComplete()
     logo.remove()
     loadingEl.remove()

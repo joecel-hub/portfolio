@@ -14,6 +14,7 @@ import reviewRoutes from './routes/reviews.js'
 import certificateRoutes from './routes/certificates.js'
 import hobbyClipRoutes from './routes/hobbyClips.js'
 import contactRoutes from './routes/contact.js'
+import chatRoutes from './routes/chat.js'
 import { toLabHtml } from './labHtml.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -40,6 +41,7 @@ app.use('/api/reviews', reviewRoutes)
 app.use('/api/certificates', certificateRoutes)
 app.use('/api/hobby-clips', hobbyClipRoutes)
 app.use('/api/contact', contactRoutes)
+app.use('/api/chat', chatRoutes)
 
 // Uploaded images (client logos, etc.)
 app.use('/uploads', express.static(UPLOAD_DIR))
