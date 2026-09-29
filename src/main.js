@@ -1,4 +1,3 @@
-import gsap from 'gsap'
 import './styles/style.css'
 import { playLoader } from './js/modules/loader.js'
 import { initModeToggle, syncThemeColor } from './js/modules/mode-toggle.js'
@@ -67,12 +66,42 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!container) return
     heroBotLoading = import('./js/modules/robot-cube.js')
       .then(({ initHeroBot }) => {
-        heroBot = initHeroBot(container)
+        heroBot = initHeroBot(container, { onIntroEnd: () => assistant?.introEnded() })
         if (heroBot && isNormalMode()) heroBot.setPaused(true) // switched back meanwhile
       })
       .catch((e) => console.error('hero-bot init failed:', e))
       .finally(() => { heroBotLoading = null })
   }
+
+  // The lab assistant (speech bubbles, docked robot, section tour). Loaded
+  // with the lab; it never shows on the Gio side.
+  let assistant = null
+  let assistantLoading = null
+  function ensureAssistant() {
+    if (assistant) return Promise.resolve(assistant)
+    if (!assistantLoading) {
+      assistantLoading = import('./js/modules/assistant/index.js')
+        .then(({ initAssistant }) => {
+          assistant = initAssistant({ getHeroBot: () => heroBot, openChat })
+          return assistant
+        })
+        .catch((e) => { console.error('assistant init failed:', e); return null })
+    }
+    return assistantLoading
+  }
+  function enterLabAssistant() {
+    ensureAssistant().then(a => { if (a && !isNormalMode()) a.enterLab() })
+  }
+
+  // "Chat with Gio" (hero button, assistant bubbles). Until the chat panel
+  // exists, it takes the visitor to the contact section.
+  function openChat() {
+    const contact = document.getElementById('contact')
+    if (!contact) return
+    if (window.lenisInstance) window.lenisInstance.scrollTo(contact, { offset: -20, duration: 1.2 })
+    else contact.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' })
+  }
+  document.querySelectorAll('[data-open-chat]').forEach(btn => btn.addEventListener('click', openChat))
 
   // Normal (Gio) is the default mode, so the profile stack mounts on boot
   // rather than behind a gate. The guards keep re-entry (switching back from
@@ -142,24 +171,44 @@ document.addEventListener('DOMContentLoaded', () => {
   if (bootLab) {
     syncThemeColor(false)
     ensureHeroBot()
+    enterLabAssistant()
   }
 
   let toggleMode = () => {}
+  let currentMode = () => bootMode
   try {
-    ({ toggleMode } = initModeToggle(particles, {
+    ({ toggleMode, currentMode } = initModeToggle(particles, {
+      // Leaving the lab: the robot waves goodbye first.
+      beforeToNormal: () => (assistant ? assistant.goodbye() : Promise.resolve()),
       onToNormal: () => {
         if (heroBot) heroBot.setPaused(true)
+        assistant?.leaveLab()
         mountNormal()
       },
       onToDev: () => {
-        if (heroBot) heroBot.setPaused(false)
+        // Returning: the robot drops in again once the loader clears.
+        if (heroBot) { heroBot.setPaused(false); heroBot.replayIntro() }
         else ensureHeroBot()
         unmountNormal()
+        enterLabAssistant()
       }
     }, bootMode))
   } catch (e) {
     console.error('mode-toggle init failed:', e)
   }
+
+  // Header identity switch (G | S·B): pressed state follows the mode.
+  const idOpts = document.querySelectorAll('.id-opt')
+  function syncIdSwitch(mode) {
+    idOpts.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)))
+  }
+  syncIdSwitch(bootMode)
+  document.addEventListener('modechange', (e) => syncIdSwitch(e.detail.to))
+  idOpts.forEach(btn => btn.addEventListener('click', () => {
+    if (btn.dataset.mode === currentMode()) return
+    toggleMode()
+    setTimeout(scrollToHero, 450)
+  }))
 
   function scrollToHero() {
     // In normal mode the dev hero is hidden, so land on the profile cover.
@@ -173,8 +222,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // The nav logo always returns to the top of the current mode; the floating
-  // circular mode-switch below handles switching identities.
+  // The nav logo always returns to the top of the current mode; the header
+  // G | S·B switch handles switching identities.
   const navLogo = document.getElementById('nav-logo')
   if (navLogo) {
     navLogo.addEventListener('click', scrollToHero)
@@ -193,16 +242,6 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(scrollToHero, 450)
     })
   })
-
-  // Floating circular mode switch — spins and swaps identity on click.
-  const modeSwitch = document.getElementById('mode-switch')
-  if (modeSwitch) {
-    modeSwitch.addEventListener('click', () => {
-      if (!prefersReducedMotion) gsap.to(modeSwitch, { rotation: '+=360', duration: 0.6, ease: 'power2.inOut' })
-      toggleMode()
-      setTimeout(scrollToHero, 450)
-    })
-  }
 
   // Footer year, kept current automatically
   const footerYear = document.getElementById('footer-year')

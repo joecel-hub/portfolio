@@ -29,13 +29,24 @@ export function initModeToggle(devBg, callbacks = {}, initialMode = 'gio') {
     }
   }
 
-  function toggleMode({ push = true } = {}) {
-    isNormal = !isNormal
-    const mode = isNormal ? 'gio' : 'lab'
+  // One switch at a time: clicks during a transition are ignored.
+  let switching = false
+
+  async function toggleMode({ push = true } = {}) {
+    if (switching) return
+    switching = true
+    const from = isNormal ? 'gio' : 'lab'
+    const mode = isNormal ? 'lab' : 'gio'
     // Keep the address bar shareable: / is Gio, /lab is Stryg.Bytes.
     if (push) history.pushState(null, '', pathForMode(mode))
     applyModeMeta(mode)
     closeMenu()
+    document.dispatchEvent(new CustomEvent('modechange', { detail: { from, to: mode } }))
+    // Leaving the lab: a short goodbye from the assistant before the fade.
+    if (mode === 'gio' && callbacks.beforeToNormal) {
+      try { await callbacks.beforeToNormal() } catch (e) { console.error('goodbye failed:', e) }
+    }
+    isNormal = mode === 'gio'
     gsap.to(['#app', '#site-footer'], {
       opacity: 0, duration: 0.25, onComplete: () => {
         document.body.classList.toggle('normal-mode', isNormal)
@@ -66,6 +77,9 @@ export function initModeToggle(devBg, callbacks = {}, initialMode = 'gio') {
     })
   }
 
+  // The current identity ('gio' | 'lab').
+  const currentMode = () => (isNormal ? 'gio' : 'lab')
+
   // Back/Forward across a mode change. Hash-only entries keep the same
   // path, so they never flip the mode.
   window.addEventListener('popstate', () => {
@@ -74,10 +88,11 @@ export function initModeToggle(devBg, callbacks = {}, initialMode = 'gio') {
   })
 
   function finalize() {
+    switching = false
     // Sections appear/disappear with the mode, so recalculate every
     // ScrollTrigger's start/end positions against the new layout.
     requestAnimationFrame(() => ScrollTrigger.refresh())
   }
 
-  return { toggleMode }
+  return { toggleMode, currentMode }
 }

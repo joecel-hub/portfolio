@@ -21,7 +21,10 @@ export function initHeroBot(container, options = {}) {
     orange = '#ff8a3d',
     modelUrl, // default: the bundled robot-cube.glb
     anchor = document.querySelector('.hero-bot-card'),
-    pointerTarget = document.getElementById('hero') || container
+    pointerTarget = document.getElementById('hero') || container,
+    // Called each time the drop-in Intro finishes (first visit and every
+    // return to the lab): the assistant's cue to say hello.
+    onIntroEnd = null
   } = options
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -504,11 +507,54 @@ export function initHeroBot(container, options = {}) {
       g.introPending = false
       g.robot.model.visible = true
       g.robot.playIntro()
+      g.introRunning = true
     }
-    g.expr.setLook(targetLook.x, targetLook.y)
+    // A look set by the assistant (e.g. toward a project card) wins over
+    // the cursor while it lasts.
+    if (lookOverride && lookOverride.until > elapsed) g.expr.setLook(lookOverride.x, lookOverride.y)
+    else g.expr.setLook(targetLook.x, targetLook.y)
     g.expr.setHover(hovering)
     g.expr.update(dt)
+    if (g.introRunning && !g.robot.introRunning()) {
+      g.introRunning = false
+      g.expr.play('welcome') // happy eyes + a wave of the flaps
+      try { onIntroEnd?.() } catch (e) { console.error('onIntroEnd failed:', e) }
+    }
   }
+
+  // ── Assistant hooks (no-ops until the model has loaded) ──
+  let lookOverride = null
+  function react(name) {
+    if (!glb) return
+    glb.expr.play(name)
+    wake()
+  }
+  function setMood(mood) {
+    if (!glb) return
+    glb.expr.setMood(mood)
+    wake()
+  }
+  // Look toward a screen point for `seconds`, then back to the cursor.
+  function lookAtPoint(clientX, clientY, seconds = 1.6) {
+    const a = (anchor || container).getBoundingClientRect()
+    const clamp1 = (v) => Math.max(-1, Math.min(1, v))
+    lookOverride = {
+      x: clamp1((clientX - (a.left + a.width / 2)) / (window.innerWidth / 2)) * 0.45,
+      y: clamp1((clientY - (a.top + a.height / 2)) / (window.innerHeight / 2)) * 0.2,
+      until: elapsed + seconds
+    }
+    wake()
+  }
+  // Replay the drop-in (on each return to the lab). It waits, hidden, for
+  // the Stryg.Bytes loader to clear, like the first time.
+  function replayIntro() {
+    if (!glb || !glb.robot.intro || reduceMotion) return
+    glb.robot.model.visible = false
+    glb.introPending = true
+  }
+  const isShowing = () => active() && !!glb && glb.robot.model.visible
+  // Whether a drop-in will play (and onIntroEnd follow) on this device.
+  const hasIntro = () => !!glb && !!glb.robot.intro
 
   function updateProcedural(dt, t) {
     // Intro: drop in and settle, flaps unfold, then the eyes open. It waits
@@ -633,5 +679,5 @@ export function initHeroBot(container, options = {}) {
   renderer.render(scene, camera)
   start()
 
-  return { setPaused, destroy }
+  return { setPaused, destroy, react, setMood, lookAtPoint, replayIntro, isShowing, hasIntro }
 }

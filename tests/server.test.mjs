@@ -83,7 +83,7 @@ test('spa: /lab serves the portfolio page', { skip: !existsSync(new URL('../dist
   assert.equal(res.status, 200)
   assert.match(res.headers.get('content-type'), /text\/html/)
   const html = await res.text()
-  assert.match(html, /id="mode-switch"/)
+  assert.match(html, /class="id-switch"/)
   // Served with lab metadata baked in, for crawlers that don't run JS.
   assert.match(html, /<link rel="canonical" href="[^"]*\/lab"/)
   assert.match(html, /<meta property="og:title" content="Stryg\.Bytes/)
