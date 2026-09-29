@@ -14,6 +14,7 @@ import { initProfile } from './js/modules/profile.js'
 import { initApiContent } from './js/modules/api-content.js'
 import { initContactForms } from './js/modules/contact-form.js'
 import { prefersReducedMotion } from './js/utils/motion.js'
+import { wantsIntro, markIntroSeen } from './js/modules/intro-gate.js'
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -123,10 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Boot: the profile entrance plays as the grid wipes away (in the loader
-  // onComplete). The WebGL
-  // background waits until the page has loaded and the main thread is idle,
-  // so it stays off the critical path.
+  // Boot: the profile entrance plays as the page is revealed (startSite).
+  // The WebGL background waits until the page has loaded and the main
+  // thread is idle, so it stays off the critical path.
   const whenIdle = (fn) => {
     const run = () => ('requestIdleCallback' in window
       ? requestIdleCallback(fn, { timeout: 2000 })
@@ -134,7 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (document.readyState === 'complete') run()
     else window.addEventListener('load', run, { once: true })
   }
-  whenIdle(() => { if (isNormalMode()) mountPixel() })
+  // The page is revealed by the loader or, on a first visit, the Gio intro;
+  // the WebGL background waits for that so it never competes with the intro.
+  let introDone
+  const revealed = new Promise((resolve) => { introDone = resolve })
+  whenIdle(() => revealed.then(() => { if (isNormalMode()) mountPixel() }))
   if (bootLab) {
     syncThemeColor(false)
     ensureHeroBot()
@@ -209,25 +213,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
   try { initTextReveal() } catch (e) { console.error('text-reveal init failed:', e) }
   if (!prefersReducedMotion) try { initTextMorph() } catch (e) { console.error('text-morph init failed:', e) }
-  try {
-    playLoader({
-      brand: bootLab ? 'Stryg.Bytes' : 'Gio',
-      onComplete: () => {
-        if (!bootLab) initProfile()
-        // Native scrolling when the visitor asks for reduced motion.
-        const lenis = prefersReducedMotion ? null : initLenis()
-        window.lenisInstance = lenis
-        setLenis(lenis)
-        // Wait for CMS content before animations so ScrollTrigger picks up the
-        // dynamically-rendered project cards / testimonials. Falls back to the
-        // static sections when the API is unreachable.
-        contentReady.finally(() => {
-          try { initAnimations() } catch (e) { console.error('animations init failed:', e) }
-        })
-      }
-    })
-  } catch (e) {
-    console.error('loader init failed:', e)
+  // Runs once, as the page is revealed (after the loader, or the Gio intro).
+  let started = false
+  function startSite() {
+    if (started) return
+    started = true
+    introDone()
     if (!bootLab) initProfile()
+    // Native scrolling when the visitor asks for reduced motion.
+    const lenis = prefersReducedMotion ? null : initLenis()
+    window.lenisInstance = lenis
+    setLenis(lenis)
+    // Wait for CMS content before animations so ScrollTrigger picks up the
+    // dynamically-rendered project cards / testimonials. Falls back to the
+    // static sections when the API is unreachable.
+    contentReady.finally(() => {
+      try { initAnimations() } catch (e) { console.error('animations init failed:', e) }
+    })
+  }
+
+  function bootLoader() {
+    try {
+      playLoader({ brand: bootLab ? 'Stryg.Bytes' : 'Gio', onComplete: startSite })
+    } catch (e) {
+      console.error('loader init failed:', e)
+      if (!bootLab) initProfile()
+    }
+  }
+
+  // First Gio visit of the session: the robot intro replaces the grid loader.
+  // It gets a short window to download and prepare; if it isn't ready in
+  // time (slow network) or fails (no WebGL), the normal loader plays and the
+  // page is never held back. The page loader stays up underneath meanwhile.
+  let storage = null
+  try { storage = window.sessionStorage } catch { /* blocked */ }
+  const playIntro = wantsIntro({
+    mode: bootMode,
+    storage,
+    reduceMotion: prefersReducedMotion,
+    saveData: connection.saveData === true,
+    cores: navigator.hardwareConcurrency,
+    webgl: 'WebGLRenderingContext' in window
+  })
+  if (playIntro) {
+    const INTRO_BUDGET_MS = 1500
+    const prep = import('./js/modules/gio-intro.js').then(m => m.prepareGioIntro())
+    const late = new Promise((_, reject) => setTimeout(() => reject(new Error('intro not ready in time')), INTRO_BUDGET_MS))
+    Promise.race([prep, late])
+      .then((intro) => {
+        markIntroSeen(storage)
+        return intro.play({ onReveal: () => playLoader({ brand: 'Gio', instant: true, onComplete: startSite }) })
+      })
+      .catch((e) => {
+        console.info('Gio intro skipped:', e?.message || e)
+        prep.then(intro => intro.dispose(), () => {})
+        bootLoader()
+      })
+  } else {
+    bootLoader()
   }
 })

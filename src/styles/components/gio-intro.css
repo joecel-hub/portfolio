@@ -1,0 +1,104 @@
+/* Gio first-visit intro (gio-intro.js). Sits above the page loader. */
+.gio-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #07080d;
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out);
+}
+
+.gio-intro.is-in {
+  opacity: 1;
+}
+
+.gio-intro.is-leaving {
+  opacity: 0;
+  transition-duration: 0.65s;
+  pointer-events: none;
+}
+
+.gio-intro.is-skipped {
+  transition-duration: 0.35s;
+}
+
+.gi-stage,
+.gi-stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.gi-title {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(3.5rem, 14vh, 8rem);
+  transform: translate(-50%, 12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  pointer-events: none;
+}
+
+.gi-title.is-shown {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.gi-mark {
+  font-family: var(--head);
+  font-size: clamp(2.6rem, 7vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  color: #f4f5fb;
+}
+
+.gi-sub {
+  font-family: var(--mono);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #b9b2f5;
+  white-space: nowrap;
+}
+
+.gi-skip {
+  position: absolute;
+  top: max(1.25rem, env(safe-area-inset-top));
+  right: max(1.25rem, env(safe-area-inset-right));
+  padding: 0.6rem 1.1rem;
+  font-family: var(--mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f4f5fb;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background var(--dur-fast), border-color var(--dur-fast);
+}
+
+.gi-skip:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.gi-skip:focus-visible {
+  outline: 2px solid #b9b2f5;
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .gi-sub {
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+  }
+}
