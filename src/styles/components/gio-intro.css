@@ -79,49 +79,95 @@
   white-space: nowrap;
 }
 
-/* Enter: the way into the portfolio once the title has settled (gio-intro.js
-   fades it in, then marks it .is-ready). The title block ignores the
+/* "Enter Gio": a quiet, solid pill in the page's own light colour, no glow.
+   gio-intro.js fades it in (--rise), marks it .is-ready, and adds a small
+   magnetic pull (--mx/--my) for mouse users. Hover lifts it slightly and
+   nudges the arrow; a press gives a little. The title block ignores the
    pointer; the button takes it back when ready. */
 .gi-enter {
-  margin-top: var(--space-4);
-  padding: 0.75rem 1.6rem;
-  font-family: var(--mono);
-  font-size: var(--fs-sm);
+  --mx: 0px;
+  --my: 0px;
+  --rise: 10px;
+  --s: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: var(--space-5, 1.25rem);
+  padding: 0.8rem 1.35rem 0.8rem 1.6rem;
+  font-family: var(--sans);
+  font-size: 0.95rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #fff;
-  background: rgba(139, 126, 234, 0.18);
-  border: 1px solid rgba(185, 178, 245, 0.55);
+  letter-spacing: 0.01em;
+  color: #16142a;
+  background: #f1f0f8;
+  border: 0;
   border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
-  transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
+  transform: translate(var(--mx), calc(var(--my) + var(--rise))) scale(var(--s));
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease,
+    box-shadow 0.4s ease;
 }
 
 .gi-enter.is-ready {
   pointer-events: auto;
-  animation: gi-enter-glow 2.6s ease-in-out infinite;
 }
 
-.gi-enter:hover {
-  background: rgba(139, 126, 234, 0.32);
-  border-color: #d6d1ff;
+.gi-arrow {
+  display: inline-block;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gi-enter.is-ready:hover {
+  --s: 1.035;
+  background: #fff;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32);
+}
+
+.gi-enter.is-ready:hover .gi-arrow {
+  transform: translateX(4px);
+}
+
+.gi-enter.is-ready:active {
+  --s: 0.97;
+}
+
+/* Pressed: it gives a little as the transition begins. */
+.gi-enter.is-pressed {
+  --s: 0.95;
+  pointer-events: none;
 }
 
 .gi-enter:focus-visible {
-  outline: 2px solid #d6d1ff;
-  outline-offset: 4px;
+  outline: 1.5px solid rgba(241, 240, 248, 0.55);
+  outline-offset: 5px;
 }
 
-@keyframes gi-enter-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 126, 234, 0); }
-  50% { box-shadow: 0 0 26px 2px rgba(139, 126, 234, 0.35); }
+/* The Gio page's own colour: blooms out of the logo (a soft-edged radial
+   mask set per frame) until it covers the scene, behind the title; the
+   page underneath shares the colour, so dissolving the intro reveals the
+   page with no flash. */
+.gi-light {
+  position: absolute;
+  inset: 0;
+  background: var(--nm-bg, #f6f7fb);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.gio-intro.is-entering {
+  transition-duration: 0.45s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gi-enter.is-ready { animation: none; }
+  .gi-enter,
+  .gi-arrow {
+    transition: none;
+  }
 }
 
 @media (max-width: 480px) {

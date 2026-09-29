@@ -18,8 +18,12 @@ import { createExpressions } from './robot/expressions.js'
 //                         while the robot glances down at it; an Enter
 //                         button follows, and the scene holds on the title
 //                         (the robot still idling) until it's pressed
-//   6. out       ~1 s     after Enter: a gentle push-in as title and scene
-//                         zoom and fade into the portfolio underneath
+//   6. enter     ~1.7 s   after "Enter Gio": the robot acknowledges the
+//                         visitor, the camera pushes forward past it, GIO
+//                         rises to the centre, and the Gio page's colour opens
+//                         out of the logo until it covers the screen; the real
+//                         page is set up underneath and the intro dissolves
+//                         into it (same colour, so no flash, no loader)
 //
 // There's no visible skip: the Enter button is the way in. Esc still leaves
 // at any point, so keyboard users are never stuck.
@@ -46,12 +50,20 @@ const T = {
   shift: 5.7,   // the space starts to change, the cube floats off
   logo: 6.6,    // first letter enters (the camera has risen by now)
   sub: 7.85,    // "IT Infrastructure · Web Development"
-  enter: 8.35,  // the Enter button appears
-  out: 8.95,    // the scene holds here until the visitor enters; then the
-                // push-in, zoom and fade begin
-  end: 9.3      // hand over to the page (then a 0.65 s fade)
+  enter: 8.35,  // the "Enter Gio" button appears
+  out: 8.95     // the scene holds on the title until the visitor enters
 }
 const LETTER_GAP = 0.09 // stagger between G, I and O
+
+// "Enter Gio" (seconds after the click): the robot acknowledges the visitor,
+// the camera pushes forward past it, GIO rises to the centre as the focus,
+// then the Gio page's own colour opens out of the logo and becomes the page.
+const EXIT = {
+  push: [0.12, 1.2],  // camera moves forward and tilts past the robot
+  focus: [0.05, 1.1], // GIO drifts up to the centre and grows
+  light: [0.7, 1.3],  // page colour opens from the logo until it covers all
+  cover: 1.3          // fully covered: mount the page, dissolve into it
+}
 
 // Camera per shot: start → end pose (position, look-at, fov; lookTo/fovTo
 // when those move too). Landscape values; portrait pulls the camera back
@@ -118,16 +130,19 @@ export async function prepareGioIntro() {
   root.setAttribute('aria-label', 'Intro')
   root.innerHTML = `
     <div class="gi-stage" aria-hidden="true"></div>
+    <div class="gi-light" aria-hidden="true"></div>
     <div class="gi-title">
       <span class="gi-mark" role="img" aria-label="GIO"><span class="gi-l" aria-hidden="true">G</span><span class="gi-l" aria-hidden="true">I</span><span class="gi-l" aria-hidden="true">O</span></span>
       <span class="gi-sub">IT Infrastructure <span aria-hidden="true">·</span> Web Development</span>
-      <button type="button" class="gi-enter" aria-label="Enter the portfolio" tabindex="-1">Enter <span aria-hidden="true">→</span></button>
+      <button type="button" class="gi-enter" tabindex="-1">Enter Gio <span class="gi-arrow" aria-hidden="true">→</span></button>
     </div>`
   const stage = root.querySelector('.gi-stage')
   const title = root.querySelector('.gi-title')
   const letters = [...root.querySelectorAll('.gi-l')]
   const sub = root.querySelector('.gi-sub')
   const enterBtn = root.querySelector('.gi-enter')
+  const mark = root.querySelector('.gi-mark')
+  const light = root.querySelector('.gi-light')
 
   // Throws without WebGL; main.js catches that and uses the normal loader.
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'low-power' })
@@ -203,8 +218,8 @@ export async function prepareGioIntro() {
 
   const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _look = new THREE.Vector3()
   const _pos = new THREE.Vector3()
-  // Camera for shot `name` at progress p (0..1); `push` (0..1) is the final
-  // push-in toward the look-at point.
+  // Camera for shot `name` at progress p (0..1); `push` (0..1) is the "Enter
+  // Gio" move: forward toward the robot while tilting down past it.
   function placeCamera(name, p, t, push = 0) {
     const c = CAM[name]
     _look.fromArray(c.look)
@@ -214,7 +229,10 @@ export async function prepareGioIntro() {
     if (portrait) { _look.x = -0.1; if (name === 'reveal') _look.y -= 0.45 * p }
     _a.fromArray(c.from).sub(_look).multiplyScalar(pull)
     _b.fromArray(c.to).sub(_look).multiplyScalar(pull)
-    _pos.lerpVectors(_a, _b, p).multiplyScalar(1 - 0.22 * push).add(_look)
+    _pos.lerpVectors(_a, _b, p).multiplyScalar(1 - 0.5 * push).add(_look)
+    // Entering: aim lower as we move in, so the robot rises out of frame
+    // and we pass beneath it toward the title.
+    _look.y -= 1.5 * push
     let roll = 0
     if (name === 'selfie' || name === 'reveal') {
       // Handheld: a little sway and a phone-like tilt that settles.
@@ -253,42 +271,66 @@ export async function prepareGioIntro() {
     root.remove()
   }
 
-  // ── The title, on the same clock as the scene ──
-  function poseTitle(t) {
+  // ── The title, on the same clock as the scene. `x`: seconds since "Enter
+  // Gio" was pressed (-1 before). ──
+  function poseTitle(t, x) {
     letters.forEach((el, i) => {
       const l = letterPose(t - T.logo - i * LETTER_GAP)
       el.style.opacity = l.opacity.toFixed(3)
       el.style.transform = `translateY(${l.y.toFixed(2)}px) rotate(${l.rot.toFixed(2)}deg) scale(${l.scale.toFixed(3)})`
       el.style.filter = l.blur > 0.05 ? `blur(${l.blur.toFixed(2)}px)` : ''
     })
+    // After "Enter Gio" the supporting lines step aside quickly.
+    const aside = x >= 0 ? 1 - easeOut(span(x, 0, 0.3)) : 1
     const s = easeOut(span(t, T.sub, T.sub + 0.7))
-    sub.style.opacity = s.toFixed(3)
+    sub.style.opacity = (s * aside).toFixed(3)
     sub.style.transform = `translateY(${(8 * (1 - s)).toFixed(2)}px)`
     sub.style.letterSpacing = `${(0.2 - 0.08 * s).toFixed(3)}em`
     // The Enter button rises in after the subtitle; clickable once shown.
     const e = easeOut(span(t, T.enter, T.enter + 0.6))
-    enterBtn.style.opacity = e.toFixed(3)
-    enterBtn.style.transform = `translateY(${(10 * (1 - e)).toFixed(2)}px)`
-    const ready = e > 0.5
+    enterBtn.style.opacity = (e * aside).toFixed(3)
+    enterBtn.style.setProperty('--rise', `${(10 * (1 - e)).toFixed(2)}px`)
+    const ready = e > 0.5 && x < 0
     if (ready !== enterBtn.classList.contains('is-ready')) {
       enterBtn.classList.toggle('is-ready', ready)
       enterBtn.tabIndex = ready ? 0 : -1
       if (ready) enterBtn.focus({ preventScroll: true })
     }
-    // Once settled: a slow drift closer, then the zoom-and-fade hand-over.
+    // Settled: a slow drift closer. Entering: GIO rises toward the centre
+    // and grows, the focal point the page will open from.
     const settle = smooth(span(t, T.logo + 1.4, T.out))
-    const out = easeIn(span(t, T.out, T.end + 0.65))
-    title.style.transform = `translateX(-50%) scale(${(1 + 0.05 * settle + 0.22 * out).toFixed(4)})`
-    title.style.opacity = (1 - out).toFixed(3)
+    const focus = x >= 0 ? easeInOut(span(x, ...EXIT.focus)) : 0
+    const lift = -0.2 * window.innerHeight * focus
+    title.style.transform = `translateX(-50%) translateY(${lift.toFixed(1)}px) scale(${(1 + 0.05 * settle + 0.32 * focus).toFixed(4)})`
+
+    // The Gio page's colour blooms out of the logo (a soft-edged circle)
+    // until it covers everything; GIO, above it, turns from light to the
+    // page's ink so it stays the focus and dissolves straight into the page.
+    const open = x >= 0 ? easeInOut(span(x, ...EXIT.light)) : 0
+    if (open > 0) {
+      const r = mark.getBoundingClientRect()
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2
+      const reach = Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy))
+      const FEATHER = 110
+      const edge = (reach + FEATHER) * open
+      const mask = `radial-gradient(circle at ${cx.toFixed(1)}px ${cy.toFixed(1)}px, #000 ${Math.max(0, edge - FEATHER).toFixed(1)}px, transparent ${edge.toFixed(1)}px)`
+      light.style.maskImage = mask
+      light.style.webkitMaskImage = mask
+      light.style.visibility = 'visible'
+      const ink = smooth(span(x, EXIT.light[0] + 0.05, EXIT.light[0] + 0.4))
+      mark.style.color = `rgb(${lerp(244, 22, ink)}, ${lerp(245, 20, ink)}, ${lerp(251, 42, ink)})`
+    }
   }
+  const lerp = (a, b, p) => Math.round(a + (b - a) * p)
 
   const SHOT_NAMES = Object.keys(SHOTS)
   const _bg = new THREE.Color()
   // Everything driven by time: the cube's path, the space, the robot's gaze
   // and reactions, the camera and the title. The first frame is drawn with
   // it before play(), so the intro starts on a ready picture.
-  let happy = false, waved = false, cheered = false
-  function pose(t, dt) {
+  let happy = false, waved = false, cheered = false, acknowledged = false
+  // `x`: seconds since "Enter Gio" (-1 before).
+  function pose(t, dt, x = -1) {
     // The space: warmer and a little brighter as GIO arrives; the floor
     // light gives way.
     const shift = smooth(span(t, T.shift, T.logo + 1.2))
@@ -320,14 +362,14 @@ export async function prepareGioIntro() {
     cube.visible = fade > 0.01
 
     // Camera: whichever shot t falls in (the reveal holds its last pose
-    // through the title), plus the final push-in. Cut shots drift at an
+    // through the title), plus the "Enter Gio" move. Cut shots drift at an
     // even pace; the selfie and reveal ease.
     let i = SHOT_NAMES.length - 1
     while (i > 0 && t < SHOTS[SHOT_NAMES[i]]) i--
     const name = SHOT_NAMES[i]
     const end = i < SHOT_NAMES.length - 1 ? SHOTS[SHOT_NAMES[i + 1]] : SHOTS.reveal + 1.4
     const p = span(t, SHOTS[name], end)
-    const push = easeIn(span(t, T.out, T.end + 0.65))
+    const push = x >= 0 ? easeInOut(span(x, ...EXIT.push)) : 0
     placeCamera(name, name === 'selfie' || name === 'reveal' ? easeInOut(p) : p, t, push)
 
     // Gaze: follows the cube (lazily at first), turns to the camera, then
@@ -347,9 +389,11 @@ export async function prepareGioIntro() {
     if (!waved && t >= T.wave) { waved = true; expr.play('welcome') }
     // A little cheer when the last letter lands.
     if (!cheered && t >= T.logo + 2 * LETTER_GAP + 0.6) { cheered = true; expr.play('happy') }
+    // "Enter Gio": it acknowledges the visitor with a happy little hop.
+    if (!acknowledged && x >= 0) { acknowledged = true; expr.play('happy') }
     expr.update(dt)
 
-    poseTitle(t)
+    poseTitle(t, x)
   }
 
   resize()
@@ -368,28 +412,51 @@ export async function prepareGioIntro() {
       root.tabIndex = -1
       root.focus({ preventScroll: true })
 
-      let t = 0 // timeline time: it holds at T.out until the visitor enters
+      let t = 0 // timeline time: it holds at T.out (the title) until entered
+      let x = -1 // seconds since "Enter Gio"
       let last = performance.now()
       let done = false
-      let entered = false
 
-      // Enter: from the hold (or on the way to it) straight into the exit.
+      // Enter Gio: the button gives under the press, then the exit plays.
       function enter() {
-        if (entered || !enterBtn.classList.contains('is-ready')) return
-        entered = true
+        if (x >= 0 || !enterBtn.classList.contains('is-ready')) return
+        x = 0
         t = Math.max(t, T.out)
+        enterBtn.classList.add('is-pressed')
       }
 
-      function finish(skipped) {
+      // A light magnetic pull toward the cursor (mouse only).
+      const magnetic = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+      function onMagnet(e) {
+        const r = enterBtn.getBoundingClientRect()
+        const mx = Math.max(-6, Math.min(6, (e.clientX - (r.left + r.width / 2)) * 0.18))
+        const my = Math.max(-4, Math.min(4, (e.clientY - (r.top + r.height / 2)) * 0.25))
+        enterBtn.style.setProperty('--mx', `${mx.toFixed(1)}px`)
+        enterBtn.style.setProperty('--my', `${my.toFixed(1)}px`)
+      }
+      function offMagnet() {
+        enterBtn.style.setProperty('--mx', '0px')
+        enterBtn.style.setProperty('--my', '0px')
+      }
+      if (magnetic) {
+        enterBtn.addEventListener('pointermove', onMagnet)
+        enterBtn.addEventListener('pointerleave', offMagnet)
+      }
+
+      // `how`: 'skip' (Esc: quick fade) or 'enter' (the page colour already
+      // covers everything; dissolve into the real page underneath).
+      function finish(how) {
         if (done) return
         done = true
         window.removeEventListener('keydown', onKey)
-        // Set the page up underneath, then fade the intro away over it.
+        // Set the page up underneath while it's still covered, then fade the
+        // intro away over it.
         try { onReveal?.() } catch (e) { console.error('intro reveal failed:', e) }
         html.style.overflow = prevOverflow
         root.classList.add('is-leaving')
-        if (skipped) root.classList.add('is-skipped')
-        const out = skipped ? 350 : 650
+        if (how === 'skip') root.classList.add('is-skipped')
+        else root.classList.add('is-entering')
+        const out = how === 'skip' ? 350 : 450
         setTimeout(() => {
           dispose()
           if (prevFocus && prevFocus !== document.body && document.contains(prevFocus)) prevFocus.focus({ preventScroll: true })
@@ -399,7 +466,7 @@ export async function prepareGioIntro() {
       // Esc: a quiet way out at any time (for keyboard users; there is no
       // visible skip). Enter: same as the button once it's shown.
       function onKey(e) {
-        if (e.key === 'Escape') finish(true)
+        if (e.key === 'Escape') finish('skip')
         else if (e.key === 'Enter' && e.target !== enterBtn) enter()
       }
       enterBtn.addEventListener('click', enter)
@@ -411,12 +478,13 @@ export async function prepareGioIntro() {
         if (disposed) return
         const dt = Math.min((now - last) / 1000, 0.05)
         last = now
-        // Waiting at the title: the timeline holds, but the robot (real
-        // dt) keeps idling and following the cursor.
-        t = entered || t < T.out ? t + dt : T.out
-        pose(t, dt)
+        // At the title the timeline holds (the robot, on real dt, keeps
+        // idling and following the cursor); after Enter the exit runs.
+        if (t < T.out) t = Math.min(t + dt, T.out)
+        if (x >= 0) x += dt
+        pose(t, dt, x)
         renderer.render(scene, camera)
-        if (t >= T.end) finish(false)
+        if (x >= EXIT.cover) finish('enter')
         if (!disposed) raf = requestAnimationFrame(frame)
       }
       raf = requestAnimationFrame(frame)
