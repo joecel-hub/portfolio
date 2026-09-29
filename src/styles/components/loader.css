@@ -40,6 +40,49 @@ body.normal-mode .ld-logo span {
   color: var(--nm-a1);
 }
 
+/* Stryg.Bytes loader: the robot-cube hops, spins once in the air, lands
+   with a little squash, and repeats (loader.js adds it). */
+.ld-mark {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  width: 64px;
+  height: 104px; /* room for the jump */
+  margin-bottom: -0.5rem;
+}
+
+.ld-mark img {
+  width: 64px;
+  height: 64px;
+  animation: ld-hop 1.15s infinite;
+  will-change: transform;
+}
+
+.ld-mark-shadow {
+  width: 46px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(21, 151, 212, 0.45), transparent);
+  animation: ld-hop-shadow 1.15s infinite;
+}
+
+@keyframes ld-hop {
+  0% { transform: translateY(0) scale(1.12, 0.86) rotate(0deg); animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  14% { transform: translateY(0) scale(0.94, 1.08) rotate(0deg); animation-timing-function: cubic-bezier(0.15, 0.6, 0.35, 1); }
+  48% { transform: translateY(-38px) scale(1) rotate(180deg); animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.4); }
+  78% { transform: translateY(0) scale(1) rotate(360deg); animation-timing-function: ease-out; }
+  88% { transform: translateY(0) scale(1.12, 0.86) rotate(360deg); animation-timing-function: ease-out; }
+  100% { transform: translateY(0) scale(1) rotate(360deg); }
+}
+
+@keyframes ld-hop-shadow {
+  0%, 14%, 78%, 100% { transform: scaleX(1); opacity: 1; }
+  48% { transform: scaleX(0.55); opacity: 0.45; }
+}
+
 .ld-loading {
   font-family: var(--mono);
   font-size: 0.72rem;

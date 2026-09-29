@@ -33,6 +33,20 @@ export function playLoader({ brand = 'Gio', onComplete, instant = false } = {}) 
   const originalText = brand
   logo.innerHTML = originalHTML
 
+  // Stryg.Bytes only: the robot-cube mark hops and spins above the name.
+  let mark = document.querySelector('.ld-mark')
+  if (brand === 'Stryg.Bytes') {
+    if (!mark) {
+      mark = document.createElement('div')
+      mark.className = 'ld-mark'
+      mark.innerHTML = '<img src="/favicon.svg" alt="" width="64" height="64" /><span class="ld-mark-shadow"></span>'
+      loader.insertBefore(mark, logo)
+    }
+  } else if (mark) {
+    mark.remove()
+    mark = null
+  }
+
   let loadingEl = document.querySelector('.ld-loading')
   if (!loadingEl) {
     loadingEl = document.createElement('div')
@@ -50,6 +64,7 @@ export function playLoader({ brand = 'Gio', onComplete, instant = false } = {}) 
     if (onComplete) onComplete()
     logo.remove()
     loadingEl.remove()
+    mark?.remove()
     document.body.classList.add('loader-done')
     loader.style.zIndex = '-1'
     loader.style.pointerEvents = 'none'
@@ -106,13 +121,14 @@ export function playLoader({ brand = 'Gio', onComplete, instant = false } = {}) 
               stagger: { each: 0.003 },
               ease: 'power2.in',
               onComplete: () => {
-                gsap.to([logo, loadingEl], {
+                gsap.to([logo, loadingEl, mark].filter(Boolean), {
                   opacity: 0,
                   duration: 0.15,
                   ease: 'power2.out',
                   onComplete: () => {
                     if (logo) logo.remove()
                     if (loadingEl) loadingEl.remove()
+                    mark?.remove()
                     overlay.remove()
 
                     document.body.classList.add('loader-done')
