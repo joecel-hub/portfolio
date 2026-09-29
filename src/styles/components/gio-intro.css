@@ -34,7 +34,9 @@
 .gi-title {
   position: absolute;
   left: 50%;
-  bottom: clamp(3.5rem, 14vh, 8rem);
+  /* Low enough to leave the robot room above the title + Enter; clear of
+     the home bar on phones. */
+  bottom: max(clamp(1.5rem, 6vh, 4rem), calc(env(safe-area-inset-bottom) + 1rem));
   transform: translateX(-50%);
   transform-origin: 50% 60%;
   display: flex;
@@ -77,31 +79,49 @@
   white-space: nowrap;
 }
 
-.gi-skip {
-  position: absolute;
-  top: max(1.25rem, env(safe-area-inset-top));
-  right: max(1.25rem, env(safe-area-inset-right));
-  padding: 0.6rem 1.1rem;
+/* Enter: the way into the portfolio once the title has settled (gio-intro.js
+   fades it in, then marks it .is-ready). The title block ignores the
+   pointer; the button takes it back when ready. */
+.gi-enter {
+  margin-top: var(--space-4);
+  padding: 0.75rem 1.6rem;
   font-family: var(--mono);
-  font-size: var(--fs-xs);
-  letter-spacing: 0.1em;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #f4f5fb;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+  background: rgba(139, 126, 234, 0.18);
+  border: 1px solid rgba(185, 178, 245, 0.55);
   border-radius: 999px;
   cursor: pointer;
-  transition: background var(--dur-fast), border-color var(--dur-fast);
+  opacity: 0;
+  pointer-events: none;
+  transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
 }
 
-.gi-skip:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: rgba(255, 255, 255, 0.5);
+.gi-enter.is-ready {
+  pointer-events: auto;
+  animation: gi-enter-glow 2.6s ease-in-out infinite;
 }
 
-.gi-skip:focus-visible {
-  outline: 2px solid #b9b2f5;
-  outline-offset: 3px;
+.gi-enter:hover {
+  background: rgba(139, 126, 234, 0.32);
+  border-color: #d6d1ff;
+}
+
+.gi-enter:focus-visible {
+  outline: 2px solid #d6d1ff;
+  outline-offset: 4px;
+}
+
+@keyframes gi-enter-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(139, 126, 234, 0); }
+  50% { box-shadow: 0 0 26px 2px rgba(139, 126, 234, 0.35); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gi-enter.is-ready { animation: none; }
 }
 
 @media (max-width: 480px) {

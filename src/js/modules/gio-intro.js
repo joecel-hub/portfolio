@@ -2,7 +2,8 @@ import * as THREE from 'three'
 import { loadRobot, createRobotInstance, addRobotLights } from './robot/model.js'
 import { createExpressions } from './robot/expressions.js'
 
-// Gio first-visit intro (about 10 s, once per session; see intro-gate.js).
+// Gio first-visit intro (about 9 s, then Enter; once per session; see
+// intro-gate.js).
 // A short opening title sequence, "meet the person behind the portfolio": the
 // same robot-cube that later becomes the Stryg.Bytes assistant, in a quiet
 // dark space with one floating cube.
@@ -14,9 +15,14 @@ import { createExpressions } from './robot/expressions.js'
 //   5. reveal    5.6–8.95 the camera rises; the cube floats away, the space
 //                         warms toward the Gio violet, and GIO enters letter
 //                         by letter (rise, a small hop, a damped swing, settle)
-//                         while the robot glances down at it
-//   6. out       8.95–10  a gentle push-in as title and scene zoom and fade
-//                         into the portfolio underneath
+//                         while the robot glances down at it; an Enter
+//                         button follows, and the scene holds on the title
+//                         (the robot still idling) until it's pressed
+//   6. out       ~1 s     after Enter: a gentle push-in as title and scene
+//                         zoom and fade into the portfolio underneath
+//
+// There's no visible skip: the Enter button is the way in. Esc still leaves
+// at any point, so keyboard users are never stuck.
 //
 // Shots 1–3 cut; 4–6 flow. Everything, the DOM title included, is driven by
 // one clock, so frames are deterministic and never drift apart.
@@ -40,7 +46,9 @@ const T = {
   shift: 5.7,   // the space starts to change, the cube floats off
   logo: 6.6,    // first letter enters (the camera has risen by now)
   sub: 7.85,    // "IT Infrastructure · Web Development"
-  out: 8.95,    // push-in, zoom and fade begin
+  enter: 8.35,  // the Enter button appears
+  out: 8.95,    // the scene holds here until the visitor enters; then the
+                // push-in, zoom and fade begin
   end: 9.3      // hand over to the page (then a 0.65 s fade)
 }
 const LETTER_GAP = 0.09 // stagger between G, I and O
@@ -113,13 +121,13 @@ export async function prepareGioIntro() {
     <div class="gi-title">
       <span class="gi-mark" role="img" aria-label="GIO"><span class="gi-l" aria-hidden="true">G</span><span class="gi-l" aria-hidden="true">I</span><span class="gi-l" aria-hidden="true">O</span></span>
       <span class="gi-sub">IT Infrastructure <span aria-hidden="true">·</span> Web Development</span>
-    </div>
-    <button type="button" class="gi-skip">Skip intro</button>`
+      <button type="button" class="gi-enter" aria-label="Enter the portfolio" tabindex="-1">Enter <span aria-hidden="true">→</span></button>
+    </div>`
   const stage = root.querySelector('.gi-stage')
   const title = root.querySelector('.gi-title')
   const letters = [...root.querySelectorAll('.gi-l')]
   const sub = root.querySelector('.gi-sub')
-  const skip = root.querySelector('.gi-skip')
+  const enterBtn = root.querySelector('.gi-enter')
 
   // Throws without WebGL; main.js catches that and uses the normal loader.
   const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'low-power' })
@@ -257,6 +265,16 @@ export async function prepareGioIntro() {
     sub.style.opacity = s.toFixed(3)
     sub.style.transform = `translateY(${(8 * (1 - s)).toFixed(2)}px)`
     sub.style.letterSpacing = `${(0.2 - 0.08 * s).toFixed(3)}em`
+    // The Enter button rises in after the subtitle; clickable once shown.
+    const e = easeOut(span(t, T.enter, T.enter + 0.6))
+    enterBtn.style.opacity = e.toFixed(3)
+    enterBtn.style.transform = `translateY(${(10 * (1 - e)).toFixed(2)}px)`
+    const ready = e > 0.5
+    if (ready !== enterBtn.classList.contains('is-ready')) {
+      enterBtn.classList.toggle('is-ready', ready)
+      enterBtn.tabIndex = ready ? 0 : -1
+      if (ready) enterBtn.focus({ preventScroll: true })
+    }
     // Once settled: a slow drift closer, then the zoom-and-fade hand-over.
     const settle = smooth(span(t, T.logo + 1.4, T.out))
     const out = easeIn(span(t, T.out, T.end + 0.65))
@@ -345,11 +363,22 @@ export async function prepareGioIntro() {
       const prevOverflow = html.style.overflow
       html.style.overflow = 'hidden'
       requestAnimationFrame(() => root.classList.add('is-in'))
-      skip.focus({ preventScroll: true })
+      // Focus the dialog itself until the Enter button appears (it then
+      // takes focus); Esc works from the start.
+      root.tabIndex = -1
+      root.focus({ preventScroll: true })
 
-      let t = 0
+      let t = 0 // timeline time: it holds at T.out until the visitor enters
       let last = performance.now()
       let done = false
+      let entered = false
+
+      // Enter: from the hold (or on the way to it) straight into the exit.
+      function enter() {
+        if (entered || !enterBtn.classList.contains('is-ready')) return
+        entered = true
+        t = Math.max(t, T.out)
+      }
 
       function finish(skipped) {
         if (done) return
@@ -367,8 +396,13 @@ export async function prepareGioIntro() {
           resolve()
         }, out)
       }
-      function onKey(e) { if (e.key === 'Escape') finish(true) }
-      skip.addEventListener('click', () => finish(true))
+      // Esc: a quiet way out at any time (for keyboard users; there is no
+      // visible skip). Enter: same as the button once it's shown.
+      function onKey(e) {
+        if (e.key === 'Escape') finish(true)
+        else if (e.key === 'Enter' && e.target !== enterBtn) enter()
+      }
+      enterBtn.addEventListener('click', enter)
       window.addEventListener('keydown', onKey)
       window.addEventListener('resize', resize, { passive: true })
       window.addEventListener('pointermove', onPointer, { passive: true })
@@ -377,7 +411,9 @@ export async function prepareGioIntro() {
         if (disposed) return
         const dt = Math.min((now - last) / 1000, 0.05)
         last = now
-        t += dt
+        // Waiting at the title: the timeline holds, but the robot (real
+        // dt) keeps idling and following the cursor.
+        t = entered || t < T.out ? t + dt : T.out
         pose(t, dt)
         renderer.render(scene, camera)
         if (t >= T.end) finish(false)
