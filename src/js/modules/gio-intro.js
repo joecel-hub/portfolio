@@ -140,6 +140,7 @@ export async function prepareGioIntro() {
   root.innerHTML = `
     <div class="gi-stage" aria-hidden="true"></div>
     <div class="gi-light" aria-hidden="true"></div>
+    <p class="gi-say" aria-live="polite"></p>
     <div class="gi-title">
       <span class="gi-mark" role="img" aria-label="GIO"><span class="gi-l" aria-hidden="true">G</span><span class="gi-l" aria-hidden="true">I</span><span class="gi-l" aria-hidden="true">O</span></span>
       <span class="gi-sub">IT Infrastructure <span aria-hidden="true">·</span> Web Development</span>
@@ -152,6 +153,28 @@ export async function prepareGioIntro() {
   const enterBtn = root.querySelector('.gi-enter')
   const mark = root.querySelector('.gi-mark')
   const light = root.querySelector('.gi-light')
+  const bubble = root.querySelector('.gi-say')
+
+  // The robot's short lines, in a small bubble that follows it on screen
+  // (also announced politely). Only for its reactions; otherwise quiet.
+  let sayLeft = 0
+  function say(text, secs = 1.8) {
+    bubble.textContent = text
+    bubble.classList.add('is-shown')
+    sayLeft = secs
+  }
+  const _head = new THREE.Vector3()
+  function placeBubble(dt) {
+    if (sayLeft <= 0) return
+    sayLeft -= dt
+    if (sayLeft <= 0) { bubble.classList.remove('is-shown'); return }
+    // Just above the robot's top-right corner.
+    _head.set(0.85, 1.05, 0).applyMatrix4(robot.model.matrixWorld).project(camera)
+    const px = (_head.x * 0.5 + 0.5) * window.innerWidth
+    const py = (-_head.y * 0.5 + 0.5) * window.innerHeight
+    bubble.style.setProperty('--sx', `${Math.min(px, window.innerWidth - 200).toFixed(0)}px`)
+    bubble.style.setProperty('--sy', `${Math.max(py, 70).toFixed(0)}px`)
+  }
   // The Gio logo's ink (the site's --nm-text): GIO lands on exactly this.
   const INK = (() => {
     const hex = getComputedStyle(document.documentElement).getPropertyValue('--nm-text').trim()
@@ -454,6 +477,7 @@ export async function prepareGioIntro() {
         expr.setMood(null)
         expr.setHover(false)
         expr.play('yay')
+        say('Yay! Let’s go!', 0.9)
       }
 
       // A bit of personality while the visitor hovers without entering:
@@ -471,9 +495,9 @@ export async function prepareGioIntro() {
         if (holdT - lastHover > 8) hovers = 0 // calm again after a while
         hovers++
         lastHover = holdT
-        if (hovers === 1) expr.setMood('curious')
-        else if (hovers === 2) { expr.setMood('curious'); expr.play('happy') }
-        else { expr.play('huh'); setMoodFor('impatient', 2.6) }
+        if (hovers === 1) { expr.setMood('curious'); say('Ooh — going in?') }
+        else if (hovers === 2) { expr.setMood('curious'); expr.play('happy'); say('Yes! That one!') }
+        else { expr.play('huh'); setMoodFor('impatient', 2.6); say('…really?') }
       }
       function onHoverOut() {
         hoverBtn = false
@@ -495,7 +519,7 @@ export async function prepareGioIntro() {
         }
         if (holdT >= nextNudge) {
           nextNudge = holdT + 12
-          if (!hoverBtn) { expr.play('huh'); setMoodFor('impatient', 3.2) }
+          if (!hoverBtn) { expr.play('huh'); setMoodFor('impatient', 3.2); say('Still there?', 2.2) }
         }
       }
 
@@ -559,6 +583,7 @@ export async function prepareGioIntro() {
         tickWaiting(dt)
         pose(t, dt, x)
         renderer.render(scene, camera)
+        placeBubble(dt)
         if (x !== null && x >= EXIT.cover) finish('enter')
         if (!disposed) raf = requestAnimationFrame(frame)
       }
